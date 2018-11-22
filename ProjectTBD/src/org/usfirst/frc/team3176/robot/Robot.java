@@ -5,13 +5,16 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package org.usfirst.frc.team3176.robot;
+package org.usfirst.frc.team3176.robot; 
 
+import util.*;
+import subsystem.*;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
+	manager loopManager = manager.getInstance();
 
 	@Override
 	public void robotInit() {}

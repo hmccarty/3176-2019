@@ -3,15 +3,14 @@ package util;
 import java.util.ArrayList;
 
 public class manager {
-	private manager instance; 
+	private static manager instance = new manager(); 
 	private ArrayList<loop> subsystemList;
 	
 	public manager() {
-		instance = new manager();
 		subsystemList = new ArrayList();
 	}
 	
-	public manager getInstance() {
+	public static manager getInstance() {
 		return instance; 
 	}
 	
