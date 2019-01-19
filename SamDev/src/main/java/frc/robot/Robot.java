@@ -74,7 +74,7 @@ public class Robot extends IterativeRobot {
     switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
-      break;
+        break;
       case kDefaultAuto:
       default:
         // Put default auto code here
