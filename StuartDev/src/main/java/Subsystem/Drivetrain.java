@@ -1,7 +1,7 @@
 package Subsystem;
 
 import com.kauailabs.navx.frc.AHRS; //Need to install Nav-X libraries to use
-import Auton.Kinematics;
+//import Auton.Kinematics;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
@@ -25,7 +25,7 @@ public class Drivetrain extends Subsystem {
 	private Controller controller = Controller.getInstance(); 
 	private PowerDistributionPanel pdp = new PowerDistributionPanel(0);
 	private AHRS gyro;
-	private Kinematics kinematics;
+	//private Kinematics kinematics;
 	
 	private ArrayList<Swervepod> Pods;
 	
@@ -340,8 +340,7 @@ public class Drivetrain extends Subsystem {
 				default:
 					break;			
 				}
-			outputToSmartDashboard();
-			kinematics.update();
+			//kinematics.update();
 		}	
 		@Override
 		public void stop() {				
@@ -353,7 +352,7 @@ public class Drivetrain extends Subsystem {
 	public void outputToSmartDashboard() {
 		// SmartDashboard.putNumber("Vision X", cam.getAvgX());
 		// SmartDashboard.putNumber("Vision Area", cam.getAvgArea());
-		SmartDashboard.putNumber("kinematics Position", kinematics.getY());
+		//SmartDashboard.putNumber("kinematics Position", kinematics.getY());
 		SmartDashboard.putNumber("angle", getAngle());
 	}
 }
