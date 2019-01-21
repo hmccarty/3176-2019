@@ -29,7 +29,6 @@ void loop(){
   xAdjusted = (double(pixy.ccc.blocks[0].m_x)*cos(camOffset))-(yCalc*sin(camOffset));
   yAdjusted = (yCalc*cos(camOffset))+(double(pixy.ccc.blocks[0].m_x)*sin(camOffset));
 
-  Serial.println("xActual: " + String(pixy.ccc.blocks[0].m_x) + " | xAdjusted: " + String(xAdjusted) + " | yActual: " + String(yCalc) + " | yAdjusted: " + String(yAdjusted));
 //  for(int i = 0; i < pixy.ccc.blocks.numBlocks; i++) {
 //     widthAvgSum += pixy.ccc.blocks[i];
 //  }
@@ -39,31 +38,30 @@ void loop(){
 //      smallBlocks += pixy.ccc.blocks[i];
 //    }
 //  }
-// 
+ 
 
-//  piOutput = String(pixy.ccc.numBlocks);
-//  piOutput += "|";
-//  for(int i = 0; i < pixy.ccc.numBlocks; i++) {
-//   piOutput += String(pixy.ccc.blocks[i].m_x);
-//    piOutput += "|";
-//    piOutput += String(pixy.ccc.blocks[i].m_y);
-//    piOutput += "|";
-//    piOutput += String(pixy.ccc.blocks[i].m_height);
-//    piOutput += "|";
-//    piOutput += String(pixy.ccc.blocks[i].m_width);
-//    piOutput += "|";
-//  }
-//  Serial.println(String(double(pixy.ccc.blocks[0].m_width)/double(pixy.ccc.blocks[0].m_height)) + " | " + String(double(pixy.ccc.blocks[1].m_width)/double(pixy.ccc.blocks[1].m_height)));
-   //gives time for everything to process
+  piOutput = String(pixy.ccc.numBlocks);
+  piOutput += "|";
+  for(int i = 0; i < pixy.ccc.numBlocks; i++) {
+    piOutput += String(xAdjusted);
+    piOutput += "|";
+    piOutput += String(yAdjusted);
+    piOutput += "|";
+    piOutput += String(pixy.ccc.blocks[i].m_height);
+    piOutput += "|";
+    piOutput += String(pixy.ccc.blocks[i].m_width);
+    piOutput += "|";
+  }
+  Serial.println(piOutput);
 }
 
-//void requestEvent(){//called when RoboRIO request a message from this device
-//  Wire.write(piOutput.c_str()); //writes data to the RoboRIO, converts it to string
-//
-//
-//}
-//
-//void receiveEvent(int bytes){//called when RoboRIO "gives" this device a message
-//
-//
+void requestEvent(){//called when RoboRIO request a message from this device
+  Wire.write(piOutput.c_str()); //writes data to the RoboRIO, converts it to string
+
+
+}
+
+void receiveEvent(int bytes){//called when RoboRIO "gives" this device a message
+
+}
 
