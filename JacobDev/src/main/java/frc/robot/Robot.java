@@ -1,48 +1,39 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
 
 package frc.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Timer;
 
-/**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the IterativeRobot
- * documentation. If you change the name of this class or the package after 
- * creating this project, you must also update the build.gradle file in the
- * project.
- */
 public class Robot extends IterativeRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
-   */
+  Joystick Stick = new Joystick(0);
+  Compressor Compressor = new Compressor();
+  Solenoid blue1 = new Solenoid(0);
+  Solenoid blue2 = new Solenoid(1);
+  Solenoid purple1 = new Solenoid(2);
+  Solenoid purple2 = new Solenoid(3);  
+  Timer timer =  new Timer();
+  int cycler = 1;
+
   @Override
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    timer.start();
+    timer.reset();
   }
 
-  /**
-   * This function is called every robot packet, no matter the mode. Use
-   * this for items like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
-   */
+  
   @Override
   public void robotPeriodic() {
   }
@@ -86,13 +77,93 @@ public class Robot extends IterativeRobot {
    * This function is called periodically during operator control.
    */
   @Override
-  public void teleopPeriodic() {
+  public void teleopPeriodic()
+  {   
+    if(Stick.getRawButtonPressed(5)){
+      timer.reset();
+      cycler = 1;
+    }
+    else if (Stick.getRawButtonPressed(3)){
+      cycler = 2;
+    }
+    else if (Stick.getRawButtonPressed(4)){
+      cycler = 3; 
+    }
+    switch(cycler){
+      case 1:
+        outtake();
+        break; 
+      case 2:
+        hold();
+        break;
+      case 3:
+        intake();
+        break;
+    }
+    
+    if(Stick.getRawButton(2))
+    {
+      Compressor.stop();
+    }
+    else
+    {
+      Compressor.start();
+    }
   }
 
-  /**
-   * This function is called periodically during test mode.
-   */
+  public void intake()
+  {
+    setBlue(true);
+    setPurple(false);
+  }
+
+  public void hold()
+  {
+    setPurple(true);
+  }
+
+  public void outtake()
+  {
+    
+    setBlue(false);
+    if(timer.get() > 0.5)
+    {
+      setPurple(false);
+      timer.reset();
+    }
+  }
+
+  public void setBlue(boolean on)
+  {
+    if(on)
+    {
+      blue1.set(true);
+      blue2.set(false);
+    }
+    else
+    {
+      blue1.set(false);
+      blue2.set(true);
+    }
+  }
+
+  public void setPurple(boolean on)
+  {
+    if(on)
+    {
+      purple1.set(true);
+      purple2.set(false);
+    }
+    else
+    {
+      purple1.set(false);
+      purple2.set(true);
+    }
+  }
+
   @Override
-  public void testPeriodic() {
+  public void testPeriodic() 
+  {
+
   }
 }
