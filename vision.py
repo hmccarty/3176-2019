@@ -4,7 +4,7 @@
 #
 #
 #This Frankenstein code is The demo Python script that came with
-#the FRCVison image mashed with my ball tracking code. It Does
+#the FRCVison image mashed with my Target tracking code. It Does
 #Vision Processing exclusively on the Pi, should run faster
 #then the Driver Station Version. Hopefully this script is just
 #plug and play for you but if not you will need to edit tjhis script
@@ -129,66 +129,64 @@ def readConfig():
 
     return True
 
-
-
-
 #This should be a class lowkey but it'll work
-def TrackTheBall(frame, sd):
-    BallLower= (0,103,105)
-    BallUpper = (150,255,255)
-    #if no frame arrives, the vid is over or camera is unavalible
+def TrackTheTarget(frame, sd):
+    TargetLower = (0,103,105)
+    TargetUpper = (150,255,255)
+    try:
+        HL = sd.getNumber('HL', 0)
+        HU = sd.getNumber('HU', 36)
+        SL = sd.getNumber('SL', 103)
+        SU = sd.getNumber('SU', 255)
+        VL = sd.getNumber('VL', 105)
+        VU = sd.getNumber('VU', 255)
+        TargetLower = (HL,SL,VL)
+        TargetUpper = (HU,SU,VU)
+        print("HSV lower:%s HSV Upper:%s" % (TargetLower, TargetUpper))
+    except:
+        print("Unable to grab network table values, going to default values")
+
+    #Tells Smartdashbord if rpi is receiving frames
     if frame is None:
         sd.putNumber('GettingFrameData',False)
     else:
         sd.putNumber('GettingFrameData',True)
 
-
-    #frame = cv2.flip(frame, 1)
-
-    #Blur out the Image
-    #blurred = cv2.GaussianBlur(frame, (11,11), 0)
+    #Convert frame from RGB to HSV Format
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    
-    #Make a mask for the pixals that meet yhe HSV filter 
-    #then run a bunch of dolations and
-    #erosions to remove any small blobs still in the mask
-    mask = cv2.inRange(hsv, BallLower, BallUpper)
+
+    #Creates a mask for all values within the HSV Filter
+    mask = cv2.inRange(hsv, TargetLower, TargetUpper)
+
+    #Erodes and dilates the mask to highlight objects
     mask = cv2.erode(mask, None, iterations = 2)
-    mask= cv2.dilate(mask, None, iterations = 2)
-    
+    mask = cv2.dilate(mask, None, iterations = 2)
+
     #find the Contours in the mask and initialize the
-    #current (x,y) center of the ball
-    a, cnts , b= cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    #current (x,y) center of the Target
+    a, blocks , b = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     center = None
-    #only do stuff if a single contor was found
-    for c in cnts:
-        #find the largest contour in the mask, then use it
-        #to compute the minimum enclosing circle and centroid
-        #c = max(cnts, key=cv2.contourArea)
-        rect=cv2.minAreaRect(c)
+    blockIdx = 0
+
+    for block in blocks:
+        target = cv2.minAreaRect(block)
         box = cv2.boxPoints(rect)
         box = np.int0(box)
-        print(box)
-        ((x,y), radius) = cv2.minEnclosingCircle(c)
-        M = cv2.moments(c)
-        center = (int(M["m10"] / M["m00"]), int (M["m01"] / M["m00"]))
+
+        M = cv2.moments(block)
+        xcent = int(M["m10"]/M["m00"])
+        ycent = int(M["m01"]/M["m00"])
 
         #if the dectected contour has a radius big enough, we will send it
         if radius > 10:
             cv2.drawContours(img, [box], -1, (0, 0, 255), 3)
-            #draw a circle around the target and publish values to smart dashboard
-            #cv2.circle(frame, (int(x), int(y)), int(radius), (255,255,8), 2)
-            #cv2.circle(frame, center, 3, (0,0,225), -1)
-            sd.putNumber('All', box)
-            sd.putNumber('X',x)
-            sd.putNumber('Y',y)
-            sd.putNumber('R', radius)
+            sd.putNumber('Block ' + blockIdx + ' Center X', xcent)
+            sd.putNumber('Block ' + blockIdx + ' Center Y', ycent)
         else:
             #let the RoboRio Know no target has been detected with -1
-            sd.putNumber('X', -x)
-            sd.putNumber('Y', -y)
-            sd.putNumber('R', -radius)
-            
+            sd.putNumber('Block ' + blockIdx + ' Center X', -1)
+            sd.putNumber('Block ' + blockIdx + ' Center Y', -1)
+
     print("Sent processed frame")
     return frame
 
@@ -208,7 +206,7 @@ if __name__ == "__main__":
     ntinst.startClientTeam(team)
 
     SmartDashboardValues = ntinst.getTable('SmartDashboard')
-    
+
     #Start up camera stuff
     print("Connecting to camera")
     cs = CameraServer.getInstance()
@@ -216,12 +214,12 @@ if __name__ == "__main__":
     Camera = UsbCamera('RPi Camero 0', 0)
     Camera.setResolution(160,120)
     cs.addCamera(Camera)
-    
+
     print("connected")
 
     #This Is the object we pull the imgs for OpenCV magic
     CvSink = cs.getVideo()
-    
+
     #This will send the process frames to the Driver station
     #allowing the us to see what OpenCV sees
     outputStream = cs.putVideo("Processed Frames", 160,120)
@@ -237,8 +235,6 @@ if __name__ == "__main__":
         if GotFrame  == 0:
             outputStream.notifyError(CvSink.getError())
             continue
-        img = TrackTheBall(img, SmartDashboardValues)
+        img = TrackTheTarget(img, SmartDashboardValues)
         #print(img)
         outputStream.putFrame(img)
-
-
