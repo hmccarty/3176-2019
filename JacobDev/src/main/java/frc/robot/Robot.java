@@ -17,10 +17,10 @@ public class Robot extends IterativeRobot {
 
   Joystick Stick = new Joystick(0);
   Compressor Compressor = new Compressor();
-  Solenoid blue1 = new Solenoid(0);
-  Solenoid blue2 = new Solenoid(1);
-  Solenoid purple1 = new Solenoid(2);
-  Solenoid purple2 = new Solenoid(3);  
+  Solenoid blue1 = new Solenoid(2);
+  Solenoid blue2 = new Solenoid(3);
+  Solenoid purple1 = new Solenoid(0);
+  Solenoid purple2 = new Solenoid(1);  
   Timer timer =  new Timer();
   int cycler = 1;
 
