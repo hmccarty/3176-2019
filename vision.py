@@ -131,20 +131,20 @@ def readConfig():
 
 #This should be a class lowkey but it'll work
 def TrackTheTarget(frame, sd):
-    TargetLower = (0,103,105)
-    TargetUpper = (150,255,255)
-    try:
-        HL = sd.getNumber('HL', 0)
-        HU = sd.getNumber('HU', 36)
-        SL = sd.getNumber('SL', 103)
-        SU = sd.getNumber('SU', 255)
-        VL = sd.getNumber('VL', 105)
-        VU = sd.getNumber('VU', 255)
-        TargetLower = (HL,SL,VL)
-        TargetUpper = (HU,SU,VU)
-        print("HSV lower:%s HSV Upper:%s" % (TargetLower, TargetUpper))
-    except:
-        print("Unable to grab network table values, going to default values")
+    TargetLower = (40,103,103)
+    TargetUpper = (110,255,255)
+    #try:
+     #   HL = sd.getNumber('HL', 0)
+      #  HU = sd.getNumber('HU', 36)
+       # SL = sd.getNumber('SL', 103)
+        #SU = sd.getNumber('SU', 255)
+        #VL = sd.getNumber('VL', 105)
+        #VU = sd.getNumber('VU', 255)
+        #TargetLower = (HL,SL,VL)
+        #TargetUpper = (HU,SU,VU)
+        #print("HSV lower:%s HSV Upper:%s" % (TargetLower, TargetUpper))
+    #except:
+     #   print("Unable to grab network table values, going to default values")
 
     #Tells Smartdashbord if rpi is receiving frames
     if frame is None:
@@ -170,22 +170,23 @@ def TrackTheTarget(frame, sd):
 
     for block in blocks:
         target = cv2.minAreaRect(block)
-        box = cv2.boxPoints(rect)
+        box = cv2.boxPoints(target)
         box = np.int0(box)
 
         M = cv2.moments(block)
-        xcent = int(M["m10"]/M["m00"])
-        ycent = int(M["m01"]/M["m00"])
+        xcent = int(M['m10']/M['m00'])
+        ycent = int(M['m01']/M['m00'])
 
         #if the dectected contour has a radius big enough, we will send it
-        if radius > 10:
+        if M['m00'] > 10:
             cv2.drawContours(img, [box], -1, (0, 0, 255), 3)
-            sd.putNumber('Block ' + blockIdx + ' Center X', xcent)
-            sd.putNumber('Block ' + blockIdx + ' Center Y', ycent)
+            sd.putNumber('Block ' + str(blockIdx) + ' Center X', xcent)
+            sd.putNumber('Block ' + str(blockIdx) + ' Center Y', ycent)
         else:
             #let the RoboRio Know no target has been detected with -1
-            sd.putNumber('Block ' + blockIdx + ' Center X', -1)
-            sd.putNumber('Block ' + blockIdx + ' Center Y', -1)
+            sd.putNumber('Block ' + str(blockIdx) + ' Center X', -1)
+            sd.putNumber('Block ' + str(blockIdx) + ' Center Y', -1)
+        blockIdx = blockIdx + 1
 
     print("Sent processed frame")
     return frame
