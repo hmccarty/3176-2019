@@ -22,7 +22,7 @@ import cv2
 from cscore import CameraServer, VideoSource, CvSource, VideoMode, CvSink, UsbCamera
 from networktables import NetworkTablesInstance
 
-#   
+#
 
 configFile = "/boot/frc.json"
 
@@ -31,6 +31,9 @@ class CameraConfig: pass
 team = None
 server = False
 cameraConfigs = []
+yPixPerInch = 0
+xPixPerInch = 0
+distPixPerInch = 0
 
 """Report parse error."""
 def parseError(str):
@@ -106,6 +109,12 @@ def readConfig():
 
     return True
 
+def degPerPixel(imageWidth):
+    return imageWidth/61
+
+def pixelPerInch():
+
+
 #This should be a class lowkey but it'll work
 def TrackTheTarget(frame, sd):
     TargetLower = (10,25,70)
@@ -143,13 +152,14 @@ def TrackTheTarget(frame, sd):
     #current (x,y) center of the Target
     a, blocks , b = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     center = None
-	
+    areas = []
     if len(blocks) > 0:
-        block = max(blocks, key=cv2.contourArea)
-        target = cv2.minAreaRect(block)
+        blocks = sorted(blocks, key = cv2.contourArea, reverse = True)[:5] # get largest five contour area
+        #block = max(blocks, key=cv2.contourArea)
+        target = cv2.minAreaRect(blocks[0])
         box = cv2.boxPoints(target)
         box = np.int0(box)
-        M = cv2.moments(block)
+        M = cv2.moments(block[0])
         xcent = int(M['m10']/M['m00'])
         ycent = int(M['m01']/M['m00'])
         pidx = 0
@@ -163,9 +173,9 @@ def TrackTheTarget(frame, sd):
                         sd.putNumber("Point " + str(pidx) + " Y Coord", coords)
                     cidx += 1
             pidx += 1
-			
+
         #if the dectected contour has a radius big enough, we will send it
-        
+
         cv2.drawContours(img, [box], -1, (125, 0, 125), 3)
         sd.putNumber('Block Area', M['m00'])
         sd.putNumber('Block Center X', xcent)
@@ -210,7 +220,7 @@ if __name__ == "__main__":
 
     #This will send the process frames to the Driver station
     #allowing the us to see what OpenCV sees
-    outputStream = cs.putVideo("Processed Frames", 160,120)
+    #outputStream = cs.putVideo("Processed Frames", 160,120)
 
     #buffer to store img data
     img = np.zeros(shape=(160,120,3), dtype=np.uint8)
@@ -222,11 +232,11 @@ if __name__ == "__main__":
         # and after a few loops and should start grabing frames from the camera
         GotFrame, img = CvSink.grabFrame(img)
         if GotFrame  == 0:
-            outputStream.notifyError(CvSink.getError())
+            #outputStream.notifyError(CvSink.getError())
             continue
         img = TrackTheTarget(img, SmartDashboardValues)
         end = time.time()
         #print(img)
         #outputStream.putFrame(img)
-        
+
         print(end-start)
