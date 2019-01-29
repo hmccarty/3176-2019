@@ -19,10 +19,10 @@ public class HatchIntake {
     Talon inMotor = new Talon(0);
     Talon upMotor = new Talon(1);
     Joystick stick = new Joystick(0);
-    boolean intakeButton = stick.getRawButton(12);
-    boolean sendButton = stick.getRawButton(13);
+    private boolean intakeButton = stick.getRawButton(12);
+    private boolean sendButton = stick.getRawButton(13);
 
-    if (getButton()) {
+    // if (getButton()) {
 
-    }
+    // }
 }
