@@ -16,17 +16,19 @@ import com.revrobotics.CANError;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
+import com.revrobotics.CANEncoder;
 
 
 public class Robot extends IterativeRobot {
   private Joystick stick;
   private CANSparkMax motor;
+  private CANEncoder encoder;
   
   @Override
   public void robotInit() {
     stick = new Joystick(1);
-    motor = new CANSparkMax(3, MotorType.kBrushless);
+    motor = new CANSparkMax(0, MotorType.kBrushless);
+    encoder = motor.getEncoder();
 
   }
 
@@ -46,7 +48,13 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void teleopPeriodic() {
-    motor.set(stick.getY());
+    if (Math.abs(stick.getY()) < .06){
+      motor.set(0);
+    }
+    else{
+      motor.set(stick.getY());
+    }
+    System.out.println(encoder.getPosition());
   }
 
   @Override
