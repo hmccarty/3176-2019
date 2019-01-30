@@ -169,6 +169,7 @@ def TrackTheTarget(frame, sd):
                 for coords in points:
                     if cidx == 0:
                         sd.putNumber("Point " + str(pidx) + " X Coord", coords)
+						print(coords)
                     elif cidx == 1:
                         sd.putNumber("Point " + str(pidx) + " Y Coord", coords)
                     cidx += 1

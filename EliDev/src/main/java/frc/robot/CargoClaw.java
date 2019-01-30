@@ -17,8 +17,9 @@ public class CargoClaw extends IterativeRobot {
   Joystick Stick = new Joystick(0);
   Solenoid grabber1 = new Solenoid(2);
   Solenoid grabber2 = new Solenoid(3); 
-  //Solenoid mover1 = new Solenoid(0);
-  //Solenoid mover2 = new Solenoid(1);
+  Solenoid mover1 = new Solenoid(0);
+  Solenoid mover2 = new Solenoid(1);
+  DigitalInput ballSensor = new DigitalInput(0);
   int cycler = 1;
   Timer timer =  new Timer();
 
@@ -80,13 +81,17 @@ public class CargoClaw extends IterativeRobot {
   
   public void loop()
   {
-    if(Stick.getRawButtonPressed(5)){
+    if(Stick.getRawButtonPressed(5))
+    {
       cycler = 1;
     }
-    else if (Stick.getRawButtonPressed(4)){
+    else if (Stick.getRawButtonPressed(4))
+    {
       cycler = 2;
     }
-    switch(cycler){
+
+    switch(cycler)
+    {
       case 1:
         outtake();
         break;
@@ -98,24 +103,28 @@ public class CargoClaw extends IterativeRobot {
 
   public void intake()
   {
-    //put in some garbage for sensors.
-    setGrabber(true);
-    //if(timer.get() > 0.5)
-    //{
-      //setMover(false);
-      //timer.reset();
-    //}
- }
+    if(ballSensor.get())
+    {
+      setGrabber(true);
+      timer.reset();
+      if(timer.get() > 0.5)
+      {
+        setMover(false);
+        timer.reset();
+      }
+    }
+  }
 
 
   public void outtake()
   {
-    //setMover(true);
-    //if(timer.get() > 2.0)
-    //{
+    setMover(true);
+    timer.reset();
+    if(timer.get() > 2.0)
+    {
       setGrabber(false);
-      //timer.reset();
-    //}
+      timer.reset();
+    }
   }
 
   public void setGrabber(boolean on)
@@ -136,13 +145,13 @@ public class CargoClaw extends IterativeRobot {
   {
       if(on)
       {
-        //mover1.set(true);
-        //mover2.set(false);
+          mover1.set(true);
+          mover2.set(false);
       }
       else
       {
-        //mover1.set(false);
-       //mover2.set(true);
+        mover1.set(false);
+        mover2.set(true);
       }
   }
   
