@@ -13,23 +13,15 @@ public class Robot extends IterativeRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
-  Joystick Stick = new Joystick(0);
-  Compressor Compressor = new Compressor();
-  Solenoid blue1 = new Solenoid(2);
-  Solenoid blue2 = new Solenoid(3);
-  Solenoid purple1 = new Solenoid(0);
-  Solenoid purple2 = new Solenoid(1);  
-  Timer timer =  new Timer();
-  int cycler = 1;
+  
+  CargoClaw cargoClaw = new CargoClaw();
 
   @Override
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    timer.start();
-    timer.reset();
+    
   }
 
   
@@ -77,89 +69,9 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic()
-  {   
-    if(Stick.getRawButtonPressed(5)){
-      timer.reset();
-      cycler = 1;
-    }
-    else if (Stick.getRawButtonPressed(3)){
-      cycler = 2;
-    }
-    else if (Stick.getRawButtonPressed(4)){
-      cycler = 3; 
-    }
-    switch(cycler){
-      case 1:
-        outtake();
-        break; 
-      case 2:
-        hold();
-        break;
-      case 3:
-        intake();
-        break;
-    }
-    
-    if(Stick.getRawButton(2))
-    {
-      Compressor.stop();
-    }
-    else
-    {
-      Compressor.start();
-    }
-  }
-
-  public void intake()
   {
-    setBlue(true);
-    setPurple(false);
+    cargoClaw.loop();
   }
-
-  public void hold()
-  {
-    setPurple(true);
-  }
-
-  public void outtake()
-  {
-    
-    setBlue(false);
-    if(timer.get() > 0.5)
-    {
-      setPurple(false);
-      timer.reset();
-    }
-  }
-
-  public void setBlue(boolean on)
-  {
-    if(on)
-    {
-      blue1.set(true);
-      blue2.set(false);
-    }
-    else
-    {
-      blue1.set(false);
-      blue2.set(true);
-    }
-  }
-
-  public void setPurple(boolean on)
-  {
-    if(on)
-    {
-      purple1.set(true);
-      purple2.set(false);
-    }
-    else
-    {
-      purple1.set(false);
-      purple2.set(true);
-    }
-  }
-
   @Override
   public void testPeriodic() 
   {
