@@ -11,19 +11,40 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
-
-/**
- * Add your docs here.
- */
 public class cargo_intake {
 
-   Talon motorIn = new Talon(0); 
-   Talon motorPivot = new Talon(1);
-   Joystick stick =  new Joystick(0);
-   Button intakeButton = new JoystickButton(stick, 0),
-       pivotButton = new JoystickButton(stick, 1);
-
-    if /* see cargo close enough */{
-        //input code relative to pseudocode
+    private static cargo_intake instance = new cargo_intake();    
+    Talon motorIn; 
+    Talon motorPivot;
+    Joystick stick;
+ 
+    public static cargo_intake getInstance(){
+        return instance;
     }
+
+    private cargo_intake(){
+
+        motorIn = new Talon(0); 
+        motorPivot = new Talon(1);
+        stick =  new Joystick(0);
+
+    }
+
+    public void checkButton(){
+        if (stick.getRawButtonPressed(11) == true){
+            
+            motorIn.set(-1);
+
+        }
+    }
+
+  
 }
+            // motorPivot.set(-1);
+            // motorPivot.set(0);
+            // motorIn.set(-1);
+            // motorIn.set(0);
+            // motorPivot.set(1);
+            // motorPivot.set(0);
+            // motorIn.set(-1);
+            // motorIn.set(0);
