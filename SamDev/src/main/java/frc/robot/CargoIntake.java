@@ -14,9 +14,17 @@ import edu.wpi.first.wpilibj.Joystick;
  * Anna is also doing this.
  */
 public class CargoIntake {
-    Talon inMotor = new Talon(0);
-    Talon upMotor = new Talon(1);
-    Joystick stick = new Joystick(0);
+    Talon inMotor;
+    Talon upMotor;
+    Joystick stick;
+    
+    public void CargoIntake getInstance(){
+        return instance;
+    }
+    
+    inMotor = new Talon(0);
+    upMotor = new Talon(1);
+    stick = new Joystick(0);
 
     public void checkButtons() {
         switch (Boolean.toString(stick.getRawButtonPressed(10))) {
