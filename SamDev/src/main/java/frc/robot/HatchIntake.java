@@ -16,9 +16,21 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  * Kyle is doing this.
  */
 public class HatchIntake {
-    Talon inMotor = new Talon(0);
-    Talon upMotor = new Talon(1);
-    Joystick stick = new Joystick(0);
+    
+    public static HatchIntake instance = new HatchIntake();
+    Talon inMotor;
+    Talon upMotor;
+    Joystick stick;
+    
+    public static HatchIntake getInstance() {
+        return instance;
+    }
+    
+    public static HatchIntake() {
+        inMotor = new Talon();
+        upMotor = new Talon();
+        stick = new Joystick();
+    }
 
     public void checkButtons() {
         switch (Boolean.toString(stick.getRawButtonPressed(10))) {
