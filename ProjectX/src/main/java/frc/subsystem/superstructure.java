@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import frc.subsystem.cargointake;
 
 public class superstructure {
-    private ArrayList<commands> commandQueue; 
+    private commands currentCommand;
+    private commands wantedCommand;  
     private static superstructure instance = new superstructure();
     private boolean finished = false; 
 
     controller c = controller.getInstance();
     cargointake cintake = cargointake.getInstance();
+    loopmanager loopMan = loopmanager.getInstance();
 
-    public superstructure (){
-        commandQueue = new ArrayList<commands>();
-    }
+    public superstructure (){}
 
     public static superstructure getInstance(){
         return instance; 
@@ -25,14 +25,12 @@ public class superstructure {
         INTAKE_HATCH_G,
         TRANSFER_CARGO,
         TRANSFER_HATCH,
-        FLOOR_CHANGE,
         DELIVER_CARGO,
         DELIVER_HATCH,
         OPEN_LOOP_HATCH,
-        OPEN_LOOP_ELEVATOR,
         OPENLOOP_CARGO,
         VISION_TRACK,
-        NEUTRAL
+        HOLDING
     }
 
     public void startUp(){}
@@ -41,42 +39,43 @@ public class superstructure {
 
     public void end(){}
 
-    public void addCommand(commands command){}
+    public void setCommand(commands wantedCommand){ this.wantedCommand = wantedCommand; }
+
+    public void registerLoop(){
+
+    }
 
     public void enactCommand(){
-        if(!commandQueue.isEmpty()){
-            switch(commandQueue.get(0)){
-                case INTAKE_CARGO:
-                    if(cintake.deployIntake()){
-                        if(c.getCargoIntake()){
-                            cintake.runIntake();
-                        }
-                        else{
-                            if(cintake.stowIntake()){
-                                finished = true; 
-                            }
+        switch(commandQueue.get(0)){
+            case INTAKE_CARGO:
+                if(cintake.deployIntake()){
+                    if(c.getCargoIntake()){
+                        cintake.runIntake(-.5);
+                    }
+                    else{
+                        if(cintake.stowIntake()){
+                            finished = true; 
                         }
                     }
-                case INTAKE_HATCH_CB:
-                case INTAKE_HATCH_G:
-                case TRANSFER_CARGO:
-                case TRANSFER_HATCH:
-                case FLOOR_CHANGE:
-                case DELIVER_CARGO:
-                case DELIVER_HATCH:
-                case OPEN_LOOP_HATCH:
-                case OPEN_LOOP_ELEVATOR:
-                case OPENLOOP_CARGO:
-                case NEUTRAL:
-                    finished = true; 
-            }
-            if(finished){
-                commandQueue.remove(0);
-                finished = false; 
-            }
+                }
+            case INTAKE_HATCH_CB:
+            case INTAKE_HATCH_G:
+            case TRANSFER_CARGO:
+                if(cintake.stowIntake()){
+
+                }
+            case TRANSFER_HATCH:
+            case DELIVER_CARGO:
+            case DELIVER_HATCH:
+            case OPEN_LOOP_HATCH:
+            case OPEN_LOOP_ELEVATOR:
+            case OPENLOOP_CARGO:
+            case NEUTRAL:
+                finished = true; 
         }
-        else{
-            commandQueue.add(commands.NEUTRAL);
+        if(finished){
+            commandQueue.remove(0);
+            finished = false; 
         }
     }
 

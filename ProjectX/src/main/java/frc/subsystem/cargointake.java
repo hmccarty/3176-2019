@@ -11,6 +11,7 @@ public class cargointake extends subsystem {
     private DigitalInput isDown;
     private DigitalInput isUp;
     private Talon actuator;
+    private Talon roller; 
     private Timer intakeTimer; 
     private controller c; 
 
@@ -18,6 +19,8 @@ public class cargointake extends subsystem {
         isDown = new DigitalInput(constants.CARGO_INTAKE_DOWN);
         isUp = new DigitalInput(constants.CARGO_INTAKE_UP);
         actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
+        roller = new Talon(constants.CARGO_INTAKE_ROLLER)
+        
 
         intakeTimer = new Timer();
         intakeTimer.start();
@@ -49,7 +52,8 @@ public class cargointake extends subsystem {
         }
     }
 
-    public void runIntake(){
+    public void runIntake(double speed){
+        roller.set(speed);
     }
 
     public void zeroAllSensors(){}
