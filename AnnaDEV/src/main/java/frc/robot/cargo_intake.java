@@ -11,18 +11,18 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
-public class cargo_intake {
+public class hatch_intake {
 
-    private static cargo_intake instance = new cargo_intake();    
+    private static hatch_intake instance = new hatch_intake();    
     Talon motorIn; 
     Talon motorPivot;
     Joystick stick;
  
-    public static cargo_intake getInstance(){
+    public static hatch_intake getInstance(){
         return instance;
     }
 
-    private cargo_intake(){
+    private hatch_intake(){
 
         motorIn = new Talon(0); 
         motorPivot = new Talon(1);
