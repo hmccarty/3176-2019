@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
-//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants;
 
 
@@ -87,6 +87,8 @@ public class HatchIntake {
     }
 
     public void outputToSmartDashboard() {
-
+        SmartDashboard.putNumber("Joystick X value: ", stick.getX());
+        SmartDashboard.putNumber("Joystick Y value: ", stick.getY());
+        SmartDashboard.putNumber("Joystick Z value: ", stick.getZ());
     }
 }
