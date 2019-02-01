@@ -8,56 +8,87 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.buttons.Button;
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants;
 
-/**
- * Kyle is doing this.
- */
+
 public class HatchIntake {
     
     public static HatchIntake instance = new HatchIntake();
-    Talon inMotor;
-    Talon upMotor;
-    Joystick stick;
+    private Timer timer;
+    private Talon roller;
+    private Talon actuator;
+    private Joystick stick;
+    private DigitalInput isDown;
+    private DigitalInput isUp;
+    //private controller c;
+
     
     public static HatchIntake getInstance() {
         return instance;
     }
     
-    public static HatchIntake() {
-        inMotor = new Talon();
-        upMotor = new Talon();
-        stick = new Joystick();
+    public HatchIntake() {
+        roller = new Talon(constants.HATCH_INTAKE_ROLLER);
+        actuator = new Talon(constants.HATCH_INTAKE_ACTUATOR);
+        isDown = new DigitalInput(constants.HATCH_INTAKE_DOWN);
+        isUp = new DigitalInput(constants.HATCH_INTAKE_UP);
+        stick = new Joystick(0);
+
+        timer = new Timer();
+        timer.start();
+
+        //c = controller.start();
     }
 
     public void checkButtons() {
-        switch (Boolean.toString(stick.getRawButtonPressed(10))) {
-            case "true":
-                System.out.println("Button 10 is pressed.");
-                break;
-            case "false":
-                System.out.println("Button 10 is not pressed.");
+        if (stick.getRawButtonPressed(10)) {
+            roller.set(1);
         }
-        switch (Boolean.toString(stick.getRawButtonPressed(11))) {
-            case "true":
-                System.out.println("Button 11 is pressed.");
-                break;
-            case "false":
-                System.out.println("Button 11 is not pressed.");
+        if (stick.getRawButtonPressed(11)) {
+            roller.set(1);
         }
-        switch (Boolean.toString(stick.getRawButtonPressed(12))) {
-            case "true":
-                System.out.println("Button 12 is pressed.");
-                break;
-            case "false":
-                System.out.println("Button 12 is not pressed.");
+        if (stick.getRawButtonPressed(12)) {
+            roller.set(1);
         }
-        System.out.println("All button values are recognized.");
     }
 
-    public void hatchFunction() {
+    public boolean deployIntake() {
+        if (isDown.get()) {
+            actuator.set(0);
+            return true;
+        }
+        else {
+            actuator.set(-.3);
+            return false;
+        }
+    }
 
+    public boolean stowIntake() {
+        if (isUp.get()) {
+            actuator.set(0);
+            return true;
+        }
+        else {
+            actuator.set(.3);
+            return false;
+        }
+    }
+
+    public void runIntake(double speed) {
+        roller.set(speed);
+    }
+
+    public void zeroAllSensors() {
+
+    }
+
+    public void outputToSmartDashboard() {
+        SmartDashboard.putNumber("Joystick X value: ", stick.getX());
+        SmartDashboard.putNumber("Joystick Y value: ", stick.getY());
+        SmartDashboard.putNumber("Joystick Z value: ", stick.getZ());
     }
 }

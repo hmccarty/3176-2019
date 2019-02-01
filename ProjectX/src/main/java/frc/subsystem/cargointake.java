@@ -19,7 +19,7 @@ public class cargointake extends subsystem {
         isDown = new DigitalInput(constants.CARGO_INTAKE_DOWN);
         isUp = new DigitalInput(constants.CARGO_INTAKE_UP);
         actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
-        roller = new Talon(constants.CARGO_INTAKE_ROLLER)
+        roller = new Talon(constants.CARGO_INTAKE_ROLLER);
         
 
         intakeTimer = new Timer();

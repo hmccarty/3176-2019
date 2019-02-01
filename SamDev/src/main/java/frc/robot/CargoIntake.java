@@ -8,47 +8,79 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.constants;
 
-/**
- * Anna is also doing this.
- */
+
 public class CargoIntake {
     
     private static CargoIntake instance = new CargoIntake();
-    Talon inMotor;
-    Talon upMotor;
-    Joystick stick;
+    private Talon roller;
+    private Talon actuator;
+    private Joystick stick;
+    private Timer timer;
+    private DigitalInput isDown;
+    private DigitalInput isUp;
+    //private controller c;
     
     public static CargoIntake getInstance() {
         return instance;
     }
     
     private CargoIntake() {
-        inMotor = new Talon(0);
-        upMotor = new Talon(1);
+        roller = new Talon(constants.CARGO_INTAKE_ROLLER);
+        actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
+        isDown = new DigitalInput(constants.CARGO_INTAKE_DOWN);
+        isUp = new DigitalInput(constants.CARGO_INTAKE_UP);
         stick = new Joystick(0);
+        timer = new Timer();
+        timer.start();
+
+        //c = controller.getInstance();
     }
 
     public void checkButtons() {
-        switch (Boolean.toString(stick.getRawButtonPressed(11))) {
-            case "true":
-                System.out.println("Button 11 is pressed.");
-                break;
-            case "false":
-                System.out.println("Button 11 is not pressed.");
+        if (stick.getRawButtonPressed(11)) {
+            roller.set(1);
         }
-        switch (Boolean.toString(stick.getRawButtonPressed(12))) {
-            case "true":
-                System.out.println("Button 12 is pressed.");
-                break;
-            case "false":
-                System.out.println("Button 12 is not pressed.");
+        if (stick.getRawButtonPressed(12)) {
+            roller.set(1);
         }
-        System.out.println("All button values are recognized.");
     }
     
-    public void cargoIntake() {
+    public boolean deployIntake() {
+        if (isDown.get()) {
+            actuator.set(0);
+            return true;
+        }
+        else {
+            actuator.set(-.3);
+            return false;
+        }
+    }
+
+    public boolean stowIntake() {
+        if (isUp.get()) {
+            actuator.set(0);
+            return true;
+        }
+        else {
+            actuator.set(.3);
+            return false;
+        }
+    }
+
+    public void runIntake(double speed) {
+        roller.set(speed);
+    }
+
+    public void zeroAllSensors() {
+
+    }
+
+    public void outputToSmartDashboard() {
         
     }
 }
