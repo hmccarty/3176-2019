@@ -2,5 +2,9 @@
     "enableCppIntellisense": false,
     "currentLanguage": "java",
     "projectYear": "2019",
+<<<<<<< HEAD:StuartDev/VSCode/VisionAndX/.wpilib/wpilib_preferences.json
+    "teamNumber": 6713
+=======
     "teamNumber": 3176
+>>>>>>> 2125850299013c70196733ff00ab7ffc519f0b7d:EvanDev/.wpilib/wpilib_preferences.json
 }
