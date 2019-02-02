@@ -24,6 +24,7 @@ public class HatchIntake {
     private Joystick stick;
     private DigitalInput isDown;
     private DigitalInput isUp;
+    private DigitalInput sensor;
     //private controller c;
 
     
@@ -36,6 +37,7 @@ public class HatchIntake {
         actuator = new Talon(constants.HATCH_INTAKE_ACTUATOR);
         isDown = new DigitalInput(constants.HATCH_INTAKE_DOWN);
         isUp = new DigitalInput(constants.HATCH_INTAKE_UP);
+        sensor = new DigitalInput(constants.HATCH_IRSENSOR);
         stick = new Joystick(0);
 
         timer = new Timer();
@@ -78,17 +80,24 @@ public class HatchIntake {
         }
     }
 
-    public void runIntake(double speed) {
-        roller.set(speed);
+    public boolean runIntake(double speed) {
+        if (sensor.get()) {
+            roller.set(0);
+            return true;
+        }
+        else {
+            roller.set(speed);
+            return false;
+        }
     }
 
     public void zeroAllSensors() {
-
+        
     }
 
     public void outputToSmartDashboard() {
-        SmartDashboard.putNumber("Joystick X value: ", stick.getX());
-        SmartDashboard.putNumber("Joystick Y value: ", stick.getY());
-        SmartDashboard.putNumber("Joystick Z value: ", stick.getZ());
+        SmartDashboard.putBoolean("isDown value: ", isDown.get());
+        SmartDashboard.putBoolean("isUp value: ", isUp.get());
+        SmartDashboard.putBoolean("sensor value: ", sensor.get());
     }
 }
