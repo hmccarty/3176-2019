@@ -70,9 +70,9 @@ public class HatchIntake {
       return false;
     } 
   }
-  // public void ZeroSensors() {
+  public void ZeroSensors() {
     
-  // }
+  }
   public void OutputToDash() {
     SmartDashboard.putBoolean("Is Down:", isDown.get());
     SmartDashboard.putBoolean("Is Up:", isUp.get());

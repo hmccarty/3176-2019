@@ -18,13 +18,13 @@ import frc.robot.constants;
 public class HatchIntake {
     
     public static HatchIntake instance = new HatchIntake();
-    private Timer timer;
-    private Talon roller;
-    private Talon actuator;
-    private Joystick stick;
     private DigitalInput isDown;
     private DigitalInput isUp;
     private DigitalInput sensor;
+    private Talon roller;
+    private Talon actuator;
+    private Joystick stick;
+    private Timer timer;
     //private controller c;
 
     
@@ -33,17 +33,16 @@ public class HatchIntake {
     }
     
     public HatchIntake() {
-        roller = new Talon(constants.HATCH_INTAKE_ROLLER);
-        actuator = new Talon(constants.HATCH_INTAKE_ACTUATOR);
         isDown = new DigitalInput(constants.HATCH_INTAKE_DOWN);
         isUp = new DigitalInput(constants.HATCH_INTAKE_UP);
         sensor = new DigitalInput(constants.HATCH_IRSENSOR);
+        roller = new Talon(constants.HATCH_INTAKE_ROLLER);
+        actuator = new Talon(constants.HATCH_INTAKE_ACTUATOR);
         stick = new Joystick(0);
-
         timer = new Timer();
         timer.start();
 
-        //c = controller.start();
+        //c = controller.getInstance();
     }
 
     public void checkButtons() {
