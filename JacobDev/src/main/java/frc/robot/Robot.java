@@ -12,8 +12,8 @@ public class Robot extends IterativeRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  private double range;
-  Ultrasonic ballDetector = new Ultrasonic(1, 1); //Ultrasonic(pingChannel, echoChannel)
+  SmartDashboard dashboard = new SmartDashboard;
+  Ultrasonic ballDetector = new Ultrasonic(0, 1); //Ultrasonic(pingChannel, echoChannel);
 
   @Override
   public void robotInit() {
@@ -53,11 +53,13 @@ public class Robot extends IterativeRobot {
     }
   }
 
+  /**
+   * This function is called periodically during operator control.
+   */
   @Override
   public void teleopPeriodic()
   {   
-    range = ballDetector.getRangeInches();
-    SmartDashboard.putNumber("Distance", range);
+    
   }
 
   @Override
