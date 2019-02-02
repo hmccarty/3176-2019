@@ -22,30 +22,7 @@ import cv2
 from cscore import CameraServer, VideoSource, CvSource, VideoMode, CvSink, UsbCamera
 from networktables import NetworkTablesInstance
 
-#   JSON format:
-#   {
-#       "team": <team number>,
-#       "ntmode": <"client" or "server", "client" if unspecified>
-#       "cameras": [
-#           {
-#               "name": <camera name>
-#               "path": <path, e.g. "/dev/video0">
-#               "pixel format": <"MJPEG", "YUYV", etc>   // optional
-#               "width": <video mode width>              // optional
-#               "height": <video mode height>            // optional
-#               "fps": <video mode fps>                  // optional
-#               "brightness": <percentage brightness>    // optional
-#               "white balance": <"auto", "hold", value> // optional
-#               "exposure": <"auto", "hold", value>      // optional
-#               "properties": [                          // optional
-#                   {
-#                       "name": <property name>
-#                       "value": <property value>
-#                   }
-#               ]
-#           }
-#       ]
-#   }
+#
 
 configFile = "/boot/frc.json"
 
@@ -54,6 +31,9 @@ class CameraConfig: pass
 team = None
 server = False
 cameraConfigs = []
+yPixPerInch = 0
+xPixPerInch = 0
+distPixPerInch = 0
 
 """Report parse error."""
 def parseError(str):
@@ -129,10 +109,16 @@ def readConfig():
 
     return True
 
+def degPerPixel(imageWidth):
+    return imageWidth/61
+
+def pixelPerInch():
+
+
 #This should be a class lowkey but it'll work
 def TrackTheTarget(frame, sd):
-    TargetLower = (40,103,103)
-    TargetUpper = (110,255,255)
+    TargetLower = (10,25,70)
+    TargetUpper = (120,255,255)
     #try:
      #   HL = sd.getNumber('HL', 0)
       #  HU = sd.getNumber('HU', 36)
@@ -166,27 +152,39 @@ def TrackTheTarget(frame, sd):
     #current (x,y) center of the Target
     a, blocks , b = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     center = None
-    blockIdx = 0
-
-    for block in blocks:
-        target = cv2.minAreaRect(block)
+    areas = []
+    if len(blocks) > 0:
+        blocks = sorted(blocks, key = cv2.contourArea, reverse = True)[:5] # get largest five contour area
+        #block = max(blocks, key=cv2.contourArea)
+        target = cv2.minAreaRect(blocks[0])
         box = cv2.boxPoints(target)
         box = np.int0(box)
-
-        M = cv2.moments(block)
+        M = cv2.moments(block[0])
         xcent = int(M['m10']/M['m00'])
         ycent = int(M['m01']/M['m00'])
+        pidx = 0
+        for points in box:
+            cidx = 0
+            if pidx != 0 and pidx != 1:
+                for coords in points:
+                    if cidx == 0:
+                        sd.putNumber("Point " + str(pidx) + " X Coord", coords)
+						print(coords)
+                    elif cidx == 1:
+                        sd.putNumber("Point " + str(pidx) + " Y Coord", coords)
+                    cidx += 1
+            pidx += 1
 
         #if the dectected contour has a radius big enough, we will send it
-        if M['m00'] > 10:
-            cv2.drawContours(img, [box], -1, (0, 0, 255), 3)
-            sd.putNumber('Block ' + str(blockIdx) + ' Center X', xcent)
-            sd.putNumber('Block ' + str(blockIdx) + ' Center Y', ycent)
-        else:
+
+        cv2.drawContours(img, [box], -1, (125, 0, 125), 3)
+        sd.putNumber('Block Area', M['m00'])
+        sd.putNumber('Block Center X', xcent)
+        sd.putNumber('Block Center Y', ycent)
+        #else:
             #let the RoboRio Know no target has been detected with -1
-            sd.putNumber('Block ' + str(blockIdx) + ' Center X', -1)
-            sd.putNumber('Block ' + str(blockIdx) + ' Center Y', -1)
-        blockIdx = blockIdx + 1
+         #   sd.putNumber('Block ' + str(blockIdx) + ' Center X', -1)
+          #  sd.putNumber('Block ' + str(blockIdx) + ' Center Y', -1)
 
     print("Sent processed frame")
     return frame
@@ -213,7 +211,7 @@ if __name__ == "__main__":
     cs = CameraServer.getInstance()
     cs.enableLogging()
     Camera = UsbCamera('RPi Camero 0', 0)
-    Camera.setResolution(160,120)
+    Camera.setResolution(640,480)
     cs.addCamera(Camera)
 
     print("connected")
@@ -223,19 +221,23 @@ if __name__ == "__main__":
 
     #This will send the process frames to the Driver station
     #allowing the us to see what OpenCV sees
-    outputStream = cs.putVideo("Processed Frames", 160,120)
+    #outputStream = cs.putVideo("Processed Frames", 160,120)
 
     #buffer to store img data
     img = np.zeros(shape=(160,120,3), dtype=np.uint8)
     # loop forever
     while True:
+        start = time.time()
         #Quick little FYI, This will throw a Unicode Decode Error first time around
         #Something about a invalid start byte. This is fine, the Program will continue
         # and after a few loops and should start grabing frames from the camera
         GotFrame, img = CvSink.grabFrame(img)
         if GotFrame  == 0:
-            outputStream.notifyError(CvSink.getError())
+            #outputStream.notifyError(CvSink.getError())
             continue
         img = TrackTheTarget(img, SmartDashboardValues)
+        end = time.time()
         #print(img)
-        outputStream.putFrame(img)
+        #outputStream.putFrame(img)
+
+        print(end-start)
