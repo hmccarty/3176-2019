@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Compressor;
 
 public class Robot extends IterativeRobot {
   private static final String kDefaultAuto = "Default";
@@ -13,7 +15,9 @@ public class Robot extends IterativeRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   private double range;
-  Ultrasonic ballDetector = new Ultrasonic(8, 8); //Ultrasonic(pingChannel, echoChannel)
+  Ultrasonic ballDetector = new Ultrasonic(0, 1); //Ultrasonic(pingChannel, echoChannel)
+  Compressor compressor = new Compressor();
+  DigitalInput yeet = new DigitalInput(0);
 
   @Override
   public void robotInit() {
@@ -21,6 +25,8 @@ public class Robot extends IterativeRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     ballDetector.setAutomaticMode(true);
+    ballDetector.setEnabled(true);
+    
   }
 
   
@@ -57,7 +63,9 @@ public class Robot extends IterativeRobot {
   @Override
   public void teleopPeriodic()
   {   
+    System.out.println(yeet.get());
     System.out.println(ballDetector.getRangeInches());
+    compressor.stop();
   }
 
   @Override
