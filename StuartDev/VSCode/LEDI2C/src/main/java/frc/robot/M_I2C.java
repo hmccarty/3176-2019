@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package Vision;
+package frc.robot;
 
 /**
  * Add your docs here.
@@ -31,40 +31,40 @@ public class M_I2C {
 			System.out.println(input);
 	}
 	
-	public PixyPacket[] getPixy(){//reads the data from arduino and saves it
-		String info[] = read().split("\\|");//everytime a "|" is used it splits the data,
-											//and adds it as a new element in the array
-		PixyPacket pkt[] = new PixyPacket[Integer.parseInt(info[0])];
-		for(int i = 0; i < pkt.length; i++){
-			pkt[i] = new PixyPacket();
-		}
-		//creates a new packet to hold the data 
-		// if(info[0].equals("none") || info[0].equals("")){//checks to make sure there is data 
-		// 	pkt.X = -1;//the x val will never be -1 so we can text later in code to make sure 
-		// 	pkt.Y = -1;
-		// 	pkt.Width = -1;
-		// 	pkt.Height = -1;
-		// }else if(info.length == 3){//if there is an x, y, and area value the length equals 3
-		// 	pkt.X = Integer.parseInt(info[1]);
-		// 	pkt.Y = Integer.parseInt(info[2]);
-		// 	pkt.Width = Integer.parseInt(info[3]);
-		// 	pkt.Height = Integer.parseInt(info[4]);
-		// }
-		for (int i = 1; i < info.length; i += 4) {
-			for(int k = 0; k < pkt.length; k++){
-				pkt[k].setX(i);
-				pkt[k].setY(i+1);
-				pkt[k].setHeight(i+2);
-				pkt[k].setWidth(i+3);
-			}
-		}
-		return pkt;
-    }
+	// public PixyPacket[] getPixy(){//reads the data from arduino and saves it
+	// 	String info[] = read().split("\\|");//everytime a "|" is used it splits the data,
+	// 										//and adds it as a new element in the array
+	// 	PixyPacket pkt[] = new PixyPacket[Integer.parseInt(info[0])];
+	// 	for(int i = 0; i < pkt.length; i++){
+	// 		pkt[i] = new PixyPacket();
+	// 	}
+	// 	creates a new packet to hold the data 
+	// 	if(info[0].equals("none") || info[0].equals("")){//checks to make sure there is data 
+	// 		pkt.X = -1;//the x val will never be -1 so we can text later in code to make sure 
+	// 		pkt.Y = -1;
+	// 		pkt.Width = -1;
+	// 		pkt.Height = -1;
+	// 	}else if(info.length == 3){//if there is an x, y, and area value the length equals 3
+	// 		pkt.X = Integer.parseInt(info[1]);
+	// 		pkt.Y = Integer.parseInt(info[2]);
+	// 		pkt.Width = Integer.parseInt(info[3]);
+	// 		pkt.Height = Integer.parseInt(info[4]);
+	// 	}
+	// 	for (int i = 1; i < info.length; i += 4) {
+	// 		for(int k = 0; k < pkt.length; k++){
+	// 			pkt[k].setX(i);
+	// 			pkt[k].setY(i+1);
+	// 			pkt[k].setHeight(i+2);
+	// 			pkt[k].setWidth(i+3);
+	// 		}
+	// 	}
+	// 	return pkt;
+    // }
     
-    public String getXCoord(){
-        String xCoord = read();
-        return xCoord;
-    }
+    // public String getXCoord(){
+    //     String xCoord = read();
+    //     return xCoord;
+    // }
 	
 	private String read(){//function to read the data from arduino
 		byte[] data = new byte[MAX_BYTES];//create a byte array to hold the incoming data

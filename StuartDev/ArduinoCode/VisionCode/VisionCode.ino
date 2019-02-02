@@ -24,11 +24,11 @@ void setup(){
 }
 
 void loop(){
-  pixy.ccc.getBlocks();
-  yCalc = double(pixy.ccc.blocks[0].m_y)*-1+207;
-  xAdjusted = (double(pixy.ccc.blocks[0].m_x)*cos(camOffset))-(yCalc*sin(camOffset));
-  yAdjusted = (yCalc*cos(camOffset))+(double(pixy.ccc.blocks[0].m_x)*sin(camOffset));
-
+//  pixy.ccc.getBlocks();
+//  yCalc = double(pixy.ccc.blocks[0].m_y)*-1+207;
+//  xAdjusted = (double(pixy.ccc.blocks[0].m_x)*cos(camOffset))-(yCalc*sin(camOffset));
+//  yAdjusted = (yCalc*cos(camOffset))+(double(pixy.ccc.blocks[0].m_x)*sin(camOffset));
+//
 //  for(int i = 0; i < pixy.ccc.blocks.numBlocks; i++) {
 //     widthAvgSum += pixy.ccc.blocks[i];
 //  }
@@ -38,21 +38,21 @@ void loop(){
 //      smallBlocks += pixy.ccc.blocks[i];
 //    }
 //  }
- 
-
-  piOutput = String(pixy.ccc.numBlocks);
-  piOutput += "|";
-  for(int i = 0; i < pixy.ccc.numBlocks; i++) {
-    piOutput += String(xAdjusted);
-    piOutput += "|";
-    piOutput += String(yAdjusted);
-    piOutput += "|";
-    piOutput += String(pixy.ccc.blocks[i].m_height);
-    piOutput += "|";
-    piOutput += String(pixy.ccc.blocks[i].m_width);
-    piOutput += "|";
-  }
-  Serial.println(piOutput);
+// 
+//
+//  piOutput = String(pixy.ccc.numBlocks);
+//  piOutput += "|";
+//  for(int i = 0; i < pixy.ccc.numBlocks; i++) {
+//    piOutput += "X " + String(pixy.ccc.blocks[i].m_x);
+//    piOutput += "|";
+//    piOutput += "Y " + String(pixy.ccc.blocks[i].m_y);
+//    piOutput += "|";
+//    piOutput += "Height " + String(pixy.ccc.blocks[i].m_height);
+//    piOutput += "|";
+//    piOutput += "Width " + String(pixy.ccc.blocks[i].m_width);
+//    piOutput += "|";
+//  }
+//  Serial.println(piOutput);
 }
 
 void requestEvent(){//called when RoboRIO request a message from this device
@@ -62,6 +62,6 @@ void requestEvent(){//called when RoboRIO request a message from this device
 }
 
 void receiveEvent(int bytes){//called when RoboRIO "gives" this device a message
-
+  Serial.println(bytes);
 }
 
