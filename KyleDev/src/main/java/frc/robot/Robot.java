@@ -23,6 +23,7 @@ public class Robot extends IterativeRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  static HatchIntake intake; 
 
   /**
    * This function is run when the robot is first started up and should be
@@ -33,6 +34,7 @@ public class Robot extends IterativeRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    intake = HatchIntake.getInstance(); 
   }
 
   /**

@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.constants;
 
-public class cargointake extends subsystem {
-    private static cargointake instance = new cargointake(); 
+public class hatchintake extends subsystem{
+    private static hatchintake instance = new hatchintake();
     private DigitalInput isDown;
     private DigitalInput isUp;
     private Talon actuator;
@@ -15,11 +15,11 @@ public class cargointake extends subsystem {
     private Timer intakeTimer; 
     private controller c; 
 
-    public cargointake(){
-        isDown = new DigitalInput(constants.CARGO_INTAKE_DOWN);
-        isUp = new DigitalInput(constants.CARGO_INTAKE_UP);
-        actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
-        roller = new Talon(constants.CARGO_INTAKE_ROLLER);
+    public hatchintake(){
+        isDown = new DigitalInput(constants.HATCH_INTAKE_DOWN);
+        isUp = new DigitalInput(constants.HATCH_INTAKE_UP);
+        actuator = new Talon(constants.HATCH_INTAKE_ACTUATOR);
+        roller = new Talon(constants.HATCH_INTAKE_ROLLER);
         
 
         intakeTimer = new Timer();
@@ -28,7 +28,7 @@ public class cargointake extends subsystem {
         c = controller.getInstance();
     }
 
-    public static cargointake getInstance(){ return instance; }
+    public static hatchintake getInstance(){ return instance; }
 
     public boolean deployIntake(){
         if(isDown.get()){
