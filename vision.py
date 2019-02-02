@@ -210,9 +210,12 @@ if __name__ == "__main__":
     print("Connecting to camera")
     cs = CameraServer.getInstance()
     cs.enableLogging()
-    Camera = UsbCamera('RPi Camero 0', 0)
-    Camera.setResolution(640,480)
-    cs.addCamera(Camera)
+    #Camera = UsbCamera('RPi Camero 0', 0)
+    Camera2 = UsbCamera('RPi Camero 1', 1)
+    #Camera.setResolution(240,180)
+    Camera2.setResolution(240,180)
+    #cs.addCamera(Camera)
+    cs.addCamera(Camera2)
 
     print("connected")
 

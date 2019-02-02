@@ -12,14 +12,20 @@ public class Robot extends IterativeRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+<<<<<<< HEAD
   SmartDashboard dashboard = new SmartDashboard;
   Ultrasonic ballDetector = new Ultrasonic(0, 1); //Ultrasonic(pingChannel, echoChannel);
+=======
+  private double range;
+  Ultrasonic ballDetector = new Ultrasonic(8, 8); //Ultrasonic(pingChannel, echoChannel)
+>>>>>>> 2125850299013c70196733ff00ab7ffc519f0b7d
 
   @Override
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    ballDetector.setAutomaticMode(true);
   }
 
   
@@ -59,7 +65,11 @@ public class Robot extends IterativeRobot {
   @Override
   public void teleopPeriodic()
   {   
+<<<<<<< HEAD
     
+=======
+    System.out.println(ballDetector.getRangeInches());
+>>>>>>> 2125850299013c70196733ff00ab7ffc519f0b7d
   }
 
   @Override
