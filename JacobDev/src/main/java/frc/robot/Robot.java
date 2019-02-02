@@ -1,7 +1,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Ultrasonic;
@@ -13,14 +16,16 @@ public class Robot extends IterativeRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   private double range;
-  Ultrasonic ballDetector = new Ultrasonic(8, 8); //Ultrasonic(pingChannel, echoChannel)
+  AnalogInput ai;
+  DigitalInput di;
 
   @Override
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    ballDetector.setAutomaticMode(true);
+    ai = new AnalogInput(0);
+    di = new DigitalInput(9);
   }
 
   
@@ -36,6 +41,7 @@ public class Robot extends IterativeRobot {
     // autoSelected = SmartDashboard.getString("Auto Selector",
     // defaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+  
   }
 
   /**
@@ -56,8 +62,12 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void teleopPeriodic()
-  {   
-    System.out.println(ballDetector.getRangeInches());
+  {
+    // if (ai.getVoltage() > 4.5){
+    //   isSignal = true;
+    // }
+    //System.out.println(ai.getVoltage());
+    System.out.println(di.get());
   }
 
   @Override

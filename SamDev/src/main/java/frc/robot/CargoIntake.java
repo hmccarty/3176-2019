@@ -18,12 +18,12 @@ import frc.robot.constants;
 public class CargoIntake {
     
     private static CargoIntake instance = new CargoIntake();
+    private DigitalInput isDown;
+    private DigitalInput isUp;
     private Talon roller;
     private Talon actuator;
     private Joystick stick;
     private Timer timer;
-    private DigitalInput isDown;
-    private DigitalInput isUp;
     //private controller c;
     
     public static CargoIntake getInstance() {
@@ -31,10 +31,10 @@ public class CargoIntake {
     }
     
     private CargoIntake() {
-        roller = new Talon(constants.CARGO_INTAKE_ROLLER);
-        actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
         isDown = new DigitalInput(constants.CARGO_INTAKE_DOWN);
         isUp = new DigitalInput(constants.CARGO_INTAKE_UP);
+        roller = new Talon(constants.CARGO_INTAKE_ROLLER);
+        actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
         stick = new Joystick(0);
         timer = new Timer();
         timer.start();
