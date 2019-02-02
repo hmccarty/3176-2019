@@ -112,7 +112,7 @@ def readConfig():
 def degPerPixel(imageWidth):
     return imageWidth/61
 
-def pixelPerInch():
+
 
 
 #This should be a class lowkey but it'll work
@@ -159,7 +159,7 @@ def TrackTheTarget(frame, sd):
         target = cv2.minAreaRect(blocks[0])
         box = cv2.boxPoints(target)
         box = np.int0(box)
-        M = cv2.moments(block[0])
+        M = cv2.moments(blocks[0])
         xcent = int(M['m10']/M['m00'])
         ycent = int(M['m01']/M['m00'])
         pidx = 0
@@ -169,7 +169,7 @@ def TrackTheTarget(frame, sd):
                 for coords in points:
                     if cidx == 0:
                         sd.putNumber("Point " + str(pidx) + " X Coord", coords)
-						print(coords)
+                        print(coords)
                     elif cidx == 1:
                         sd.putNumber("Point " + str(pidx) + " Y Coord", coords)
                     cidx += 1
@@ -210,9 +210,12 @@ if __name__ == "__main__":
     print("Connecting to camera")
     cs = CameraServer.getInstance()
     cs.enableLogging()
-    Camera = UsbCamera('RPi Camero 0', 0)
-    Camera.setResolution(640,480)
-    cs.addCamera(Camera)
+    #Camera = UsbCamera('RPi Camero 0', 0)
+    Camera2 = UsbCamera('RPi Camero 1', 1)
+    #Camera.setResolution(240,180)
+    Camera2.setResolution(240,180)
+    #cs.addCamera(Camera)
+    cs.addCamera(Camera2)
 
     print("connected")
 
@@ -221,23 +224,23 @@ if __name__ == "__main__":
 
     #This will send the process frames to the Driver station
     #allowing the us to see what OpenCV sees
-    #outputStream = cs.putVideo("Processed Frames", 160,120)
+    outputStream = cs.putVideo("Processed Frames", 160,120)
 
     #buffer to store img data
-    img = np.zeros(shape=(160,120,3), dtype=np.uint8)
+    img = np.zeros(shape=(640,480,3), dtype=np.uint8)
     # loop forever
     while True:
         start = time.time()
-        #Quick little FYI, This will throw a Unicode Decode Error first time around
+        #Quick little FYI, This ll throw a Unicode Decode Error first time around
         #Something about a invalid start byte. This is fine, the Program will continue
         # and after a few loops and should start grabing frames from the camera
         GotFrame, img = CvSink.grabFrame(img)
         if GotFrame  == 0:
-            #outputStream.notifyError(CvSink.getError())
+            outputStream.notifyError(CvSink.getError())
             continue
         img = TrackTheTarget(img, SmartDashboardValues)
         end = time.time()
         #print(img)
-        #outputStream.putFrame(img)
+        outputStream.putFrame(img)
 
         print(end-start)
