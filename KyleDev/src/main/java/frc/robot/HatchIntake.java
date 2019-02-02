@@ -12,16 +12,16 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.constants;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/**
- * Add your docs here.
- */
+
 public class HatchIntake {
     static HatchIntake instance = new HatchIntake();
     Joystick Joy;
     Timer Tim1;
     DigitalInput isDown;
     DigitalInput isUp;
+    DigitalInput Sen;
     Talon actuator;
     Talon roller;
 
@@ -30,6 +30,7 @@ public class HatchIntake {
     Tim1 = new Timer();
     isDown = new DigitalInput(constants.HATCH_INTAKE_DOWN);
     isUp = new DigitalInput(constants.HATCH_INTAKE_UP);
+    Sen = new DigitalInput(constants.HATCH_IR_SENSOR);
     actuator = new Talon(constants.HATCH_INTAKE_ACTUATOR);
     roller = new Talon(constants.HATCH_INTAKE_ROLLER); 
   }
@@ -59,13 +60,22 @@ public class HatchIntake {
         return false;
     }
   }
-  public void IntoIntake(double speed) { //Sensor//
-    roller.set(speed); 
+  public boolean IntoIntake(double speed) {
+    if (Sen.get()) {
+      roller.set(0);
+      return true;
+    }
+    else {
+      roller.set(speed);
+      return false;
+    } 
   }
-  public void ZeroSensors() {
-    //When the sensor is added//
-  }
+  // public void ZeroSensors() {
+    
+  // }
   public void OutputToDash() {
-    // 
+    SmartDashboard.putBoolean("Is Down:", isDown.get());
+    SmartDashboard.putBoolean("Is Up:", isUp.get());
+    SmartDashboard.putBoolean("Sensor:", Sen.get());
   }
 }
