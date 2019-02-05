@@ -1,6 +1,6 @@
 {
     "fps": 30,
-    "height": 720,
+    "height": 280,
     "pixel format": "mjpeg",
     "properties": [
         {
@@ -80,5 +80,5 @@
             "value": 0
         }
     ],
-    "width": 1280
+    "width": 320
 }

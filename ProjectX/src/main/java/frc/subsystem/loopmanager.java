@@ -8,7 +8,7 @@ public class loopmanager {
 
     public loopmanager() {}
 
-    public loopmanager getInstance(){
+    public static loopmanager getInstance(){
         return instance; 
     }
 

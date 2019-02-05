@@ -210,11 +210,11 @@ if __name__ == "__main__":
     print("Connecting to camera")
     cs = CameraServer.getInstance()
     cs.enableLogging()
-    #Camera = UsbCamera('RPi Camero 0', 0)
+    Camera = UsbCamera('RPi Camero 0', 0)
     Camera2 = UsbCamera('RPi Camero 1', 1)
-    #Camera.setResolution(240,180)
+    Camera.setResolution(240,180)
     Camera2.setResolution(240,180)
-    #cs.addCamera(Camera)
+    cs.addCamera(Camera)
     cs.addCamera(Camera2)
 
     print("connected")
@@ -225,7 +225,7 @@ if __name__ == "__main__":
     #This will send the process frames to the Driver station
     #allowing the us to see what OpenCV sees
     outputStream = cs.putVideo("Processed Frames", 160,120)
-
+	
     #buffer to store img data
     img = np.zeros(shape=(640,480,3), dtype=np.uint8)
     # loop forever
