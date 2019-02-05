@@ -43,7 +43,7 @@ public class HatchIntake {
         timer.start();
 
         //c = controller.getInstance();
-    }
+    }0
 
     public boolean deployIntake() {
         if (isDown.get()) {
