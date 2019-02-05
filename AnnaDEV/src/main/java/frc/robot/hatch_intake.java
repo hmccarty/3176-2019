@@ -5,11 +5,13 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.constants;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class hatchintake extends subsystem{
     private static hatchintake instance = new hatchintake();
     private DigitalInput isDown;
     private DigitalInput isUp;
+    private DigitalInput sensor;
     private Talon actuator;
     private Talon roller; 
     private Timer intakeTimer; 
@@ -52,11 +54,22 @@ public class hatchintake extends subsystem{
         }
     }
 
-    public void runIntake(double speed){
-        roller.set(speed);
+    public boolean runIntake(double speed){
+        if (sensor.get()){
+            roller.set(0);
+            return true;
+        }
+        else {
+            roller.set(speed);
+            return false;
+        }       
     }
 
     public void zeroAllSensors(){}
 
-    public void outputToSmartDashboard(){}
+    public void outputToSmartDashboard(){
+        SmartDashboard.putBoolean("isDown value: ", isDown.get());
+        SmartDashboard.putBoolean("isUp value: ", isUp.get());
+        SmartDashboard.putBoolean("sensor value; ", sensor.get());
+    }
 }
