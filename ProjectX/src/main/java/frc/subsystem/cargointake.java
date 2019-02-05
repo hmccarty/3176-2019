@@ -4,56 +4,62 @@ import frc.util.subsystem;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Encoder;
+import frc.util.pid;
 import frc.robot.constants;
 
 public class cargointake extends subsystem {
     private static cargointake instance = new cargointake(); 
-    private DigitalInput isDown;
-    private DigitalInput isUp;
-    private Talon actuator;
-    private Talon roller; 
-    private Timer intakeTimer; 
-    private controller c; 
+
+    private pid mCargoPID;
+
+    private DigitalInput mBump;
+    private Encoder mEncoder; 
+
+    private Talon mActuator;
+    private Talon mRoller; 
+
+    private Timer mIntakeTimer; 
+
+    private int kStowedHeight = constants.CARGO_STOWED_HEIGHT; 
+    private int kIntakeHeight = constants.CARGO_INTAKE_HEIGHT;
 
     public cargointake(){
-        isDown = new DigitalInput(constants.CARGO_INTAKE_DOWN);
-        isUp = new DigitalInput(constants.CARGO_INTAKE_UP);
-        actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
-        roller = new Talon(constants.CARGO_INTAKE_ROLLER);
+        mCargoPID = new pid(0,0,0);
+
+        mBump = new DigitalInput(constants.CARGO_INTAKE_DOWN);
+        mEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
+        
+        mActuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
+        mRoller = new Talon(constants.CARGO_INTAKE_ROLLER);
         
 
-        intakeTimer = new Timer();
-        intakeTimer.start();
-
-        c = controller.getInstance();
+        mIntakeTimer = new Timer();
+        mIntakeTimer.start();
     }
 
     public static cargointake getInstance(){ return instance; }
 
-    public boolean deployIntake(){
-        if(isDown.get()){
-            actuator.set(0);
-            return true; 
+    private void closedLoopControl (int wantedHeight){
+        mActuator.set(mCargoPID.returnOutput(mEncoder.getRaw(), wantedHeight));
+    }
+
+    public void deploy(){
+        if(mBump.get()){
+            mActuator.set(0);
+            mEncoder.reset();
         }
         else {
-            actuator.set(-.3);
-            return false; 
+            closedLoopControl(kIntakeHeight);
         }
     }
 
-    public boolean stowIntake(){
-        if(isUp.get()){
-            actuator.set(0);
-            return true;
-        }
-        else {
-            actuator.set(.3);
-            return false;
-        }
+    public void stow(){
+        closedLoopControl(kStowedHeight);
     }
 
-    public void runIntake(double speed){
-        roller.set(speed);
+    public void run(double speed){
+        mRoller.set(speed);
     }
 
     public void zeroAllSensors(){}

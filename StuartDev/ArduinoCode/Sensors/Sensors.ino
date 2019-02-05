@@ -1,49 +1,50 @@
 int sensorPin = A0;
-int ledPin = 13;
-int irValues[] = {-1, -1, -1, -1, -1, -1};
-int lastVal = -1;
-int currentVal = -1;
-int differenceThreshold;
+int ledPin = 3;
+int differenceThreshold = 0;
 boolean hasBall = false;
+int onAvg = 0;
+int offAvg = 0;
+int numTrues = 0;
+int numChecks = 0;
+int difference = 0;
 
-void irStates(char val, int i){
+
+void irStates(char val) {
   switch (val) {
     case 'A': {
       digitalWrite(ledPin, HIGH);
-      irValues[i] = analogRead(sensorPin);
+      analogRead(sensorPin);
+      int total = analogRead(sensorPin);
+      total += analogRead(sensorPin);
+      total += analogRead(sensorPin);
+      onAvg = total/3;
       break;
     }
     case 'B': {
       digitalWrite(ledPin, LOW);
-      irValues[i] = analogRead(sensorPin);
+      analogRead(sensorPin);
+      int total = analogRead(sensorPin);
+      total += analogRead(sensorPin);
+      total += analogRead(sensorPin);
+      offAvg = total/3;
       break;
     }
   }
 }
 
-void shouldTest() {
-  if(abs(currentVal-lastVal) > differenceThreshold){
-    testBall;
-  }
+void blink() {
+  irStates('A');
+  check();
+  irStates('B');
+  check();
 }
 
-void testBall() {
-  irStates('A', 0);
-  delay(50);
-  irStates('B', 1);
-  delay(50);
-  irStates('A', 2);
-  delay(50);
-  irStates('B', 3);
-  delay(50);
-  irStates('A', 4);
-  delay(50);
-  irStates('B', 5);
-  for(int i = 0; i < sizeof(irValues)-1; i++) {                 //need logic help pls
-    if(abs(irValues[i] - irValues[i+1]) < differenceThreshold){
-      hasBall = false;
-    }
+void check() {
+  difference = abs(onAvg- offAvg);
+  if (difference > differenceThreshold) {
+    numTrues++;
   }
+  numChecks++;
 }
 
 void setup() {
@@ -52,6 +53,17 @@ void setup() {
 }
 
 void loop() {
-  shouldTest();
-  Serial.println(hasBall);
+  blink();
+  blink();
+  blink();
+  if(numTrues >= numChecks-1){
+    hasBall = true;
+  }
+  else{
+    hasBall = false;
+  }
+  Serial.println(String(numTrues) + "|" + String(numChecks) + "|" + String(onAvg) + "|" + String(offAvg) + "|" + String(difference));
+  numTrues = 0;
+  numChecks = 0;
+  //Serial.println(hasBall);
 }
