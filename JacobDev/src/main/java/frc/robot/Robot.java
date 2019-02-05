@@ -16,39 +16,28 @@ public class Robot extends IterativeRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
-<<<<<<< HEAD
-  SmartDashboard dashboard = new SmartDashboard;
+  SmartDashboard dashboard = new SmartDashboard();
   Ultrasonic ballDetector = new Ultrasonic(0, 1); //Ultrasonic(pingChannel, echoChannel);
-=======
   private double range;
-<<<<<<< HEAD
-  Ultrasonic ballDetector = new Ultrasonic(0, 1); //Ultrasonic(pingChannel, echoChannel)
   Compressor compressor = new Compressor();
   DigitalInput yeet = new DigitalInput(0);
-=======
-<<<<<<< HEAD
   AnalogInput ai;
   DigitalInput di;
-=======
-  Ultrasonic ballDetector = new Ultrasonic(8, 8); //Ultrasonic(pingChannel, echoChannel)
->>>>>>> 2125850299013c70196733ff00ab7ffc519f0b7d
->>>>>>> 5f0bb088ba886b7911dee024e69995b586cf65c9
->>>>>>> 70d1506f2d77aef590cfa95f5ca33434d55d9323
+
 
   @Override
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-<<<<<<< HEAD
+
     ballDetector.setAutomaticMode(true);
     ballDetector.setEnabled(true);
     
-=======
+
     ai = new AnalogInput(0);
     di = new DigitalInput(9);
->>>>>>> 70d1506f2d77aef590cfa95f5ca33434d55d9323
+
   }
 
   
@@ -88,27 +77,22 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic()
-<<<<<<< HEAD
+
   {
     // if (ai.getVoltage() > 4.5){
     //   isSignal = true;
     // }
     //System.out.println(ai.getVoltage());
     System.out.println(di.get());
-=======
   {   
-<<<<<<< HEAD
+
     System.out.println(yeet.get());
     System.out.println(ballDetector.getRangeInches());
     compressor.stop();
-=======
-<<<<<<< HEAD
-    
-=======
+
     System.out.println(ballDetector.getRangeInches());
->>>>>>> 2125850299013c70196733ff00ab7ffc519f0b7d
->>>>>>> 5f0bb088ba886b7911dee024e69995b586cf65c9
->>>>>>> 70d1506f2d77aef590cfa95f5ca33434d55d9323
+  }
+
   }
 
   @Override
