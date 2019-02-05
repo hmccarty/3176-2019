@@ -46,8 +46,7 @@ public class superstructure {
                     */
                         break;
                     case HOLD_H_CB:
-                    /*  
-                    *   mCrossbow.draw();
+                    /*  mCrossbow.draw();
                     */
                         break;
                     case INTAKE_C_CLAW:
@@ -64,18 +63,34 @@ public class superstructure {
                     */
                         break;
                     case TRANSFER_CARGO:
+                    /*  mCargoIntake.stow();
+                    */
                         break;
                     case TRANSFER_HATCH:
+                        //mCrossbow.set();
+                        //mClaw.stow();
+                        /*if(mHatchIntake.stowError() < 1000){
+                        *   
+                        *
+                        */ 
                         break;
                     case DELIVER_CARGO:
                         break;
                     case DELIVER_HATCH:
                         break;
                     case OPENLOOP_HATCH:
+                        
                         break;
                     case OPENLOOP_CARGO:
+                        mCargoIntake.openLoop();
+                        //
                         break;
                     case NEUTRAL:
+                        mCargoIntake.stow();
+                        //mClaw.stow();
+                        //mHatchIntake.stow();
+                        //mCrossbow.stow();
+                        //mCrossbow.draw();
                         break;
                 }
                 mLastState = mCurrentState;
