@@ -41,15 +41,6 @@ public class CargoIntake {
 
         //c = controller.getInstance();
     }
-
-    public void checkButtons() {
-        if (stick.getRawButtonPressed(11)) {
-            roller.set(1);
-        }
-        if (stick.getRawButtonPressed(12)) {
-            roller.set(1);
-        }
-    }
     
     public boolean deployIntake() {
         if (isDown.get()) {
