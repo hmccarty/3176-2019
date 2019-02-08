@@ -17,7 +17,7 @@ import frc.robot.constants;
 
 public class HatchIntake {
     
-    public static HatchIntake instance = new HatchIntake();
+    private static HatchIntake instance = new HatchIntake();
     private DigitalInput isDown;
     private DigitalInput isUp;
     private DigitalInput sensor;
