@@ -23,7 +23,6 @@ public class HatchIntake {
     private DigitalInput isUp;
     private DigitalInput sensor;
     private Talon roller;
-    private Talon actuator;
     private Joystick stick;
     private Solenoid sol1;
     private Solenoid sol2;
@@ -41,7 +40,6 @@ public class HatchIntake {
         isUp = new DigitalInput(constants.HATCH_INTAKE_UP);
         sensor = new DigitalInput(constants.HATCH_IRSENSOR);
         roller = new Talon(constants.HATCH_INTAKE_ROLLER);
-        actuator = new Talon(constants.HATCH_INTAKE_ACTUATOR);
         stick = new Joystick(0);
         sol1 = new Solenoid(0);
         sol2 = new Solenoid(1);
@@ -58,6 +56,10 @@ public class HatchIntake {
 
     public boolean getDown() {
         return isDown.get();
+    }
+    
+    public boolean getSensor() {
+        return sensor.get();
     }
 
     public void deployIntake() {
@@ -86,19 +88,21 @@ public class HatchIntake {
         }
     }
 
-    public boolean runIntake(double speed) {
+    public void runIntake(double speed) {
         if (sensor.get()) {
             roller.set(0);
-            return true;
+            getSensor();
         }
         else {
             roller.set(speed);
-            return false;
+            getSensor();
         }
     }
 
-    public void zeroAllSensors() {
-        
+    public void zeroAll() {
+        sol1.set(false);
+        sol2.set(false);
+        roller.set(0);
     }
 
     public void outputToSmartDashboard() {
