@@ -11,7 +11,12 @@ public class superstructure {
     private state mCurrentState;
 
     controller mController = controller.getInstance();
+    crossbow mCrossBow = crossbow.getInstance();
+    hatchintake mHatchIntake = hatchintake.getInstance();
+    claw mClaw = claw.getInstance();
     cargointake mCargoIntake = cargointake.getInstance();
+    elevator mElevator = elevator.getInstance(); 
+    drivetrain mDrivetrain = drivetrain.getInstance(); 
     loopmanager mLoopMan = loopmanager.getInstance();
 
     public superstructure (){}
