@@ -1,3 +1,5 @@
+#include <Wire.h>
+
 int sensorPin = A0;
 int ledPin = 3;
 int differenceThreshold = 20;
@@ -9,6 +11,8 @@ int numChecks = 0;
 int difference = 0;
 int onThrowouts = 10;
 int offThrowouts = 15;
+String piOutput = "none";
+String input = "blank";
 
 void irStates(char val) {
   switch (val) {
@@ -54,6 +58,7 @@ void check() {
 
 void setup() {
   Serial.begin(9600);
+  Wire.begin(4);
   pinMode(ledPin, OUTPUT);
 }
 
@@ -69,6 +74,7 @@ void loop() {
   }
   //Serial.println(String(numTrues) + "|" + String(numChecks) + "|" + String(onAvg) + "|" + String(offAvg) + "|" + String(difference));
   Serial.println(hasBall);
+  piOutput = String(hasBall);
   numTrues = 0;
   numChecks = 0;
 //  digitalWrite(ledPin, HIGH);
@@ -78,3 +84,12 @@ void loop() {
 //    Serial.println(String(analogRead(sensorPin)));
 //  }
 }
+
+void requestEvent(){//called when RoboRIO request a message from this device
+  Wire.write(piOutput.c_str()); //writes data to the RoboRIO, converts it to string
+}
+
+void receiveEvent(int bytes){//called when RoboRIO "gives" this device a message
+}
+
+
