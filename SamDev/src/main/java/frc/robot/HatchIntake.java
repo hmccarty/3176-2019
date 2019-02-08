@@ -13,7 +13,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants;
-
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class HatchIntake {
     
@@ -24,6 +25,9 @@ public class HatchIntake {
     private Talon roller;
     private Talon actuator;
     private Joystick stick;
+    private Solenoid sol1;
+    private Solenoid sol2;
+    private DoubleSolenoid dSol;
     private Timer timer;
     //private controller c;
 
@@ -39,31 +43,46 @@ public class HatchIntake {
         roller = new Talon(constants.HATCH_INTAKE_ROLLER);
         actuator = new Talon(constants.HATCH_INTAKE_ACTUATOR);
         stick = new Joystick(0);
+        sol1 = new Solenoid(0);
+        sol2 = new Solenoid(1);
+        dSol = new DoubleSolenoid(0, 1);
         timer = new Timer();
         timer.start();
 
         //c = controller.getInstance();
-    }0
+    }
 
-    public boolean deployIntake() {
-        if (isDown.get()) {
-            actuator.set(0);
-            return true;
+    public boolean getUp() {
+        return isUp.get();
+    }
+
+    public boolean getDown() {
+        return isDown.get();
+    }
+
+    public void deployIntake() {
+        if (getDown()) {
+            sol1.set(false);
+            sol2.set(true);
+            getDown();
         }
         else {
-            actuator.set(-.3);
-            return false;
+            sol1.set(false);
+            sol2.set(false);
+            getDown();
         }
     }
 
-    public boolean stowIntake() {
-        if (isUp.get()) {
-            actuator.set(0);
-            return true;
+    public void stowIntake() {
+        if (getUp()) {
+            sol1.set(true);
+            sol2.set(false);
+            getUp();
         }
         else {
-            actuator.set(.3);
-            return false;
+            sol1.set(false);
+            sol2.set(false);
+            getUp();
         }
     }
 

@@ -9,17 +9,21 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants;
+import edu.wpi.first.wpilibj.Encoder;
 
 
 public class CargoIntake {
     
     private static CargoIntake instance = new CargoIntake();
     private DigitalInput isDown;
-    private DigitalInput isUp;
+    private PIDLoop intakeControlLoop;
+    private Encoder encoder;
     private Talon roller;
     private Talon actuator;
     private Joystick stick;
@@ -32,7 +36,11 @@ public class CargoIntake {
     
     private CargoIntake() {
         isDown = new DigitalInput(constants.CARGO_INTAKE_DOWN);
-        isUp = new DigitalInput(constants.CARGO_INTAKE_UP);
+        intakeControlLoop = new PIDLoop(constants.CARGO_KP,
+                                        constants.CARGO_KI,
+                                        constants.CARGO_KD,
+                                        1);
+        encoder = new Encoder();
         roller = new Talon(constants.CARGO_INTAKE_ROLLER);
         actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
         stick = new Joystick(0);
@@ -41,26 +49,38 @@ public class CargoIntake {
 
         //c = controller.getInstance();
     }
-    
-    public boolean deployIntake() {
-        if (isDown.get()) {
-            actuator.set(0);
+
+    public boolean getDown() {
+        return isDown.get();
+    }
+
+    public boolean getUp() {
+        if (encoder.get() == 90) {
             return true;
-        }
-        else {
-            actuator.set(-.3);
+        } else {
             return false;
         }
     }
-
-    public boolean stowIntake() {
-        if (isUp.get()) {
+    
+    public void deployIntake() {
+        if (getDown()) {
             actuator.set(0);
-            return true;
+            encoder.reset();
+            getDown();
+        } else {
+            actuator.set(-.3);
+            getDown();
+        }
+    }
+
+    public void stowIntake() {
+        if (getUp()) {
+            actuator.set(0);
+            getUp();
         }
         else {
             actuator.set(.3);
-            return false;
+            getUp();
         }
     }
 
@@ -69,7 +89,7 @@ public class CargoIntake {
     }
 
     public void zeroAllSensors() {
-
+        encoder.reset();
     }
 
     public void outputToSmartDashboard() {
