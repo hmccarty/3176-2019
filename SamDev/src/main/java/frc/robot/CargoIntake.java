@@ -10,13 +10,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.GyroBase;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants;
-import edu.wpi.first.wpilibj.Encoder;
-
 
 public class CargoIntake {
     
@@ -88,7 +85,9 @@ public class CargoIntake {
         roller.set(speed);
     }
 
-    public void zeroAllSensors() {
+    public void zeroAll() {
+        actuator.set(0);
+        roller.set(0);
         encoder.reset();
     }
 
