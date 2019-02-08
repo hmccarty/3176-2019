@@ -10,11 +10,18 @@ package frc.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Joystick;
+import frc.robot.HatchIntake;
+import frc.robot.CargoIntake;
 
 public class Robot extends IterativeRobot {
-
+  Joystick stick;
+  private HatchIntake mHatchIntake = HatchIntake.getInstance();
+  private CargoIntake mCargoIntake = CargoIntake.getInstance();
+  
   @Override
   public void robotInit() {
+    stick = new Joystick(0);
   }
 
   @Override
@@ -37,7 +44,16 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
-    
+//     if (stick.getRawButton(2)) {
+//       mHatchIntake.deployIntake();
+//     } else if (stick.getRawButton(3)) {
+//       mHatchIntake.stowIntake();
+//     }
+//     if (stick.getRawButton(2)) {
+//       mCargoIntake.deployIntake();
+//     } else if (stick.getRawButton(3)) {
+//       mCargoIntake.stowIntake();
+//     }
   }
 
   /**
