@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -14,20 +7,35 @@ import edu.wpi.first.wpilibj.Joystick;
 
 import com.revrobotics.CANError;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANEncoder; 
+import com.revrobotics.ControlType;
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-
 
 public class Robot extends IterativeRobot {
   private Joystick stick;
   private CANSparkMax motor;
+  CANPIDController c; 
+  CANEncoder e; 
+  double kp, ki, kd, maxOutput, maxRM, minOutput; 
   
   @Override
   public void robotInit() {
     stick = new Joystick(0);
     motor = new CANSparkMax(0, MotorType.kBrushless);
-
+    c = motor.getPIDController();
+    e = motor.getEncoder();
+    kp = 4e-5; 
+    ki = 1e-6;
+    kd = 0; 
+    maxOutput = 1;
+    maxRM = 5700;
+    minOutput = -1; 
+    c.setP(kp);
+    c.setI(ki);
+    c.setD(kd);
+    c.setOutputRange(minOutput, maxOutput);
   }
 
   @Override
@@ -46,7 +54,12 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void teleopPeriodic() {
-    motor.set(stick.getY());
+    if(Math.abs(stick.getY())>.09){
+    c.setReference(stick.getY()*maxRM, ControlType.kVelocity);
+    } else {
+      c.setReference(0, ControlType.kVelocity);
+    }
+
   }
 
   @Override
