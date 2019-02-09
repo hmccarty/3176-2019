@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class controller {
     private static controller instance = new controller();
+    private Joystick thrustStick = new Joystick(0);
+    private Joystick yawStick = new Joystick(1);
     private Joystick buttonMonkey; 
 
     public controller(){
@@ -21,5 +23,21 @@ public class controller {
         else {
             return buttonMonkey.getRawButton(0);
         }
+    }
+
+    public boolean getGyroReset(){
+        return thrustStick.getRawButton(2);
+    }
+
+    public double getForward(){
+        return thrustStick.getY();
+    }
+
+    public double getStrafe(){
+        return thrustStick.getX();
+    }
+
+    public double getRotation(){
+        return yawStick.getX();
     }
 }

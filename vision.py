@@ -18,6 +18,7 @@ import time
 import sys
 import numpy as np
 import cv2
+import math
 
 from cscore import CameraServer, VideoSource, CvSource, VideoMode, CvSink, UsbCamera
 from networktables import NetworkTablesInstance
@@ -111,8 +112,75 @@ def readConfig():
 
 def degPerPixel(imageWidth):
     return imageWidth/61
+	
+#Angles in radians
 
+#image size ratioed to 16:9
+image_width = 256
+image_height = 144
 
+#Lifecam 3000 from datasheet
+#Datasheet: https://dl2jx7zfbtwvr.cloudfront.net/specsheets/WEBC1010.pdf
+diagonalView = math.radians(68.5)
+
+#16:9 aspect ratio
+horizontalAspect = 16
+verticalAspect = 9
+
+#Reasons for using diagonal aspect is to calculate horizontal field of view.
+diagonalAspect = math.hypot(horizontalAspect, verticalAspect)
+#Calculations: http://vrguy.blogspot.com/2013/04/converting-diagonal-field-of-view-and.html
+horizontalView = math.atan(math.tan(diagonalView/2) * (horizontalAspect / diagonalAspect)) * 2
+verticalView = math.atan(math.tan(diagonalView/2) * (verticalAspect / diagonalAspect)) * 2
+
+#Focal Length calculations: https://docs.google.com/presentation/d/1ediRsI-oR3-kwawFJZ34_ZTlQS2SDBLjZasjzZ-eXbQ/pub?start=false&loop=false&slide=id.g12c083cffa_0_165
+H_FOCAL_LENGTH = image_width / (2*math.tan((horizontalView/2)))
+V_FOCAL_LENGTH = image_height / (2*math.tan((verticalView/2)))
+	
+def translateRotation(rotation, width, height):
+    if (width < height):
+        rotation = -1 * (rotation - 90)
+    if (rotation > 90):
+        rotation = -1 * (rotation - 180)
+    rotation *= -1
+    return round(rotation)
+
+def getEllipseRotation(image, cnt):
+    try:
+        # Gets rotated bounding ellipse of contour
+        ellipse = cv2.fitEllipse(cnt)
+        centerE = ellipse[0]
+        # Gets rotation of ellipse; same as rotation of contour
+        rotation = ellipse[2]
+        # Gets width and height of rotated ellipse
+        widthE = ellipse[1][0]
+        heightE = ellipse[1][1]
+        # Maps rotation to (-90 to 90). Makes it easier to tell direction of slant
+        rotation = translateRotation(rotation, widthE, heightE)
+
+        cv2.ellipse(image, ellipse, (23, 184, 80), 3)
+        return rotation
+    except:
+        # Gets rotated bounding rectangle of contour
+        rect = cv2.minAreaRect(cnt)
+        # Creates box around that rectangle
+        box = cv2.boxPoints(rect)
+        # Not exactly sure
+        box = np.int0(box)
+        # Gets center of rotated rectangle
+        center = rect[0]
+        # Gets rotation of rectangle; same as rotation of contour
+        rotation = rect[2]
+        # Gets width and height of rotated rectangle
+        width = rect[1][0]
+        height = rect[1][1]
+        # Maps rotation to (-90 to 90). Makes it easier to tell direction of slant
+        rotation = translateRotation(rotation, width, height)
+        return rotation
+		
+def calculateYaw(pixelX, centerX, hFocalLength):
+    yaw = math.degrees(math.atan((pixelX - centerX) / hFocalLength))
+    return round(yaw)
 
 
 #This should be a class lowkey but it'll work
@@ -162,6 +230,19 @@ def TrackTheTarget(frame, sd):
         M = cv2.moments(blocks[0])
         xcent = int(M['m10']/M['m00'])
         ycent = int(M['m01']/M['m00'])
+        try:
+            target1 = cv2.minAreaRect(blocks[1])
+            box1 = cv2.boxPoints(target1)
+            box1 = np.int0(box1)
+            M1 = cv2.moments(blocks[1])
+            xcent1 = int(M1['m10']/M1['m00'])
+            ycent1 = int(M1['m01']/M1['m00'])
+            centerOfTarget = math.floor((xcent + xcent1) / 2)
+            yawToTarget = calculateYaw(centerOfTarget, 128, H_FOCAL_LENGTH)
+            print(yawToTarget)
+        except:
+            print("Only one block detected")
+        rotation = getEllipseRotation(frame, blocks[0])
         pidx = 0
         for points in box:
             cidx = 0
@@ -169,7 +250,7 @@ def TrackTheTarget(frame, sd):
                 for coords in points:
                     if cidx == 0:
                         sd.putNumber("Point " + str(pidx) + " X Coord", coords)
-                        print(coords)
+                        #print(coords)
                     elif cidx == 1:
                         sd.putNumber("Point " + str(pidx) + " Y Coord", coords)
                     cidx += 1
@@ -243,4 +324,4 @@ if __name__ == "__main__":
         #print(img)
         outputStream.putFrame(img)
 
-        print(end-start)
+        #print(end-start)

@@ -62,23 +62,20 @@ public class CargoIntake {
     }
     
     public void deployIntake() {
-        if (getDown()) {
+        if (isDown.get()) {
             actuator.set(0);
             encoder.reset();
         } else {
+<<<<<<< HEAD
             actuator.set(intakeControl.returnOutput(-1));
+=======
+            loopControl(constants.CARGO_INTAKE_HEIGHT);
+>>>>>>> c985680ab9caf8671d3fbba1493f3c72ce8a2285
         }
     }
 
     public void stowIntake() {
-        if (getUp()) {
-            actuator.set(0);
-            getUp();
-        }
-        else {
-            actuator.set(intakeControlLoop.returnOutput(1));
-            getUp();
-        }
+        loopControl(constants.CARGO_STOWED_HEIGHT);
     }
 
     public void runIntake(double speed) {

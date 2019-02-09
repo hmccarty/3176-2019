@@ -1,7 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public class CargoClaw {
     private static CargoClaw instance = new CargoClaw(2,3);
@@ -16,16 +16,13 @@ public class CargoClaw {
         return instance; 
     }
     public void forward() {
-        dsolval = DoubleSolenoid.Value.kForward; 
-        dsol.set(dsolval);
+        dsol.set(DoubleSolenoid.Value.kForward);
     }
     public void reverse() {
-        dsolval = DoubleSolenoid.Value.kReverse;
-        dsol.set(dsolval);
+        dsol.set(DoubleSolenoid.Value.kReverse);
     }
     public void off() {
-        dsolval = DoubleSolenoid.Value.kOff;
-        dsol.set(dsolval);
+        dsol.set(DoubleSolenoid.Value.kOff);
     }
 
 }

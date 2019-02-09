@@ -63,11 +63,9 @@ public class hatchintake {
     public void run(double speed) {
         if (mSensor.get()) {
             mRoller.set(0);
-            getSensor();
         }
         else {
             mRoller.set(speed);
-            getSensor();
         }
     }
 
@@ -76,5 +74,9 @@ public class hatchintake {
         mRoller.set(0);
     }
 
-    public void outputToSmartDashboard() {}
+    public void outputToSmartDashboard() {
+        SmartDashboard.putBoolean("isDeployed: ", isDeployed());
+        SmartDashboard.putBoolean("isStowed: ", isStowed());
+        SmartDashboard.putBoolean("getSensor: ", getSensor());
+    }
 }
