@@ -96,5 +96,6 @@ public class CargoIntake {
     public void outputToSmartDashboard() {
         SmartDashboard.putBoolean("getDown value: ", getDown());
         SmartDashboard.putBoolean("getUp value: ", getUp());
+        SmartDashboard.putNumber("Encoder value", encoder.get());
     }
 }
