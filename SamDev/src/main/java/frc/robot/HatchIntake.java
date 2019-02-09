@@ -96,8 +96,8 @@ public class HatchIntake {
     }
 
     public void outputToSmartDashboard() {
-        SmartDashboard.putBoolean("isDown value: ", isDown.get());
-        SmartDashboard.putBoolean("isUp value: ", isUp.get());
-        SmartDashboard.putBoolean("sensor value: ", sensor.get());
+        SmartDashboard.putBoolean("isDown value: ", getDown());
+        SmartDashboard.putBoolean("isUp value: ", getUp());
+        SmartDashboard.putBoolean("sensor value: ", getSensor());
     }
 }
