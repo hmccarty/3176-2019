@@ -70,6 +70,6 @@ public class hatchintake extends subsystem{
     public void outputToSmartDashboard(){
         SmartDashboard.putBoolean("isDown value: ", isDown.get());
         SmartDashboard.putBoolean("isUp value: ", isUp.get());
-        SmartDashboard.putBoolean ("sensor value; ", sensor.get());
+        SmartDashboard.putBoolean  ("sensor value; ", sensor.get());
     }
 }
