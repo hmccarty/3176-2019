@@ -16,13 +16,13 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class HatchIntake {
     private static HatchIntake instance = new HatchIntake();
-    private static DigitalInput isDown;
-    private static DigitalInput isUp;
-    private static DigitalInput Sen;
-    private static Talon roller;
-    private static Solenoid Sol1;
-    private static Solenoid Sol2;
-    private static DoubleSolenoid SolDo;
+    private  DigitalInput isDown;
+    private DigitalInput isUp;
+    private DigitalInput Sen;
+    private Talon roller;
+    private Solenoid Sol1;
+    private Solenoid Sol2;
+    private DoubleSolenoid SolDo;
 
     private HatchIntake(){
       isDown = new DigitalInput(constants.HATCH_INTAKE_DOWN);
@@ -83,8 +83,8 @@ public class HatchIntake {
     
     }
     public void OutputToDash() {
-      SmartDashboard.putBoolean("Is Down:", isDown.get());
-      SmartDashboard.putBoolean("Is Up:", isUp.get());
+      SmartDashboard.putBoolean("Is Down:", getDown());
+      SmartDashboard.putBoolean("Is Up:", getUp());
       SmartDashboard.putBoolean("Sensor:", Sen.get());
       SmartDashboard.putBoolean("Solenoid 1:", Sol1.get());
       SmartDashboard.putBoolean("Solenoid 2:", Sol2.get());

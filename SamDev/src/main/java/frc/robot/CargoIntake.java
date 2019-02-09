@@ -10,7 +10,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.Util.PIDLoop;
@@ -20,11 +19,10 @@ public class CargoIntake {
     
     private static CargoIntake instance = new CargoIntake();
     private DigitalInput isDown;
-    private PIDLoop intakeControlLoop;
+    private PIDLoop intakeControl;
     private Encoder encoder;
     private Talon roller;
     private Talon actuator;
-    private Joystick stick;
     private Timer timer;
     //private controller c;
     
@@ -34,17 +32,15 @@ public class CargoIntake {
     
     private CargoIntake() {
         isDown = new DigitalInput(constants.CARGO_INTAKE_DOWN);
-        intakeControlLoop = new PIDLoop(constants.CARGO_KP,
+        intakeControl = new PIDLoop(constants.CARGO_KP,
                                         constants.CARGO_KI,
                                         constants.CARGO_KD,
                                         1);
         encoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
         roller = new Talon(constants.CARGO_INTAKE_ROLLER);
         actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
-        stick = new Joystick(0);
         timer = new Timer();
         timer.start();
-        timer.reset();
 
         //c = controller.getInstance();
     }
@@ -60,27 +56,22 @@ public class CargoIntake {
             return false;
         }
     }
+
+    private void loopControl(int wantedHeight) {
+        actuator.set(intakeControl.returnOutput(encoder.getRaw(), wantedHeight));
+    }
     
     public void deployIntake() {
-        if (getDown()) {
+        if (isDown.get()) {
             actuator.set(0);
             encoder.reset();
-            getDown();
         } else {
-            actuator.set(intakeControlLoop.returnOutput(-1));
-            getDown();
+            loopControl(constants.CARGO_INTAKE_HEIGHT);
         }
     }
 
     public void stowIntake() {
-        if (getUp()) {
-            actuator.set(0);
-            getUp();
-        }
-        else {
-            actuator.set(intakeControlLoop.returnOutput(1));
-            getUp();
-        }
+        loopControl(constants.CARGO_STOWED_HEIGHT);
     }
 
     public void runIntake(double speed) {
@@ -96,5 +87,6 @@ public class CargoIntake {
     public void outputToSmartDashboard() {
         SmartDashboard.putBoolean("getDown value: ", getDown());
         SmartDashboard.putBoolean("getUp value: ", getUp());
+        SmartDashboard.putNumber("Encoder value", encoder.get());
     }
 }
