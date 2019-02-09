@@ -44,16 +44,23 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
-//     if (stick.getRawButton(2)) {
-//       mHatchIntake.deployIntake();
-//     } else if (stick.getRawButton(3)) {
-//       mHatchIntake.stowIntake();
-//     }
-//     if (stick.getRawButton(2)) {
-//       mCargoIntake.deployIntake();
-//     } else if (stick.getRawButton(3)) {
-//       mCargoIntake.stowIntake();
-//     }
+    // if (stick.getRawButton(4)) {
+    //   mHatchIntake.deployIntake();
+    // } else if (stick.getRawButton(5)) {
+    //   mHatchIntake.stowIntake();
+    // }
+    // if (stick.getY() < 0.1 || stick.getY() > 0.1) {
+    //   mHatchIntake.runIntake(stick.getY());
+    // }
+
+    // if (stick.getRawButton(4)) {
+    //   mCargoIntake.deployIntake();
+    // } else if (stick.getRawButton(5)) {
+    //   mCargoIntake.stowIntake();
+    // }
+    // if (stick.getY() < 0.1 || stick.getY() > 0.1) {
+    //   mCargoIntake.runIntake(stick.getY());
+    // }
   }
 
   /**
