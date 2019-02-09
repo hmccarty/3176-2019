@@ -10,15 +10,18 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.subsystem.*;
 import frc.subsystem.superstructure;
+import frc.subsystem.drivetrain;
 
-public class robot extends TimedRobot {
+public class Robot extends TimedRobot {
   controller mController;
   superstructure mSubsystemManager; 
+  drivetrain mDrivetrain; 
 
   @Override
   public void robotInit() {
     mController = controller.getInstance();
     mSubsystemManager = superstructure.getInstance();
+
   }
 
   @Override
@@ -33,7 +36,7 @@ public class robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     if(mController.getCargoIntake(0)){
-      mSubsystemManager.setWantedState(mSubsystemManager.state.INTAKE_C_ROLLER);
+      //mSubsystemManager.setWantedState(mSubsystemManager.state.INTAKE_C_ROLLER);
     }
   }
 
