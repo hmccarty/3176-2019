@@ -44,7 +44,6 @@ public class CargoIntake {
         stick = new Joystick(0);
         timer = new Timer();
         timer.start();
-        timer.reset();
 
         //c = controller.getInstance();
     }
