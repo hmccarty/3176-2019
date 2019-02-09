@@ -41,6 +41,7 @@ void irStates(char val) {
   }
 }
 
+//turns the sensor on and off
 void blink() {
   irStates('A');
   check();
@@ -66,14 +67,15 @@ void loop() {
   blink();
   blink();
   blink();
+  //If number of trues is atleast 1 under the number of checks
   if(numTrues >= numChecks-1){
     hasBall = true;
   }
   else{
     hasBall = false;
   }
-  //Serial.println(String(numTrues) + "|" + String(numChecks) + "|" + String(onAvg) + "|" + String(offAvg) + "|" + String(difference));
-  Serial.println(hasBall);
+  Serial.println(String(numTrues) + "|" + String(numChecks) + "|" + String(onAvg) + "|" + String(offAvg) + "|" + String(difference));
+  //Serial.println(hasBall);
   piOutput = String(hasBall);
   numTrues = 0;
   numChecks = 0;
