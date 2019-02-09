@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.Util.PIDLoop;
 import frc.robot.constants;
 
 public class CargoIntake {
@@ -37,12 +38,13 @@ public class CargoIntake {
                                         constants.CARGO_KI,
                                         constants.CARGO_KD,
                                         1);
-        encoder = new Encoder();
+        encoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
         roller = new Talon(constants.CARGO_INTAKE_ROLLER);
         actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
         stick = new Joystick(0);
         timer = new Timer();
         timer.start();
+        timer.reset();
 
         //c = controller.getInstance();
     }
@@ -65,7 +67,7 @@ public class CargoIntake {
             encoder.reset();
             getDown();
         } else {
-            actuator.set(-.3);
+            actuator.set(intakeControlLoop.returnOutput(-1));
             getDown();
         }
     }
@@ -76,7 +78,7 @@ public class CargoIntake {
             getUp();
         }
         else {
-            actuator.set(.3);
+            actuator.set(intakeControlLoop.returnOutput(1));
             getUp();
         }
     }
@@ -92,7 +94,7 @@ public class CargoIntake {
     }
 
     public void outputToSmartDashboard() {
-        SmartDashboard.putBoolean("isDown value: ", isDown.get());
-        SmartDashboard.putBoolean("isUp value: ", isUp.get());
+        SmartDashboard.putBoolean("getDown value: ", getDown());
+        SmartDashboard.putBoolean("getUp value: ", getUp());
     }
 }
