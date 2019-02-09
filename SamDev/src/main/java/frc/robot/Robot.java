@@ -13,11 +13,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.HatchIntake;
 import frc.robot.CargoIntake;
+import frc.robot.NeoTesting;
 
 public class Robot extends IterativeRobot {
   Joystick stick;
   private HatchIntake mHatchIntake = HatchIntake.getInstance();
   private CargoIntake mCargoIntake = CargoIntake.getInstance();
+  private NeoTesting mNeoTesting = NeoTesting.getInstance();
   
   @Override
   public void robotInit() {
@@ -44,6 +46,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
+    mNeoTesting.run();
     // if (stick.getRawButton(4)) {
     //   mHatchIntake.deployIntake();
     // } else if (stick.getRawButton(5)) {
@@ -54,7 +57,7 @@ public class Robot extends IterativeRobot {
     // }
 
     // if (stick.getRawButton(4)) {
-    //   mCargoIntake.deployIntake();
+    //   mCargoIntake.deployIntake();+
     // } else if (stick.getRawButton(5)) {
     //   mCargoIntake.stowIntake();
     // }
