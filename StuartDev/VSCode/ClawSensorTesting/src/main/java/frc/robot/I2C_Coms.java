@@ -21,7 +21,7 @@ public class I2C_Coms {
         sensorHub = new I2C(I2C.Port.kOnboard, 9);
     }
 
-    public int ir(){
+    public int getValue(){
         int returnValue = -1;
         sensorHub.transaction(toSend, 1, recieved, 1);
         returnValue = recieved[0];

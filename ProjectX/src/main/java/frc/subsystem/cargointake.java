@@ -1,4 +1,4 @@
-package frc.subsystem;
+/*package frc.subsystem;
 
 import frc.util.subsystem;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -77,9 +77,14 @@ public class cargointake {
         mEncoder.reset();
     }
 
+<<<<<<< HEAD
+    public void outputToSmartDashboard(){}
+}*/
+=======
     public void outputToSmartDashboard() {
         SmartDashboard.putBoolean("isDeployed: ", isDeployed());
         SmartDashboard.putBoolean("isStowed: ", isStowed());
         SmartDashboard.putBoolean("mBump: ", mBump.get());
     }
 }
+>>>>>>> bba17b8a28bfd9875155690486b4dc66aca4f5fc
