@@ -55,7 +55,7 @@ public class controller {
 
     public double getRotation(){
         if(Math.abs(yawStick.getX()) > 0.05){
-            return -yawStick.getX()*.6;
+            return -yawStick.getX()/6;
         } else {
             return 0; 
         }
