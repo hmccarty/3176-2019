@@ -1,59 +1,50 @@
 package frc.subsystem; 
 
-import com.kauailabs.navx.frc.AHRS; //Need to install Nav-X libraries to use
+import com.kauailabs.navx.frc.AHRS; 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import frc.robot.constants;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import frc.util.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 
 /** 
- * Handles crab drive states and manages individual swervepods, see {@link Swervepod}
+ * Handles crab drive states and manages individual swervemPods, see {@link Swervepod}
  */
 public class drivetrain extends subsystem {
 	private static drivetrain instance = new drivetrain();
 	private loopmanager mLoopMan = loopmanager.getInstance();
 	private controller mController = controller.getInstance(); 
-	private PowerDistributionPanel pdp = new PowerDistributionPanel(0);
-	private AHRS gyro;
+	private PowerDistributionPanel mPDP = new PowerDistributionPanel(0);
+	private AHRS mGyro;
 	
-	private ArrayList<swervepod> Pods;
+	private ArrayList<swervepod> mPods;
 	
-	private swervepod upperRight;
-	private swervepod upperLeft;
-	private swervepod lowerLeft;
-	private swervepod lowerRight;
+	private swervepod mUpperRight;
+	private swervepod mUpperLeft;
+	private swervepod mLowerLeft;
+	private swervepod mLowerRight;
 	
-	private driveCoords Coords;
-	private driveType commandType;
+	private coordType mCoordType;
+	private inputType mInputType;
 	
-	private double currTime; 
-	private double lastTime = Timer.getFPGATimestamp();
-	
-	public TalonSRX[] driveTalon = {new TalonSRX(1), new TalonSRX(2), new TalonSRX(3), new TalonSRX(4)}; 
-	public TalonSRX[] gearTalon = {new TalonSRX(11), new TalonSRX(22), new TalonSRX(33), new TalonSRX(44)};
+	public TalonSRX[] mDriveTalons = {new TalonSRX(1), new TalonSRX(2), new TalonSRX(3), new TalonSRX(4)}; 
+	public TalonSRX[] mGearTalons = {new TalonSRX(11), new TalonSRX(22), new TalonSRX(33), new TalonSRX(44)};
 	
 	private double kLength;
 	private double kWidth;
-	private double kRadius;
+	private double kRadius; 
 	
 	private double kMaxSpeed;
 	private double kMaxRotation;
 	
-	private double rel_max_speed;
-	private double angle;
+	private double cMaxSpeed;
+	private double cAngle;
 	
-	private double forwardCommand;
-	private double strafeCommand;
-	private double spinCommand;
-	
-	private Timer secretSauceTimer; 
+	private double cForwardCommand;
+	private double cStrafeCommand;
+	private double cSpinCommand;
 	
 	public enum systemStates{
 		NEUTRAL,
@@ -64,35 +55,34 @@ public class drivetrain extends subsystem {
 		AUTON
 	}
 	
-	public enum driveCoords{
+	public enum coordType{
 		ROBOTCENTRIC,
 		FIELDCENTRIC
 	}
 	
-	public enum driveType{
+	public enum inputType{
 		PERCENTPOWER,
 		VELOCITY
 	}
 	
-	private systemStates currentState;
-	private systemStates requestedState;
-	private systemStates lastState;
+	private systemStates mCurrentState;
+	private systemStates mWantedState;
 	
 	private drivetrain(){
-		//instantiate the pods
-		upperRight = new swervepod(0, driveTalon[0], gearTalon[0]);
-		upperLeft = new swervepod(1, driveTalon[1], gearTalon[1]);
-		lowerLeft = new swervepod(2, driveTalon[2], gearTalon[2]);
-		lowerRight = new swervepod(3, driveTalon[3], gearTalon[3]);
+		//instantiate the mPods
+		mUpperRight = new swervepod(0, mDriveTalons[0], mGearTalons[0]);
+		mUpperLeft = new swervepod(1, mDriveTalons[1], mGearTalons[1]);
+		mLowerLeft = new swervepod(2, mDriveTalons[2], mGearTalons[2]);
+		mLowerRight = new swervepod(3, mDriveTalons[3], mGearTalons[3]);
 		
 		//Instantiate array list
-		Pods = new ArrayList<swervepod>();
+		mPods = new ArrayList<swervepod>();
 				
-		//Add instantiated Pods to the array list
-		Pods.add(upperRight);
-		Pods.add(upperLeft);
-		Pods.add(lowerLeft);
-		Pods.add(lowerRight);
+		//Add instantiated mPods to the array list
+		mPods.add(mUpperRight);
+		mPods.add(mUpperLeft);
+		mPods.add(mLowerLeft);
+		mPods.add(mLowerRight);
 		
 		//Setting constants
 		kLength = constants.DRIVETRAINLENGTH;
@@ -101,17 +91,15 @@ public class drivetrain extends subsystem {
 		kMaxSpeed = constants.DRIVETRAINMAXWHEELSPEED;
 		kMaxRotation = constants.DRIVETRAINMAXROTATIONSPEED;
 		
-		//Instantiating the gyro
-		gyro = new AHRS(SPI.Port.kMXP);
+		//Instantiating the mGyro
+		mGyro = new AHRS(SPI.Port.kMXP);
 		resetGyro();
 		updateAngle();
 		
 		//Initializing the commands
-		forwardCommand = Math.pow(10, -15); //Puts wheels in forward-facing direction
-		strafeCommand = 0.0;
-		spinCommand = 0.0;
-		
-		secretSauceTimer = new Timer();
+		cForwardCommand = Math.pow(10, -15); //Puts wheels in forward-facing direction
+		cStrafeCommand = 0.0;
+		cSpinCommand = 0.0;
 	}
 	
 	/**
@@ -122,7 +110,7 @@ public class drivetrain extends subsystem {
 	}
 	
 	/**
-	 * Handles each swerve command and communicates with the swervepods
+	 * Handles each swerve command and communicates with the swervemPods
 	 */
 	private void crabDrive() {
 		//Create arrays with the speed and angle of each pod
@@ -130,10 +118,10 @@ public class drivetrain extends subsystem {
 		double[] podGear = new double[4];
 		
 		//Calculating components
-		double a = strafeCommand + spinCommand * kLength/2; 
-		double b = strafeCommand - spinCommand * kLength/2; 
-		double c = forwardCommand - spinCommand * kWidth/2; 
-		double d = forwardCommand + spinCommand * kWidth/2; 
+		double a = cStrafeCommand + cSpinCommand * kLength/2; 
+		double b = cStrafeCommand - cSpinCommand * kLength/2; 
+		double c = cForwardCommand - cSpinCommand * kWidth/2; 
+		double d = cForwardCommand + cSpinCommand * kWidth/2; 
 		
 		//Calculating the speed and angle of each pod
 		podDrive[0] = Math.sqrt(Math.pow(b, 2)+ Math.pow(c, 2));
@@ -148,123 +136,115 @@ public class drivetrain extends subsystem {
 		podDrive[3] = Math.sqrt(Math.pow(a, 2)+ Math.pow(c, 2));
 		podGear[3] = Math.atan2(a,c);
 		
-		//Finding the highest commanded velocity between the pods
-		rel_max_speed = Math.max(Math.max(podDrive[0],podDrive[1]),Math.max(podDrive[2], podDrive[3]));
+		//Finding the highest commanded velocity between the mPods
+		cMaxSpeed = Math.max(Math.max(podDrive[0],podDrive[1]),Math.max(podDrive[2], podDrive[3]));
 		
-		//Reducing pods by the relative max speed
-		if(rel_max_speed > kMaxSpeed) {
-			for(int idx = 0; idx < Pods.size(); idx++) {
-				podDrive[idx] /= rel_max_speed/kMaxSpeed;
-			}
-		}
-		
-		boolean allPodsStopped = true;
-		for(swervepod p:Pods) {
-			if(!p.isStopped())
-			{
-				allPodsStopped = false;
+		//Reducing mPods by the relative max speed
+		if(cMaxSpeed > kMaxSpeed) {
+			for(int idx = 0; idx < mPods.size(); idx++) {
+				podDrive[idx] /= cMaxSpeed/kMaxSpeed;
 			}
 		}
 		
 		//If enabled, sends each pod to a defensive lock when not moving 
-		if(allPodsStopped && forwardCommand == 0.0 && strafeCommand == 0.0 && spinCommand == 0.0 && false) {
+		if(mController.defenseEnabled()) {
 			// Sending each pod their respective commands
-			Pods.get(0).setPod(0.0,-1.0*Math.PI/4.0);
-			Pods.get(1).setPod(0.0, 1.0*Math.PI/4.0);
-			Pods.get(2).setPod(0.0, 3.0*Math.PI/4.0);
-			Pods.get(3).setPod(0.0, -3.0* Math.PI/4.0);
+			mPods.get(0).setPod(0.0,-1.0*Math.PI/4.0);
+			mPods.get(1).setPod(0.0, 1.0*Math.PI/4.0);
+			mPods.get(2).setPod(0.0, 3.0*Math.PI/4.0);
+			mPods.get(3).setPod(0.0, -3.0* Math.PI/4.0);
 		}
 		else {
 			//Sending each pod their respective commands
-			for(int idx = 0; idx < Pods.size(); idx++) {
-				Pods.get(idx).setPod(podDrive[idx],podGear[idx]); 
+			for(int idx = 0; idx < mPods.size(); idx++) {
+				mPods.get(idx).setPod(podDrive[idx],podGear[idx]); 
 			}
 		}
 	}
 	
 	/**
 	 * Determines the settings of swerve drive, and the current commands
-	 * @param forwardCommand the magnitude on the Y-Axis 
-	 * @param strafeCommand the magnitude on the X-Axis 
-	 * @param spinCommand the magnitude on the Omega Axis 
-	 * @param Coords determines whether swerve is in Robot-Centric or Field-Centric
-	 * @param commandType determines whether commanding values are in percent power (-1 to 1) or their intended velocity values (in ft/s)
+	 * @param cForwardCommand the magnitude on the Y-Axis 
+	 * @param cStrafeCommand the magnitude on the X-Axis 
+	 * @param cSpinCommand the magnitude on the Omega Axis 
+	 * @param mCoordType determines whether swerve is in Robot-Centric or Field-Centric
+	 * @param mInputType determines whether commanding values are in percent power (-1 to 1) or their intended velocity values (in ft/s)
 	 */
-	public void swerve(double forwardCommand, double strafeCommand, double spinCommand, driveCoords Coords, driveType commandType) {
-		this.Coords = Coords;
-		this.commandType = commandType;	
-		if(Coords == driveCoords.ROBOTCENTRIC) {
-			this.forwardCommand = forwardCommand;
-			this.strafeCommand = strafeCommand;
-			this.spinCommand = -spinCommand;
+	public void swerve(double cForwardCommand, double cStrafeCommand, double cSpinCommand, coordType mCoordType, inputType mInputType) {
+		this.mCoordType = mCoordType;
+		this.mInputType = mInputType;	
+		if(mCoordType == coordType.ROBOTCENTRIC) {
+			this.cForwardCommand = cForwardCommand;
+			this.cStrafeCommand = cStrafeCommand;
+			this.cSpinCommand = -cSpinCommand;
 		} 
 		else {
-			final double temp = forwardCommand * Math.sin(angle) + strafeCommand * Math.cos(angle);
-		    this.strafeCommand = (-forwardCommand * Math.cos(angle) + strafeCommand * Math.sin(angle));
-		    this.forwardCommand = temp;
-		    this.spinCommand = -spinCommand;
+			final double temp = cForwardCommand * Math.sin(cAngle) + cStrafeCommand * Math.cos(cAngle);
+		    this.cStrafeCommand = (-cForwardCommand * Math.cos(cAngle) + cStrafeCommand * Math.sin(cAngle));
+		    this.cForwardCommand = temp;
+		    this.cSpinCommand = -cSpinCommand;
 		}
-		if(commandType == driveType.PERCENTPOWER) {
-			this.forwardCommand *= kMaxSpeed;
-			this.strafeCommand *= kMaxSpeed;
-			this.spinCommand *= kMaxRotation;
+		if(mInputType == inputType.PERCENTPOWER) {
+			this.cForwardCommand *= kMaxSpeed;
+			this.cStrafeCommand *= kMaxSpeed;
+			this.cSpinCommand *= kMaxRotation;
 		}
 	}
 	
-	public void swerve(double forwardCommand, double strafeCommand, double spinCommand) {
-		if(Coords == driveCoords.ROBOTCENTRIC) {
-			this.forwardCommand = forwardCommand;
-			this.strafeCommand = strafeCommand;
-			this.spinCommand = -spinCommand;
+	public void swerve(double cForwardCommand, double cStrafeCommand, double cSpinCommand) {
+		if(mCoordType == coordType.ROBOTCENTRIC) {
+			this.cForwardCommand = cForwardCommand;
+			this.cStrafeCommand = cStrafeCommand;
+			this.cSpinCommand = -cSpinCommand;
 		}
 		else {
-			final double temp = forwardCommand * Math.sin(angle) + strafeCommand * Math.cos(angle);
-		    this.strafeCommand = (-forwardCommand * Math.cos(angle) + strafeCommand * Math.sin(angle));
-		    this.forwardCommand = temp;
-		    this.spinCommand = -spinCommand;
+			final double temp = cForwardCommand * Math.sin(cAngle) + cStrafeCommand * Math.cos(cAngle);
+		    this.cStrafeCommand = (-cForwardCommand * Math.cos(cAngle) + cStrafeCommand * Math.sin(cAngle));
+		    this.cForwardCommand = temp;
+		    this.cSpinCommand = -cSpinCommand;
 		}
-		if(commandType == driveType.PERCENTPOWER) {
-			this.forwardCommand *= kMaxSpeed;
-			this.strafeCommand *= kMaxSpeed;
-			this.spinCommand *= kMaxRotation;
+		if(mInputType == inputType.PERCENTPOWER) {
+			this.cForwardCommand *= kMaxSpeed;
+			this.cStrafeCommand *= kMaxSpeed;
+			this.cSpinCommand *= kMaxRotation;
 		}
 	}
 	
 	public void setSystemState(systemStates wanted) {
-		requestedState = wanted;
+		mWantedState = wanted;
 	}
 	
 	public void checkState() {
-		if(requestedState!=currentState) {
-			currentState = requestedState;
+		if(mWantedState!=mCurrentState) {
+			mCurrentState = mWantedState;
 		}
 	}
 	
-	public PowerDistributionPanel getPDP() {return pdp;}
+	public PowerDistributionPanel getmPDP() {return mPDP;}
 	
-	public swervepod getPod(int idx) {return Pods.get(idx);}
+	public swervepod getPod(int idx) {return mPods.get(idx);}
 	
 	public double getAvgWheelSpeed() {
 		double average =0;
-		for(swervepod pod: Pods) {
+		for(swervepod pod: mPods) {
 			average += pod.getWheelSpeed();
 		}
-		return average/Pods.size();
+		return average/mPods.size();
 	}
 	
-	public double getAngle() {return ((gyro.getAngle()* Math.PI/180.0) % (2*Math.PI));} //Converts Gyro Angle (0-360) to Radians (0-2pi)
+	public double getAngle() {return ((mGyro.getAngle()* Math.PI/180.0) % (2*Math.PI));} //Converts mGyro Angle (0-360) to Radians (0-2pi)
 	
 	private void updateAngle(){
 		//-pi to pi 0 = straight ahead
-		angle = ((((gyro.getAngle()+90)* Math.PI/180.0)) % (2*Math.PI));
+		cAngle = ((((mGyro.getAngle()+90)* Math.PI/180.0)) % (2*Math.PI));
 	}
 	
-	public void resetGyro() {gyro.reset();}
+	public void resetGyro() {mGyro.reset();}
 	
 	@Override public void zeroAllSensors() {
 		for(int idx = 0; idx < 4; idx++)
 		{
-			Pods.get(idx).zeroAllSensors();
+			mPods.get(idx).zeroAllSensors();
 		}
 	}
 	
@@ -274,8 +254,8 @@ public class drivetrain extends subsystem {
 		mLoopMan.addLoop(new loop() {
 		@Override
 		public void onStart() {
-			currentState = systemStates.NEUTRAL;
-			requestedState = systemStates.NEUTRAL;		
+			mCurrentState = systemStates.NEUTRAL;
+			mWantedState = systemStates.NEUTRAL;		
 		}
 		@Override
 		public void onLoop() {
@@ -283,14 +263,12 @@ public class drivetrain extends subsystem {
 				resetGyro();
 			}
 			updateAngle();
-			switch(currentState) {
+			switch(mCurrentState) {
 				case NEUTRAL:
 					checkState();
-					lastState = systemStates.NEUTRAL;
 					break;
 				case DRIVE:
 					crabDrive();
-					lastState = systemStates.DRIVE;
 					checkState();
 					break;
 				default:
