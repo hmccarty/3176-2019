@@ -11,7 +11,8 @@ import edu.wpi.first.wpilibj.Encoder;
 
 public class elevator extends subsystem{
     private static elevator instance = new elevator();
-    private CANSparkMax motor;
+    private CANSparkMax mMotorLeft;
+    private CANSparkMax mMotorRight; 
     private CANEncoder neoEncoder;
     private controller mController = controller.getInstance();
     private double wantedFloor;
@@ -31,8 +32,8 @@ public class elevator extends subsystem{
     private systemStates lastState;
 
     public elevator() {
-        motor = new CANSparkMax(constants.ELEVATORMOTOR, MotorType.kBrushless);
-        neoEncoder = motor.getEncoder();
+        mMotorRight = new CANSparkMax(constants.ELEVATOR_RIGHT, MotorType.kBrushless);
+        mMotorLeft = new CANSparkMax(constants.ELEVATOR_LEFT, MotorType.kBrushless);
     }
 
     public static elevator getInstance() {
@@ -65,7 +66,7 @@ public class elevator extends subsystem{
     }
 
     public void registerLoop() {
-        Loop_Manager.getInstance().addLoop(new Loop()
+        loopmanager.getInstance().addLoop(new loop()
         {
             @Override
             public void onStart() {
@@ -77,7 +78,6 @@ public class elevator extends subsystem{
             public void onLoop() {
                 switch(currentState) {
                     case NEUTRAL:
-                        motor.set(0.0);
                         checkState();
                         lastState = systemStates.NEUTRAL;
                         break;
@@ -115,6 +115,7 @@ public class elevator extends subsystem{
                         
                 }
             }
+            public void onStop(){}
         });
     }
 

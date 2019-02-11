@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import java.util.ArrayList;
 import frc.robot.constants;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.Phoenix.motorcontrol.can.TalonSRX;
 import frc.util.*;
 
 /** 
@@ -28,8 +28,8 @@ public class drivetrain extends subsystem {
 	private coordType mCoordType;
 	private inputType mInputType;
 	
-	public TalonSRX[] mDriveTalons = {new TalonSRX(1), new TalonSRX(2), new TalonSRX(3), new TalonSRX(4)}; 
-	public TalonSRX[] mGearTalons = {new TalonSRX(11), new TalonSRX(22), new TalonSRX(33), new TalonSRX(44)};
+	public TalonSRX[] mDriveTalons = {new TalonSRX(constants.DRIVE_ONE), new TalonSRX(constants.DRIVE_TWO), new TalonSRX(constants.DRIVE_THREE), new TalonSRX(constants.DRIVE_FOUR)}; 
+	public TalonSRX[] mGearTalons = {new TalonSRX(constants.STEER_ONE), new TalonSRX(constants.STEER_TWO), new TalonSRX(constants.STEER_THREE), new TalonSRX(constants.STEER_FOUR)};
 	
 	private double kLength;
 	private double kWidth;
