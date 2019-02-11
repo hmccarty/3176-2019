@@ -25,16 +25,24 @@ public class controller {
         }
     }
 
+    /***********************\
+	|* Drivetrain Controls *|
+	\***********************/
+
     public boolean getGyroReset(){
         return thrustStick.getRawButton(2);
     }
 
-    public boolean getSlowRobotCentric(){
+    public boolean RobotCentric(){
         return thrustStick.getRawButton(3);
     }
 
-    public boolean getSlowFieldCentric(){
-        return thrustStick.getRawButton(4);
+    public boolean Boosted(){
+        return thrustStick.getRawButton(1);
+    }
+
+    public boolean TrackTarget(){
+        return yawStick.getRawButton(1);
     }
 
     public boolean defenseEnabled(){
@@ -57,9 +65,9 @@ public class controller {
         }
     }
 
-    public double getRotation(){
+    public double getSpin(){
         if(Math.abs(yawStick.getX()) > 0.05){
-            return -yawStick.getX()/6;
+            return yawStick.getX()*0.2;
         } else {
             return 0; 
         }

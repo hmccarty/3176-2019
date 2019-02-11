@@ -3,7 +3,6 @@ package frc.subsystem;
 import com.kauailabs.navx.frc.AHRS; 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Timer;
 import java.util.ArrayList;
 import frc.robot.constants;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -50,9 +49,7 @@ public class drivetrain extends subsystem {
 		NEUTRAL,
 		HOMING,
 		DRIVE,
-		PARK,
-		VISION, 
-		AUTON
+		VISION
 	}
 	
 	public enum coordType{
@@ -74,6 +71,10 @@ public class drivetrain extends subsystem {
 		mUpperLeft = new swervepod(1, mDriveTalons[1], mGearTalons[1]);
 		mLowerLeft = new swervepod(2, mDriveTalons[2], mGearTalons[2]);
 		mLowerRight = new swervepod(3, mDriveTalons[3], mGearTalons[3]);
+
+		//set drive type
+		mCoordType = coordType.FIELDCENTRIC;
+		mInputType = inputType.PERCENTPOWER;
 		
 		//Instantiate array list
 		mPods = new ArrayList<swervepod>();
@@ -113,6 +114,18 @@ public class drivetrain extends subsystem {
 	 * Handles each swerve command and communicates with the swervemPods
 	 */
 	private void crabDrive() {
+		if(mCoordType == coordType.FIELDCENTRIC){
+			final double temp = cForwardCommand * Math.sin(cAngle) + cStrafeCommand * Math.cos(cAngle);
+		    cStrafeCommand = (-cForwardCommand * Math.cos(cAngle) + cStrafeCommand * Math.sin(cAngle));
+		    cForwardCommand = temp;
+		}
+
+		if(mInputType == inputType.PERCENTPOWER){
+			cForwardCommand *= kMaxSpeed;
+			cStrafeCommand *= kMaxSpeed;
+			cSpinCommand *= kMaxRotation;
+		}
+
 		//Create arrays with the speed and angle of each pod
 		double[] podDrive = new double[4];
 		double[] podGear = new double[4];
@@ -161,60 +174,20 @@ public class drivetrain extends subsystem {
 			}
 		}
 	}
-	
-	/**
-	 * Determines the settings of swerve drive, and the current commands
-	 * @param cForwardCommand the magnitude on the Y-Axis 
-	 * @param cStrafeCommand the magnitude on the X-Axis 
-	 * @param cSpinCommand the magnitude on the Omega Axis 
-	 * @param mCoordType determines whether swerve is in Robot-Centric or Field-Centric
-	 * @param mInputType determines whether commanding values are in percent power (-1 to 1) or their intended velocity values (in ft/s)
-	 */
-	public void swerve(double cForwardCommand, double cStrafeCommand, double cSpinCommand, coordType mCoordType, inputType mInputType) {
-		this.mCoordType = mCoordType;
-		this.mInputType = mInputType;	
-		if(mCoordType == coordType.ROBOTCENTRIC) {
-			this.cForwardCommand = cForwardCommand;
-			this.cStrafeCommand = cStrafeCommand;
-			this.cSpinCommand = -cSpinCommand;
-		} 
-		else {
-			final double temp = cForwardCommand * Math.sin(cAngle) + cStrafeCommand * Math.cos(cAngle);
-		    this.cStrafeCommand = (-cForwardCommand * Math.cos(cAngle) + cStrafeCommand * Math.sin(cAngle));
-		    this.cForwardCommand = temp;
-		    this.cSpinCommand = -cSpinCommand;
-		}
-		if(mInputType == inputType.PERCENTPOWER) {
-			this.cForwardCommand *= kMaxSpeed;
-			this.cStrafeCommand *= kMaxSpeed;
-			this.cSpinCommand *= kMaxRotation;
-		}
+
+	private void setCoordType(coordType mCoordType){
+		this.mCoordType = mCoordType; 
+	}
+
+	private void setInputType(inputType mInputType){
+		this.mInputType = mInputType; 
 	}
 	
-	public void swerve(double cForwardCommand, double cStrafeCommand, double cSpinCommand) {
-		if(mCoordType == coordType.ROBOTCENTRIC) {
-			this.cForwardCommand = cForwardCommand;
-			this.cStrafeCommand = cStrafeCommand;
-			this.cSpinCommand = -cSpinCommand;
-		}
-		else {
-			final double temp = cForwardCommand * Math.sin(cAngle) + cStrafeCommand * Math.cos(cAngle);
-		    this.cStrafeCommand = (-cForwardCommand * Math.cos(cAngle) + cStrafeCommand * Math.sin(cAngle));
-		    this.cForwardCommand = temp;
-		    this.cSpinCommand = -cSpinCommand;
-		}
-		if(mInputType == inputType.PERCENTPOWER) {
-			this.cForwardCommand *= kMaxSpeed;
-			this.cStrafeCommand *= kMaxSpeed;
-			this.cSpinCommand *= kMaxRotation;
-		}
-	}
-	
-	public void setSystemState(systemStates wanted) {
+	public void setWantedState(systemStates wanted) {
 		mWantedState = wanted;
 	}
 	
-	public void checkState() {
+	private void checkState() {
 		if(mWantedState!=mCurrentState) {
 			mCurrentState = mWantedState;
 		}
@@ -239,7 +212,7 @@ public class drivetrain extends subsystem {
 		cAngle = ((((mGyro.getAngle()+90)* Math.PI/180.0)) % (2*Math.PI));
 	}
 	
-	public void resetGyro() {mGyro.reset();}
+	private void resetGyro() {mGyro.reset();}
 	
 	@Override public void zeroAllSensors() {
 		for(int idx = 0; idx < 4; idx++)
@@ -268,9 +241,27 @@ public class drivetrain extends subsystem {
 					checkState();
 					break;
 				case DRIVE:
+					cForwardCommand = mController.getForward();
+					cStrafeCommand = mController.getStrafe();
+					cSpinCommand = mController.getSpin();
+
+					if (!mController.Boosted()){
+						cForwardCommand *= constants.MAXSLOWPERCENTSPEED;
+						cStrafeCommand *= constants.MAXSLOWPERCENTSPEED;
+						cSpinCommand *= constants.MAXSLOWPERCENTSPEED;
+					}
+
+					if(mController.RobotCentric()){
+						setCoordType(coordType.ROBOTCENTRIC);
+					} else {
+						setCoordType(coordType.FIELDCENTRIC);
+					}
+					setInputType(inputType.PERCENTPOWER);
+
 					crabDrive();
 					checkState();
 					break;
+				case VISION:
 				default:
 					break;			
 				}

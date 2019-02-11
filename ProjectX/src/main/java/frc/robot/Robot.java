@@ -57,38 +57,15 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		myLoops.runLoops();
-    mDriveTrain.setSystemState(drivetrain.systemStates.DRIVE);
-
-		/**
-		 * Drive Train States
-		 */
-		if(mController.getSlowFieldCentric() == true)
-		{
-			mDriveTrain.swerve(mController.getForward(), 
-					mController.getStrafe(), 
-					mController.getRotation()* 1.15, 
-					drivetrain.driveCoords.FIELDCENTRIC, 
-					drivetrain.driveType.PERCENTPOWER);
-		}
-		else if(mController.getSlowRobotCentric() == true)
-		{
-			mDriveTrain.swerve(mController.getForward() * constants.MAXSLOWPERCENTSPEED, 
-					mController.getStrafe() * constants.MAXSLOWPERCENTSPEED, 
-					mController.getRotation() * 1.15 * constants.MAXSLOWPERCENTSPEED, 
-					drivetrain.driveCoords.ROBOTCENTRIC, 
-					drivetrain.driveType.PERCENTPOWER);
-		}
-		else
-		{
-			mDriveTrain.swerve(mController.getForward() * constants.MAXSLOWPERCENTSPEED,
-					mController.getStrafe() * constants.MAXSLOWPERCENTSPEED, 
-					mController.getRotation() * 1.15 * constants.MAXSLOWPERCENTSPEED, 
-					drivetrain.driveCoords.FIELDCENTRIC, 
-					drivetrain.driveType.PERCENTPOWER);
-		}
 		
-		
-		
+		/*********************\
+		|* Drivetrain States *|
+		\*********************/
+		if(mController.TrackTarget()){
+			mDriveTrain.setWantedState(drivetrain.systemStates.VISION);
+		} else {
+			mDriveTrain.setWantedState(drivetrain.systemStates.DRIVE);
+		}		
 	}
 	
 	@Override
