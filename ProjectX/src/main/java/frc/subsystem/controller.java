@@ -37,6 +37,10 @@ public class controller {
         return thrustStick.getRawButton(4);
     }
 
+    public boolean defenseEnabled(){
+        return thrustStick.getRawButton(5);
+    }
+
     public double getForward(){
         if(Math.abs(thrustStick.getY()) > 0.05){
             return -thrustStick.getY();
