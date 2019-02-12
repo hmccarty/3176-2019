@@ -24,7 +24,11 @@ public class crossbow {
 
     public void out() {
         dSol.set(DoubleSolenoid.Value.kReverse);
-        dSol2.set(DoubleSolenoid.Value.kReverse);
+    }
+    
+    public void launch() {
+        dSol.set(DoubleSolenoid.Value.kForward);
+        dSol2.set(DoubleSolenoid.Value.kForward);
     }
 
     public void neutral() {
