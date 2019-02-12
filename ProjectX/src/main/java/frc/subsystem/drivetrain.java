@@ -131,10 +131,10 @@ public class drivetrain extends subsystem {
 		double[] podGear = new double[4];
 		
 		//Calculating components
-		double a = cStrafeCommand + cSpinCommand * kLength/2; 
-		double b = cStrafeCommand - cSpinCommand * kLength/2; 
-		double c = cForwardCommand - cSpinCommand * kWidth/2; 
-		double d = cForwardCommand + cSpinCommand * kWidth/2; 
+		double a = cStrafeCommand + cSpinCommand * getRadius("A"); 
+		double b = cStrafeCommand - cSpinCommand * getRadius("B"); 
+		double c = cForwardCommand - cSpinCommand * getRadius("C"); 
+		double d = cForwardCommand + cSpinCommand * getRadius("D"); 
 		
 		//Calculating the speed and angle of each pod
 		podDrive[0] = Math.sqrt(Math.pow(b, 2)+ Math.pow(c, 2));
@@ -166,9 +166,7 @@ public class drivetrain extends subsystem {
 			mPods.get(1).setPod(0.0, 1.0*Math.PI/4.0);
 			mPods.get(2).setPod(0.0, 3.0*Math.PI/4.0);
 			mPods.get(3).setPod(0.0, -3.0* Math.PI/4.0);
-		}
-		else {
-			//Sending each pod their respective commands
+		} else { 			//Sending each pod their respective commands
 			for(int idx = 0; idx < mPods.size(); idx++) {
 				mPods.get(idx).setPod(podDrive[idx],podGear[idx]); 
 			}
@@ -210,6 +208,24 @@ public class drivetrain extends subsystem {
 	private void updateAngle(){
 		//-pi to pi 0 = straight ahead
 		cAngle = ((((mGyro.getAngle()+90)* Math.PI/180.0)) % (2*Math.PI));
+	}
+
+	private double getRadius(String component){
+		if(mController.frontRightRotation() || mController.frontLeftRotation()){
+			if(component.equals("A")) {return(kLength);}
+			if(component.equals("B")) {return(0.0);}
+			if(mController.frontRightRotation()){
+				if(component.equals("C")) {return(0.0);}
+				if(component.equals("D")) {return(kWidth);}
+			} else {
+				if(component.equals("C")) {return(kWidth);}
+				if(component.equals("D")) {return(0.0);}
+			}
+		} else {
+			if(component.equals("A") || component.equals("B")) {return(kLength/2.0);}
+			else {return(kWidth/2.0);}
+		}
+		return 0; 
 	}
 	
 	private void resetGyro() {mGyro.reset();}

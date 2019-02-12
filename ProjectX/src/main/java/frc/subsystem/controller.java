@@ -37,16 +37,24 @@ public class controller {
         return thrustStick.getRawButton(3);
     }
 
+    public boolean frontLeftRotation(){
+        return thrustStick.getRawButton(5);
+    }
+
+    public boolean frontRightRotation(){
+        return thrustStick.getRawButton(6);
+    }
+
     public boolean Boosted(){
         return thrustStick.getRawButton(1);
     }
 
     public boolean TrackTarget(){
-        return yawStick.getRawButton(1);
+        return false;//yawStick.getRawButton(1);
     }
 
     public boolean defenseEnabled(){
-        return thrustStick.getRawButton(5);
+        return thrustStick.getRawButton(4);
     }
 
     public double getForward(){
