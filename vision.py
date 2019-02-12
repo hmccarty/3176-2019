@@ -110,14 +110,9 @@ def readConfig():
 
     return True
 
-def degPerPixel(imageWidth):
-    return imageWidth/61
-	
-#Angles in radians
-
 #image size ratioed to 16:9
-image_width = 160
-image_height = 120
+kImageWidth = 160
+kImageHeight = 120
 
 #Lifecam 3000 from datasheet
 #Datasheet: https://dl2jx7zfbtwvr.cloudfront.net/specsheets/WEBC1010.pdf
@@ -134,9 +129,9 @@ horizontalView = math.atan(math.tan(diagonalView/2) * (horizontalAspect / diagon
 verticalView = math.atan(math.tan(diagonalView/2) * (verticalAspect / diagonalAspect)) * 2
 
 #Focal Length calculations: https://docs.google.com/presentation/d/1ediRsI-oR3-kwawFJZ34_ZTlQS2SDBLjZasjzZ-eXbQ/pub?start=false&loop=false&slide=id.g12c083cffa_0_165
-H_FOCAL_LENGTH = image_width / (2*math.tan((horizontalView/2)))
-V_FOCAL_LENGTH = image_height / (2*math.tan((verticalView/2)))
-	
+H_FOCAL_LENGTH = kImageWidth / (2*math.tan((horizontalView/2)))
+V_FOCAL_LENGTH = kImageHeight / (2*math.tan((verticalView/2)))
+
 def translateRotation(rotation, width, height):
     if (width < height):
         rotation = -1 * (rotation - 90)
@@ -177,16 +172,22 @@ def getEllipseRotation(image, cnt):
         # Maps rotation to (-90 to 90). Makes it easier to tell direction of slant
         rotation = translateRotation(rotation, width, height)
         return rotation
-		
+
 def calculateYaw(pixelX, centerX, hFocalLength):
     yaw = math.degrees(math.atan((pixelX - centerX) / hFocalLength))
     return round(yaw)
-	
+
 def calculatePitch(pixelY, centerY, vFocalLength):
     pitch = math.degrees(math.atan((pixelY - centerY) / vFocalLength))
     # Just stopped working have to do this:
     pitch *= -1
     return round(pitch)
+
+def calibrateFocalLength(kTargetWidth, kDistance, targetPixelWidth):
+    return (targetPixelWidth * kDistance) / kTargetWidth
+
+def calculateDistance(kTargetWidth, kFocalLength, targetPixelWidth):
+    return (kTargetWidth*kFocalLength)/targetPixelWidth
 
 
 #This should be a class lowkey but it'll work
@@ -314,7 +315,7 @@ if __name__ == "__main__":
     #This will send the process frames to the Driver station
     #allowing the us to see what OpenCV sees
     outputStream = cs.putVideo("Processed Frames", 160,120)
-	
+
     #buffer to store img data
     img = np.zeros(shape=(640,480,3), dtype=np.uint8)
     # loop forever
