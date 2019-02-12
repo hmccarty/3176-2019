@@ -66,11 +66,7 @@ public class CargoIntake {
             actuator.set(0);
             encoder.reset();
         } else {
-<<<<<<< HEAD
-            actuator.set(intakeControl.returnOutput(-1));
-=======
             loopControl(constants.CARGO_INTAKE_HEIGHT);
->>>>>>> c985680ab9caf8671d3fbba1493f3c72ce8a2285
         }
     }
 
