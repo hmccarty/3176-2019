@@ -26,10 +26,10 @@ public class hatchintake {
     }
     
     public hatchintake() {
-        isDown = new DigitalInput(constants.HATCH_INTAKE_DOWN);
-        isUp = new DigitalInput(constants.HATCH_INTAKE_UP);
-        sensor = new DigitalInput(constants.HATCH_IRSENSOR);
-        mRoller = new Talon(constants.HATCH_INTAKE_ROLLER);
+        // isDown = new DigitalInput(constants.HATCH_INTAKE_DOWN);
+        // isUp = new DigitalInput(constants.HATCH_INTAKE_UP);
+        // sensor = new DigitalInput(constants.HATCH_IRSENSOR);
+        // mRoller = new Talon(constants.HATCH_INTAKE_ROLLER);
         stick = new Joystick(0);
         dSol = new DoubleSolenoid(1, 2);
         timer = new Timer();

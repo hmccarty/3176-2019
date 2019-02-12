@@ -116,16 +116,16 @@ def degPerPixel(imageWidth):
 #Angles in radians
 
 #image size ratioed to 16:9
-image_width = 256
-image_height = 144
+image_width = 160
+image_height = 120
 
 #Lifecam 3000 from datasheet
 #Datasheet: https://dl2jx7zfbtwvr.cloudfront.net/specsheets/WEBC1010.pdf
 diagonalView = math.radians(68.5)
 
 #16:9 aspect ratio
-horizontalAspect = 16
-verticalAspect = 9
+horizontalAspect = 4
+verticalAspect = 3
 
 #Reasons for using diagonal aspect is to calculate horizontal field of view.
 diagonalAspect = math.hypot(horizontalAspect, verticalAspect)
@@ -181,6 +181,12 @@ def getEllipseRotation(image, cnt):
 def calculateYaw(pixelX, centerX, hFocalLength):
     yaw = math.degrees(math.atan((pixelX - centerX) / hFocalLength))
     return round(yaw)
+	
+def calculatePitch(pixelY, centerY, vFocalLength):
+    pitch = math.degrees(math.atan((pixelY - centerY) / vFocalLength))
+    # Just stopped working have to do this:
+    pitch *= -1
+    return round(pitch)
 
 
 #This should be a class lowkey but it'll work
@@ -239,7 +245,9 @@ def TrackTheTarget(frame, sd):
             ycent1 = int(M1['m01']/M1['m00'])
             centerOfTarget = math.floor((xcent + xcent1) / 2)
             yawToTarget = calculateYaw(centerOfTarget, 128, H_FOCAL_LENGTH)
+            pitch = calculatePitch(ycent, 90, V_FOCAL_LENGTH)
             print(yawToTarget)
+            sd.putNumber("angle" , yawToTarget)
         except:
             print("Only one block detected")
         rotation = getEllipseRotation(frame, blocks[0])
@@ -293,8 +301,8 @@ if __name__ == "__main__":
     cs.enableLogging()
     Camera = UsbCamera('RPi Camero 0', 0)
     Camera2 = UsbCamera('RPi Camero 1', 1)
-    Camera.setResolution(240,180)
-    Camera2.setResolution(240,180)
+    Camera.setResolution(160,120)
+    Camera2.setResolution(160,120)
     cs.addCamera(Camera)
     cs.addCamera(Camera2)
 

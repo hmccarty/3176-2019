@@ -17,8 +17,8 @@ public class cargointake {
     private Talon actuator;
     private Talon roller; 
     private Timer timer; 
-    private int stowedHeight = constants.CARGO_STOWED_HEIGHT; 
-    private int intakeHeight = constants.CARGO_INTAKE_HEIGHT;
+    //private int stowedHeight = constants.CARGO_STOWED_HEIGHT; 
+    //private int intakeHeight = constants.CARGO_INTAKE_HEIGHT;
 
     public cargointake(){
         cargoPID = new pid(0,0,0);
@@ -46,12 +46,12 @@ public class cargointake {
             encoder.reset();
         }
         else {
-            closedLoopControl(intakeHeight);
+            //closedLoopControl(intakeHeight);
         }
     }
 
     public void stow(){
-        closedLoopControl(stowedHeight);
+        //closedLoopControl(stowedHeight);
     }
 
     public void run(double speed) {

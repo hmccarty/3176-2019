@@ -9,7 +9,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Encoder;
 import frc.subsystem.controller;
 import frc.robot.constants;
-import frc.util.pid;
+import frc.util.*;
 import frc.util.trajectory;
 
 public class elevator {
@@ -35,12 +35,12 @@ public class elevator {
     private systemStates lastState;
 
     public elevator() {
-        motor = new CANSparkMax(constants.ELEVATORMOTOR, MotorType.kBrushless);
+        /*motor = new CANSparkMax(constants.ELEVATORMOTOR, MotorType.kBrushless);
         neoEncoder = motor.getEncoder();
         elevatorControlLoop = new pid(constants.ELEVATOR_KP,
                                             constants.ELEVATOR_KI,
                                             constants.ELEVATOR_KD,
-                                            1);
+                                            1);*/
     }
 
     public static elevator getInstance() {
@@ -75,7 +75,7 @@ public class elevator {
     }
 
     public void registerLoop() {
-        Loop_Manager.getInstance().addLoop(new Loop()
+        loopmanager.getInstance().addLoop(new loop()
         {
             @Override
             public void onStart() {
@@ -92,40 +92,41 @@ public class elevator {
                         lastState = systemStates.NEUTRAL;
                         break;
                     case OPEN_LOOP:
-                        motor.set(joystick.elevatorPosition());
+                        //motor.set(joystick.elevatorPosition());
                         checkState();
                         lastState = systemStates.OPEN_LOOP;
                         break;
                     case LEVEL_FOLLOW:
                         checkState();
-                        if(Math.abs(wantedFloor - getHeight()) > /*some distance away before switching to PID control*/){
-                            currentState = systemStates.MOTION_PROFILE;
-                        } else {
-                            setFloor(wantedFloor);
-                        }
+                        // if(Math.abs(wantedFloor - getHeight()) > /*some distance away before switching to PID control*/){
+                        //     currentState = systemStates.MOTION_PROFILE;
+                        // } else {
+                        //     setFloor(wantedFloor);
+                        // }
                         lastState = systemStates.LEVEL_FOLLOW;
                         break;
                     case MOTION_PROFILE:
-                        if(lastState != systemStates.MOTION_PROFILE) {
-                            if (getHeight()<wantedFloor){
-                                motionProfileTrajectory = new trajectory(/*velocity and acceleration to be determined*/);
-                            } else {
-                                motionProfileTrajectory = new trajectory(/*velocity and acceleration TBD*/);
-                            }
-                            motionProfileTrajectory.addWaypoint(new Waypoint(getHeight(),0.0,0.0));
-							motionProfileTrajectory.addWaypoint(new Waypoint(wantedFloor,0.0,0.0));
-							motionProfileTrajectory.calculateTrajectory();
-							motionProfileStartTime = Timer.getFPGATimestamp();
-                        }   else if(Timer.getFPGATimestamp()-motionProfileStartTime<motionProfileTrajectory.getTimeToComplete()) {
-							setFloor(motionProfileTrajectory.getPosition(Timer.getFPGATimestamp()-motionProfileStartTime));
-						} else {
-							currentState = systemStates.POSITION_FOLLOW;
-						}
-						lastState = systemStates.MOTION_PROFILE;
-						break;
+                        // if(lastState != systemStates.MOTION_PROFILE) {
+                        //     if (getHeight()<wantedFloor){
+                        //         motionProfileTrajectory = new trajectory(/*velocity and acceleration to be determined*/);
+                        //     } else {
+                        //         motionProfileTrajectory = new trajectory(/*velocity and acceleration TBD*/);
+                        //     }
+                        //     motionProfileTrajectory.addWaypoint(new Waypoint(getHeight(),0.0,0.0));
+						// 	motionProfileTrajectory.addWaypoint(new Waypoint(wantedFloor,0.0,0.0));
+						// 	motionProfileTrajectory.calculateTrajectory();
+						// 	motionProfileStartTime = Timer.getFPGATimestamp();
+                        // }   else if(Timer.getFPGATimestamp()-motionProfileStartTime<motionProfileTrajectory.getTimeToComplete()) {
+						// 	setFloor(motionProfileTrajectory.getPosition(Timer.getFPGATimestamp()-motionProfileStartTime));
+						// } else {
+						// 	currentState = systemStates.POSITION_FOLLOW;
+						// }
+						// lastState = systemStates.MOTION_PROFILE;
+						// break;
                         
                 }
             }
+            public void onStop(){}
         });
     }
 }

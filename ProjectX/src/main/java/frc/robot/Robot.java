@@ -36,6 +36,7 @@ public class Robot extends IterativeRobot {
 	UsbCamera camera1;
 	UsbCamera camera2;
 	private static NetworkTableEntry bRightY;
+	private static NetworkTableEntry angle; 
 	@Override
 	public void robotInit() {
 		mDriveTrain.registerLoop(); 
@@ -50,10 +51,13 @@ public class Robot extends IterativeRobot {
 		bLeftY = table.getEntry("Point 2 Y Coord");
 		bRightX = table.getEntry("Point 3 X Coord");
 		bRightY = table.getEntry("Point 3 Y Coord");
+		angle = table.getEntry("angle");
 		isIntakeOpenLoop = false;
 		isElevatorOpenLoop = false;
 	}
-	
+	public static double getAngle(){
+		return angle.getDouble(-1); 
+	}
 	@Override
 	public void teleopPeriodic() {
 		myLoops.runLoops();

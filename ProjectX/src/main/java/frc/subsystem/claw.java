@@ -1,18 +1,18 @@
-package frc.robot;
+package frc.subsystem;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
-public class CargoClaw {
-    private static CargoClaw instance = new CargoClaw(2,3);
+public class claw {
+    private static claw instance = new claw(2,3);
     Value dsolval;
     static DoubleSolenoid dsol;
     
-    public CargoClaw(int sol1, int sol2){
+    public claw(int sol1, int sol2){
         dsol = new DoubleSolenoid(sol1,sol2);
     }
 
-    public static CargoClaw getInstance(){
+    public static claw getInstance(){
         return instance; 
     }
     public void forward() {
