@@ -1,6 +1,5 @@
 package frc.subsystem; 
 
-import frc.util.subsystem;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class crossbow {
@@ -14,6 +13,10 @@ public class crossbow {
         dSol2 = new DoubleSolenoid(2, 3);
     }
 
+    public static crossbow getInstance() {
+        return instance;
+    }
+
     public void in() {
         dSol.set(DoubleSolenoid.Value.kForward);
         dSol2.set(DoubleSolenoid.Value.kForward);
@@ -24,12 +27,8 @@ public class crossbow {
         dSol2.set(DoubleSolenoid.Value.kReverse);
     }
 
-    public void off() {
+    public void neutral() {
         dSol.set(DoubleSolenoid.Value.kOff);
         dSol2.set(DoubleSolenoid.Value.kOff);
-    }
-    
-    public static crossbow getInstance(){
-        return instance; 
     }
 }

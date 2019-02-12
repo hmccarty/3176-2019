@@ -2,10 +2,10 @@ package frc.subsystem;
 
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants;
+import frc.subsystem.controller;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class hatchintake {
@@ -15,7 +15,6 @@ public class hatchintake {
     private DigitalInput isUp;
     private DigitalInput sensor;
     private Talon mRoller;
-    private Joystick stick;
     private DoubleSolenoid dSol;
     private Timer timer;
     private controller c;
@@ -30,7 +29,6 @@ public class hatchintake {
         isUp = new DigitalInput(constants.HATCH_INTAKE_UP);
         sensor = new DigitalInput(constants.HATCH_IRSENSOR);
         mRoller = new Talon(constants.HATCH_INTAKE_ROLLER);
-        stick = new Joystick(0);
         dSol = new DoubleSolenoid(1, 2);
         timer = new Timer();
         timer.start();
