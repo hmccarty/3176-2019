@@ -22,8 +22,10 @@ public class I2C_Coms {
     }
 
     public int getValue(){
+        toSend[0] = 0;
         int returnValue = -1;
-        sensorHub.readOnly(recieved, 1);
+        sensorHub.transaction(toSend, 1, recieved, 1);
+        //recieved[0] = 5;
         returnValue = recieved[0];
         return returnValue;
     }
