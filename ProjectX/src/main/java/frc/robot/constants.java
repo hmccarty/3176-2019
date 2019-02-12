@@ -1,14 +1,36 @@
 package frc.robot; 
 
 public class constants {
+	/***************\
+	|* Motor Ports *|
+	\***************/
+	public static int DRIVE_ONE = 1;
+	public static int DRIVE_TWO = 2;
+	public static int DRIVE_THREE = 3;
+	public static int DRIVE_FOUR = 4; 
+
+	public static int STEER_ONE = 11;
+	public static int STEER_TWO = 22; 
+	public static int STEER_THREE = 33; 
+	public static int STEER_FOUR = 44; 
+
+	public static int ELEVATOR_LEFT = 5; 
+	public static int ELEVATOR_RIGHT = 9; 
+
+	public static int CARGO_INTAKE_ACTUATOR = 0; 
+	public static int CARGO_INTAKE_ROLLER = 1; 
+	
+	/****************\
+	|* Sensor Ports *|
+	\****************/
+
     public static int CARGO_INTAKE_DOWN = 0; 
     public static int CARGO_INTAKE_UP = 1;
-    public static int CARGO_INTAKE_ACTUATOR = 2; 
-    public static int CARGO_INTAKE_ROLLER = 3; 
 
 	/****************************\
 	|* Driver Station Constants *|
 	\****************************/
+
 	public static int DRIVE_JOYSTICK = 0; 
 	public static int GEAR_JOYSTICK = 1;
 	public static int BUTTON_MONKEY = 2;
@@ -16,6 +38,7 @@ public class constants {
 	/************************\
 	|* Drivetrain Constants *|
 	\************************/
+
 	//Gear Facing Right
 	public static double OFFSETS[] = {9173,5870,1730,5423};
 	public static double OFFSETS_P[] = {268.0,3228.0,1184.0,2160.0};
@@ -29,6 +52,7 @@ public class constants {
 	/***********************\
 	|* Swervepod Constants *|
 	\***********************/
+
 	public static final double SWERVE_kP = 4.5;
 	public static final double SWERVE_kI = 0.0023;
 	public static final double SWERVE_kD = 210.0;
@@ -53,4 +77,9 @@ public class constants {
 	public static final double DRIVE_RAMPRATE = .3;
 	public static final double DRIVEGEARREDUCTION = 30.0/48.0;
 	public static final double DRIVEMAXENCODERSPEED = 10000.0;
+
+	/**********************\
+	|* Elevator Constants *|
+	\**********************/
+
 }

@@ -18,26 +18,58 @@ public class controller {
 
     public boolean getCargoIntake(int version){
         if(version == 0){
-            return buttonMonkey.getRawButtonPressed(0);
+            return buttonMonkey.getRawButtonPressed(1);
         }
         else {
-            return buttonMonkey.getRawButton(0);
+            return buttonMonkey.getRawButton(1);
         }
     }
+
+    /***********************\
+	|* Drivetrain Controls *|
+	\***********************/
 
     public boolean getGyroReset(){
         return thrustStick.getRawButton(2);
     }
 
+    public boolean RobotCentric(){
+        return thrustStick.getRawButton(3);
+    }
+
+    public boolean Boosted(){
+        return thrustStick.getRawButton(1);
+    }
+
+    public boolean TrackTarget(){
+        return yawStick.getRawButton(1);
+    }
+
+    public boolean defenseEnabled(){
+        return thrustStick.getRawButton(5);
+    }
+
     public double getForward(){
-        return thrustStick.getY();
+        if(Math.abs(thrustStick.getY()) > 0.05){
+            return -thrustStick.getY();
+        } else {
+            return 0; 
+        }
     }
 
     public double getStrafe(){
-        return thrustStick.getX();
+        if(Math.abs(thrustStick.getX()) > 0.05){
+            return -thrustStick.getX();
+        } else {
+            return 0; 
+        }
     }
 
-    public double getRotation(){
-        return yawStick.getX();
+    public double getSpin(){
+        if(Math.abs(yawStick.getX()) > 0.05){
+            return yawStick.getX()*0.2;
+        } else {
+            return 0; 
+        }
     }
 }
