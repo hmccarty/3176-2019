@@ -18,7 +18,7 @@ public class Robot extends IterativeRobot {
   }
 
   @Override
-  public void robotPeriodic() {
+  public void robotPeriodic() { 
   }
 
 
@@ -32,7 +32,7 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void teleopPeriodic() {
-    System.out.println(irSensor.i2cBoolean());
+    System.out.println(irSensor.getValue());
   }
 
   @Override
