@@ -24,5 +24,4 @@ public class CargoClaw {
     public void off() {
         dsol.set(DoubleSolenoid.Value.kOff);
     }
-
 }
