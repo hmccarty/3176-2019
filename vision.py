@@ -183,29 +183,29 @@ def calculatePitch(pixelY, centerY, vFocalLength):
     pitch *= -1
     return round(pitch)
 
-def calibrateFocalLength(kTargetWidth, kDistance, targetPixelWidth):
-    return (targetPixelWidth * kDistance) / kTargetWidth
-
 def calculateDistance(kTargetWidth, kFocalLength, targetPixelWidth):
     return (kTargetWidth*kFocalLength)/targetPixelWidth
+
+def determineBlockType(target):
+    corners = [[-1,-1],[-1,-1]]
+    pidx = 0
+    for points in target:
+        cidx = 0
+        if pidx != 0 and pidx != 1:
+            for coords in points:
+                corners[pidx-2][cidx] = coords
+                cidx += 1
+        pidx += 1
+     if corners[0][1] - corners[1][1] < 0:
+          return 'right'
+     else:
+          return 'left'
 
 
 #This should be a class lowkey but it'll work
 def TrackTheTarget(frame, sd):
     TargetLower = (10,25,70)
     TargetUpper = (120,255,255)
-    #try:
-     #   HL = sd.getNumber('HL', 0)
-      #  HU = sd.getNumber('HU', 36)
-       # SL = sd.getNumber('SL', 103)
-        #SU = sd.getNumber('SU', 255)
-        #VL = sd.getNumber('VL', 105)
-        #VU = sd.getNumber('VU', 255)
-        #TargetLower = (HL,SL,VL)
-        #TargetUpper = (HU,SU,VU)
-        #print("HSV lower:%s HSV Upper:%s" % (TargetLower, TargetUpper))
-    #except:
-     #   print("Unable to grab network table values, going to default values")
 
     #Tells Smartdashbord if rpi is receiving frames
     if frame is None:
@@ -229,54 +229,36 @@ def TrackTheTarget(frame, sd):
     center = None
     areas = []
     if len(blocks) > 0:
-        blocks = sorted(blocks, key = cv2.contourArea, reverse = True)[:5] # get largest five contour area
-        #block = max(blocks, key=cv2.contourArea)
+        blocks = sorted(blocks, key = cv2.contourArea, reverse = True)[:3] # get largest five contour area
         target = cv2.minAreaRect(blocks[0])
         box = cv2.boxPoints(target)
         box = np.int0(box)
         M = cv2.moments(blocks[0])
-        xcent = int(M['m10']/M['m00'])
-        ycent = int(M['m01']/M['m00'])
-        try:
-            target1 = cv2.minAreaRect(blocks[1])
-            box1 = cv2.boxPoints(target1)
-            box1 = np.int0(box1)
-            M1 = cv2.moments(blocks[1])
-            xcent1 = int(M1['m10']/M1['m00'])
-            ycent1 = int(M1['m01']/M1['m00'])
-            centerOfTarget = math.floor((xcent + xcent1) / 2)
-            yawToTarget = calculateYaw(centerOfTarget, 128, H_FOCAL_LENGTH)
-            pitch = calculatePitch(ycent, 90, V_FOCAL_LENGTH)
-            print(yawToTarget)
-            sd.putNumber("angle" , yawToTarget)
-        except:
-            print("Only one block detected")
-        rotation = getEllipseRotation(frame, blocks[0])
-        pidx = 0
-        for points in box:
-            cidx = 0
-            if pidx != 0 and pidx != 1:
-                for coords in points:
-                    if cidx == 0:
-                        sd.putNumber("Point " + str(pidx) + " X Coord", coords)
-                        #print(coords)
-                    elif cidx == 1:
-                        sd.putNumber("Point " + str(pidx) + " Y Coord", coords)
-                    cidx += 1
-            pidx += 1
 
-        #if the dectected contour has a radius big enough, we will send it
+       xcent = int(M['m10']/M['m00'])
+       ycent = int(M['m01']/M['m00'])
+
+        try:
+            otherTarget = blocks[1]
+            for block in blocks:
+                otherPointArray = cv2.moments(block)
+                otherXCent = int(otherPointArray['m10']/otherPointArray['m00'])
+                if determineBlockType(box) == 'left' and xcent > otherXCent:
+                    
+                elif determineBlockType(box) == 'right' and xcent < otherXCent:
+
+        rotation = getEllipseRotation(frame, blocks[0])
+
+        if determineBlockType(box) == 'left':
+            sd.putNumber('Center X', xcent+10)
+        else:
+            sd.putNumber('Center X', xcent-10)
 
         cv2.drawContours(img, [box], -1, (125, 0, 125), 3)
         sd.putNumber('Block Area', M['m00'])
         sd.putNumber('Block Center X', xcent)
         sd.putNumber('Block Center Y', ycent)
-        #else:
-            #let the RoboRio Know no target has been detected with -1
-         #   sd.putNumber('Block ' + str(blockIdx) + ' Center X', -1)
-          #  sd.putNumber('Block ' + str(blockIdx) + ' Center Y', -1)
 
-    print("Sent processed frame")
     return frame
 
 

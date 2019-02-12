@@ -1,7 +1,6 @@
 package frc.subsystem; 
 
 import com.kauailabs.navx.frc.AHRS; 
-import frc.robot.Robot;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import java.util.ArrayList;
@@ -18,8 +17,6 @@ public class drivetrain extends subsystem {
 	private controller mController = controller.getInstance(); 
 	private PowerDistributionPanel mPDP = new PowerDistributionPanel(0);
 	private AHRS mGyro;
-
-	private pid angleTrack = new pid(0.01, 0, 0, 1);
 	
 	private ArrayList<swervepod> mPods;
 	
@@ -265,9 +262,6 @@ public class drivetrain extends subsystem {
 					checkState();
 					break;
 				case VISION:
-					cSpinCommand = angleTrack.returnOutput(Robot.getAngle(), 0); 
-					crabDrive();
-					checkState();
 				default:
 					break;			
 				}
