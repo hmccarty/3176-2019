@@ -22,13 +22,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
-  public String Speed;
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  Joystick Joy1 = new Joystick(0);
-  M_I2C i2c = new M_I2C();
+  Joystick joy1 = new Joystick(0);
+  CargoClaw grabber = CargoClaw.getInstance();
 
-  /**
+  /*
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
    */
@@ -91,14 +90,15 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
-   if (Joy1.getX() < 0) {
-    Speed = Double.toString((-1.0 * Joy1.getY()));
-   }
-   else{
-    Speed = Double.toString(Joy1.getY());
-   }
-   i2c.write(Speed);
-
+    if (joy1.getRawButton(2)) {
+      grabber.off();
+    }
+    if (joy1.getRawButton(3)) {
+      grabber.forward();
+    }
+    if (joy1.getRawButton(4)) {
+      grabber.reverse();
+    }
   }
 
   /**

@@ -18,34 +18,12 @@ import time
 import sys
 import numpy as np
 import cv2
+import math
 
 from cscore import CameraServer, VideoSource, CvSource, VideoMode, CvSink, UsbCamera
 from networktables import NetworkTablesInstance
 
-#   JSON format:
-#   {
-#       "team": <team number>,
-#       "ntmode": <"client" or "server", "client" if unspecified>
-#       "cameras": [
-#           {
-#               "name": <camera name>
-#               "path": <path, e.g. "/dev/video0">
-#               "pixel format": <"MJPEG", "YUYV", etc>   // optional
-#               "width": <video mode width>              // optional
-#               "height": <video mode height>            // optional
-#               "fps": <video mode fps>                  // optional
-#               "brightness": <percentage brightness>    // optional
-#               "white balance": <"auto", "hold", value> // optional
-#               "exposure": <"auto", "hold", value>      // optional
-#               "properties": [                          // optional
-#                   {
-#                       "name": <property name>
-#                       "value": <property value>
-#                   }
-#               ]
-#           }
-#       ]
-#   }
+#
 
 configFile = "/boot/frc.json"
 
@@ -54,6 +32,9 @@ class CameraConfig: pass
 team = None
 server = False
 cameraConfigs = []
+yPixPerInch = 0
+xPixPerInch = 0
+distPixPerInch = 0
 
 """Report parse error."""
 def parseError(str):
@@ -129,10 +110,83 @@ def readConfig():
 
     return True
 
+def degPerPixel(imageWidth):
+    return imageWidth/61
+	
+#Angles in radians
+
+#image size ratioed to 16:9
+image_width = 256
+image_height = 144
+
+#Lifecam 3000 from datasheet
+#Datasheet: https://dl2jx7zfbtwvr.cloudfront.net/specsheets/WEBC1010.pdf
+diagonalView = math.radians(68.5)
+
+#16:9 aspect ratio
+horizontalAspect = 16
+verticalAspect = 9
+
+#Reasons for using diagonal aspect is to calculate horizontal field of view.
+diagonalAspect = math.hypot(horizontalAspect, verticalAspect)
+#Calculations: http://vrguy.blogspot.com/2013/04/converting-diagonal-field-of-view-and.html
+horizontalView = math.atan(math.tan(diagonalView/2) * (horizontalAspect / diagonalAspect)) * 2
+verticalView = math.atan(math.tan(diagonalView/2) * (verticalAspect / diagonalAspect)) * 2
+
+#Focal Length calculations: https://docs.google.com/presentation/d/1ediRsI-oR3-kwawFJZ34_ZTlQS2SDBLjZasjzZ-eXbQ/pub?start=false&loop=false&slide=id.g12c083cffa_0_165
+H_FOCAL_LENGTH = image_width / (2*math.tan((horizontalView/2)))
+V_FOCAL_LENGTH = image_height / (2*math.tan((verticalView/2)))
+	
+def translateRotation(rotation, width, height):
+    if (width < height):
+        rotation = -1 * (rotation - 90)
+    if (rotation > 90):
+        rotation = -1 * (rotation - 180)
+    rotation *= -1
+    return round(rotation)
+
+def getEllipseRotation(image, cnt):
+    try:
+        # Gets rotated bounding ellipse of contour
+        ellipse = cv2.fitEllipse(cnt)
+        centerE = ellipse[0]
+        # Gets rotation of ellipse; same as rotation of contour
+        rotation = ellipse[2]
+        # Gets width and height of rotated ellipse
+        widthE = ellipse[1][0]
+        heightE = ellipse[1][1]
+        # Maps rotation to (-90 to 90). Makes it easier to tell direction of slant
+        rotation = translateRotation(rotation, widthE, heightE)
+
+        cv2.ellipse(image, ellipse, (23, 184, 80), 3)
+        return rotation
+    except:
+        # Gets rotated bounding rectangle of contour
+        rect = cv2.minAreaRect(cnt)
+        # Creates box around that rectangle
+        box = cv2.boxPoints(rect)
+        # Not exactly sure
+        box = np.int0(box)
+        # Gets center of rotated rectangle
+        center = rect[0]
+        # Gets rotation of rectangle; same as rotation of contour
+        rotation = rect[2]
+        # Gets width and height of rotated rectangle
+        width = rect[1][0]
+        height = rect[1][1]
+        # Maps rotation to (-90 to 90). Makes it easier to tell direction of slant
+        rotation = translateRotation(rotation, width, height)
+        return rotation
+		
+def calculateYaw(pixelX, centerX, hFocalLength):
+    yaw = math.degrees(math.atan((pixelX - centerX) / hFocalLength))
+    return round(yaw)
+
+
 #This should be a class lowkey but it'll work
 def TrackTheTarget(frame, sd):
-    TargetLower = (40,103,103)
-    TargetUpper = (110,255,255)
+    TargetLower = (10,25,70)
+    TargetUpper = (120,255,255)
     #try:
      #   HL = sd.getNumber('HL', 0)
       #  HU = sd.getNumber('HU', 36)
@@ -166,27 +220,52 @@ def TrackTheTarget(frame, sd):
     #current (x,y) center of the Target
     a, blocks , b = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     center = None
-    blockIdx = 0
-
-    for block in blocks:
-        target = cv2.minAreaRect(block)
+    areas = []
+    if len(blocks) > 0:
+        blocks = sorted(blocks, key = cv2.contourArea, reverse = True)[:5] # get largest five contour area
+        #block = max(blocks, key=cv2.contourArea)
+        target = cv2.minAreaRect(blocks[0])
         box = cv2.boxPoints(target)
         box = np.int0(box)
-
-        M = cv2.moments(block)
+        M = cv2.moments(blocks[0])
         xcent = int(M['m10']/M['m00'])
         ycent = int(M['m01']/M['m00'])
+        try:
+            target1 = cv2.minAreaRect(blocks[1])
+            box1 = cv2.boxPoints(target1)
+            box1 = np.int0(box1)
+            M1 = cv2.moments(blocks[1])
+            xcent1 = int(M1['m10']/M1['m00'])
+            ycent1 = int(M1['m01']/M1['m00'])
+            centerOfTarget = math.floor((xcent + xcent1) / 2)
+            yawToTarget = calculateYaw(centerOfTarget, 128, H_FOCAL_LENGTH)
+            print(yawToTarget)
+        except:
+            print("Only one block detected")
+        rotation = getEllipseRotation(frame, blocks[0])
+        pidx = 0
+        for points in box:
+            cidx = 0
+            if pidx != 0 and pidx != 1:
+                for coords in points:
+                    if cidx == 0:
+                        sd.putNumber("Point " + str(pidx) + " X Coord", coords)
+                        #print(coords)
+                    elif cidx == 1:
+                        sd.putNumber("Point " + str(pidx) + " Y Coord", coords)
+                    cidx += 1
+            pidx += 1
 
         #if the dectected contour has a radius big enough, we will send it
-        if M['m00'] > 10:
-            cv2.drawContours(img, [box], -1, (0, 0, 255), 3)
-            sd.putNumber('Block ' + str(blockIdx) + ' Center X', xcent)
-            sd.putNumber('Block ' + str(blockIdx) + ' Center Y', ycent)
-        else:
+
+        cv2.drawContours(img, [box], -1, (125, 0, 125), 3)
+        sd.putNumber('Block Area', M['m00'])
+        sd.putNumber('Block Center X', xcent)
+        sd.putNumber('Block Center Y', ycent)
+        #else:
             #let the RoboRio Know no target has been detected with -1
-            sd.putNumber('Block ' + str(blockIdx) + ' Center X', -1)
-            sd.putNumber('Block ' + str(blockIdx) + ' Center Y', -1)
-        blockIdx = blockIdx + 1
+         #   sd.putNumber('Block ' + str(blockIdx) + ' Center X', -1)
+          #  sd.putNumber('Block ' + str(blockIdx) + ' Center Y', -1)
 
     print("Sent processed frame")
     return frame
@@ -213,8 +292,11 @@ if __name__ == "__main__":
     cs = CameraServer.getInstance()
     cs.enableLogging()
     Camera = UsbCamera('RPi Camero 0', 0)
-    Camera.setResolution(160,120)
+    Camera2 = UsbCamera('RPi Camero 1', 1)
+    Camera.setResolution(240,180)
+    Camera2.setResolution(240,180)
     cs.addCamera(Camera)
+    cs.addCamera(Camera2)
 
     print("connected")
 
@@ -224,12 +306,13 @@ if __name__ == "__main__":
     #This will send the process frames to the Driver station
     #allowing the us to see what OpenCV sees
     outputStream = cs.putVideo("Processed Frames", 160,120)
-
+	
     #buffer to store img data
-    img = np.zeros(shape=(160,120,3), dtype=np.uint8)
+    img = np.zeros(shape=(640,480,3), dtype=np.uint8)
     # loop forever
     while True:
-        #Quick little FYI, This will throw a Unicode Decode Error first time around
+        start = time.time()
+        #Quick little FYI, This ll throw a Unicode Decode Error first time around
         #Something about a invalid start byte. This is fine, the Program will continue
         # and after a few loops and should start grabing frames from the camera
         GotFrame, img = CvSink.grabFrame(img)
@@ -237,5 +320,8 @@ if __name__ == "__main__":
             outputStream.notifyError(CvSink.getError())
             continue
         img = TrackTheTarget(img, SmartDashboardValues)
+        end = time.time()
         #print(img)
         outputStream.putFrame(img)
+
+        #print(end-start)

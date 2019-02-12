@@ -30,7 +30,7 @@ public class Robot extends IterativeRobot {
 	private Loop_Manager myLoops = Loop_Manager.getInstance();
 	private Drivetrain driveTrain = Drivetrain.getInstance(); 
 	private Controller controller = Controller.getInstance();
-	private M_I2C pixy = new M_I2C();
+	private M_I2C i2c = new M_I2C();
 	// private LED led = LED.getInstance();
 	// private Elevator elevator = Elevator.getInstance();
 	// private Intake intake = Intake.getInstance();
@@ -231,7 +231,7 @@ public class Robot extends IterativeRobot {
 		// // 	elevator.setWantedFloor(elevator.getHeight()+(controller.elevatorPositionJoystick()*7000.0));
 		// // 	}
 		// // }
-		System.out.println(pixy.getPixy());
+		i2c.write(String(controller.getForward()));
 		
 	}
 	

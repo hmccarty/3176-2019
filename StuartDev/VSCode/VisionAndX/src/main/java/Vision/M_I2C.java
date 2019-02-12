@@ -28,7 +28,7 @@ public class M_I2C {
 				WriteData[i] = (byte) CharArray[i];//adds the char elements to the byte array 
 			}
 			Wire.transaction(WriteData, WriteData.length, null, 0);//sends each byte to arduino
-			
+			System.out.println(input);
 	}
 	
 	public PixyPacket[] getPixy(){//reads the data from arduino and saves it
