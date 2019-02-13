@@ -184,7 +184,7 @@ def calculatePitch(pixelY, centerY, vFocalLength):
     return round(pitch)
 
 def calculateDistance(kTargetWidth, kFocalLength, targetPixelWidth):
-    return (kTargetWidth*kFocalLength)/targetPixelWidth
+    return (kTargetWidth*174)/targetPixelWidth
 
 def determineBlockType(target):
     corners = [[-1,-1],[-1,-1]]
@@ -196,10 +196,10 @@ def determineBlockType(target):
                 corners[pidx-2][cidx] = coords
                 cidx += 1
         pidx += 1
-     if corners[0][1] - corners[1][1] < 0:
-          return 'right'
-     else:
-          return 'left'
+    if corners[0][1] - corners[1][1] < 0:
+        return 'right'
+    else:
+        return 'left'
 
 
 #This should be a class lowkey but it'll work
@@ -235,18 +235,21 @@ def TrackTheTarget(frame, sd):
         box = np.int0(box)
         M = cv2.moments(blocks[0])
 
-       xcent = int(M['m10']/M['m00'])
-       ycent = int(M['m01']/M['m00'])
-
+        xcent = int(M['m10']/M['m00'])
+        ycent = int(M['m01']/M['m00'])
+        width = min(target[1][0], target[1][1])
+        print("Width: " + str(target[1][0]) + " Height: " + str(target[1][1]))
+        print("Distance: " + str(calculateDistance(2, H_FOCAL_LENGTH, width))) 
         try:
             otherTarget = blocks[1]
             for block in blocks:
                 otherPointArray = cv2.moments(block)
                 otherXCent = int(otherPointArray['m10']/otherPointArray['m00'])
-                if determineBlockType(box) == 'left' and xcent > otherXCent:
+                #if determineBlockType(box) == 'left' and xcent > otherXCent:
                     
-                elif determineBlockType(box) == 'right' and xcent < otherXCent:
-
+                #elif determineBlockType(box) == 'right' and xcent < otherXCent:
+        except:
+            print('Only one block detected') 
         rotation = getEllipseRotation(frame, blocks[0])
 
         if determineBlockType(box) == 'left':
