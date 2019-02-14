@@ -31,12 +31,13 @@ public class Robot extends IterativeRobot {
 	private static NetworkTableEntry x;
 	private static NetworkTableEntry area;
 	private static NetworkTableEntry bLeftX;
-	private static NetworkTableEntry bRightX;
+	private static NetworkTableEntry X;
 	private static NetworkTableEntry bLeftY;
 	UsbCamera camera1;
 	UsbCamera camera2;
 	private static NetworkTableEntry bRightY;
 	private static NetworkTableEntry angle; 
+	private static NetworkTableEntry distance; 
 	@Override
 	public void robotInit() {
 		mDriveTrain.registerLoop(); 
@@ -45,19 +46,18 @@ public class Robot extends IterativeRobot {
 		
 		NetworkTableInstance inst = NetworkTableInstance.getDefault();
 		NetworkTable table = inst.getTable("SmartDashboard");
-		x = table.getEntry("Block Center X");
+		//x = table.getEntry("Block Center X");
 		area = table.getEntry("Block Area");
 		bLeftX = table.getEntry("Point 2 X Coord");
 		bLeftY = table.getEntry("Point 2 Y Coord");
-		bRightX = table.getEntry("Point 3 X Coord");
+		X = table.getEntry("X");
 		bRightY = table.getEntry("Point 3 Y Coord");
-		angle = table.getEntry("angle");
+		angle = table.getEntry("Angle");
+		distance = table.getEntry("distance");
 		isIntakeOpenLoop = false;
 		isElevatorOpenLoop = false;
 	}
-	public static double getAngle(){
-		return angle.getDouble(-1); 
-	}
+
 	@Override
 	public void teleopPeriodic() {
 		myLoops.runLoops();
@@ -71,7 +71,19 @@ public class Robot extends IterativeRobot {
 			mDriveTrain.setWantedState(drivetrain.systemStates.DRIVE);
 		}		
 	}
+
+	public static double getDistance(){
+		return distance.getDouble(-1.0);
+	}
+
+	public static double getAngle(){
+		return angle.getDouble(0);
+	}
 	
+	public static double getX(){
+		return X.getDouble(0);
+	}
+
 	@Override
 	public void testPeriodic() { 
 	}

@@ -186,6 +186,12 @@ def calculatePitch(pixelY, centerY, vFocalLength):
 def calculateDistance(kTargetWidth, kFocalLength, targetPixelWidth):
     return (kTargetWidth*174)/targetPixelWidth
 
+def calculateAngle(kTargetWidth, distanceFromCenter, lengthOfTarget):
+    return math.atan((kTargetWidth * distanceFromCenter) / lengthOfTarget)
+	
+def calculateX(kTargetWidth, distanceFromCenter, lengthOfTarget):
+    return (kTargetWidth * distanceFromCenter) / lengthOfTarget
+
 def determineBlockType(target):
     corners = [[-1,-1],[-1,-1]]
     pidx = 0
@@ -238,8 +244,13 @@ def TrackTheTarget(frame, sd):
         xcent = int(M['m10']/M['m00'])
         ycent = int(M['m01']/M['m00'])
         width = min(target[1][0], target[1][1])
-        print("Width: " + str(target[1][0]) + " Height: " + str(target[1][1]))
-        print("Distance: " + str(calculateDistance(2, H_FOCAL_LENGTH, width))) 
+        length = max(target[1][0], target[1][1])
+        distance = calculateDistance(2, H_FOCAL_LENGTH, width)
+        angle = calculateAngle(2.0, (80-xcent), length)
+        x = calculateX(2.0, (80-xcent), length)
+        print(x)
+        #print("Width: " + str(target[1][0]) + " Height: " + str(target[1][1]))
+        #print("Distance: " + str(distance)) 
         try:
             otherTarget = blocks[1]
             for block in blocks:
@@ -259,8 +270,11 @@ def TrackTheTarget(frame, sd):
 
         cv2.drawContours(img, [box], -1, (125, 0, 125), 3)
         sd.putNumber('Block Area', M['m00'])
+        sd.putNumber('distance', distance) 
         sd.putNumber('Block Center X', xcent)
         sd.putNumber('Block Center Y', ycent)
+        sd.putNumber('Angle', angle) 
+        sd.putNumber('X', x)
 
     return frame
 

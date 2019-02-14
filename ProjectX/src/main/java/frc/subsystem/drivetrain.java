@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import frc.robot.constants;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import frc.util.*;
+import frc.robot.*;
 
 /** 
  * Handles crab drive states and manages individual swervemPods, see {@link Swervepod}
@@ -27,6 +28,10 @@ public class drivetrain extends subsystem {
 	
 	private coordType mCoordType;
 	private inputType mInputType;
+
+	private pid visionForward;
+	private pid visionTurn;  
+	private pid visionStrafe;  
 	
 	public TalonSRX[] mDriveTalons = {new TalonSRX(constants.DRIVE_ONE), new TalonSRX(constants.DRIVE_TWO), new TalonSRX(constants.DRIVE_THREE), new TalonSRX(constants.DRIVE_FOUR)}; 
 	public TalonSRX[] mGearTalons = {new TalonSRX(constants.STEER_ONE), new TalonSRX(constants.STEER_TWO), new TalonSRX(constants.STEER_THREE), new TalonSRX(constants.STEER_FOUR)};
@@ -75,6 +80,10 @@ public class drivetrain extends subsystem {
 		//set drive type
 		mCoordType = coordType.FIELDCENTRIC;
 		mInputType = inputType.PERCENTPOWER;
+
+		visionForward = new pid(0.006, 0, 0, .8); 
+		visionTurn = new pid(0.01, 0, 0, .8); 
+		visionStrafe = new pid(0.009, 0, 0, .8); 
 		
 		//Instantiate array list
 		mPods = new ArrayList<swervepod>();
@@ -278,6 +287,18 @@ public class drivetrain extends subsystem {
 					checkState();
 					break;
 				case VISION:
+					//System.out.println(Robot.getDistance());
+					if(Robot.getDistance() != -1){
+						cForwardCommand = visionForward.returnOutput(Robot.getDistance(), 10);
+					}
+					System.out.println(Robot.getAngle());
+					cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
+					//cStrafeCommand = visionStrafe.returnOutput(Robot.getX(), 0);
+					setCoordType(coordType.ROBOTCENTRIC); 
+					setInputType(inputType.PERCENTPOWER);
+					crabDrive();
+					checkState();
+					break;
 				default:
 					break;			
 				}

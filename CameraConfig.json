@@ -1,6 +1,6 @@
 {
     "fps": 30,
-    "height": 280,
+    "height": 120,
     "pixel format": "mjpeg",
     "properties": [
         {
@@ -9,11 +9,11 @@
         },
         {
             "name": "raw_brightness",
-            "value": 57
+            "value": 30
         },
         {
             "name": "brightness",
-            "value": 12
+            "value": 0
         },
         {
             "name": "raw_contrast",
@@ -61,11 +61,11 @@
         },
         {
             "name": "raw_exposure_absolute",
-            "value": 20
+            "value": 5
         },
         {
             "name": "exposure_absolute",
-            "value": 18
+            "value": 5
         },
         {
             "name": "pan_absolute",
@@ -80,5 +80,5 @@
             "value": 0
         }
     ],
-    "width": 320
+    "width": 160
 }

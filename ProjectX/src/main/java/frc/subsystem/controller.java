@@ -50,7 +50,7 @@ public class controller {
     }
 
     public boolean TrackTarget(){
-        return false;//yawStick.getRawButton(1);
+        return yawStick.getRawButton(1);
     }
 
     public boolean defenseEnabled(){
