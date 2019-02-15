@@ -54,7 +54,8 @@ public class drivetrain extends subsystem {
 		NEUTRAL,
 		HOMING,
 		DRIVE,
-		VISION
+		VISION,
+		AUTON
 	}
 	
 	public enum coordType{
@@ -182,6 +183,18 @@ public class drivetrain extends subsystem {
 		}
 	}
 
+	public void setForwardCommand(double wantedForwardCommand){
+		cForwardCommand = wantedForwardCommand; 
+	}
+
+	public void setStrafeCommand(double wantedStrafeCommand){
+		cStrafeCommand = wantedStrafeCommand; 
+	}
+
+	public void setSpinCommand(double wantedSpinCommand){
+		cSpinCommand = wantedSpinCommand; 
+	}
+
 	private void setCoordType(coordType mCoordType){
 		this.mCoordType = mCoordType; 
 	}
@@ -237,7 +250,7 @@ public class drivetrain extends subsystem {
 		return 0; 
 	}
 	
-	private void resetGyro() {mGyro.reset();}
+	public void resetGyro() {mGyro.reset();}
 	
 	@Override public void zeroAllSensors() {
 		for(int idx = 0; idx < 4; idx++)
@@ -299,6 +312,11 @@ public class drivetrain extends subsystem {
 					crabDrive();
 					checkState();
 					break;
+				case AUTON:
+					setCoordType(coordType.FIELDCENTRIC); 
+					setInputType(inputType.VELOCITY);
+					crabDrive();
+					checkState();
 				default:
 					break;			
 				}

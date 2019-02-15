@@ -16,6 +16,7 @@ import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.auton.*;
 
 import edu.wpi.first.networktables.*;
 
@@ -56,6 +57,11 @@ public class Robot extends IterativeRobot {
 		distance = table.getEntry("distance");
 		isIntakeOpenLoop = false;
 		isElevatorOpenLoop = false;
+	}
+	
+	public void autonomousPeriodic() {
+		mDriveTrain.setWantedState(drivetrain.systemStates.AUTON);
+		leftHab.main.run();
 	}
 
 	@Override
