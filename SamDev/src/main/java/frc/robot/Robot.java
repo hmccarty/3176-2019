@@ -23,7 +23,7 @@ public class Robot extends IterativeRobot {
   
   @Override
   public void robotInit() {
-    stick = new Joystick(0);
+    //stick = new Joystick(0);
   }
 
   @Override
