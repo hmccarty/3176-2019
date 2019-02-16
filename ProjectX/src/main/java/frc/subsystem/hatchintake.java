@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants;
 import frc.subsystem.controller;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class hatchintake {
