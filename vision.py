@@ -57,6 +57,9 @@ def readCameraConfig(config):
     except KeyError:
         parseError("camera '{}': could not read path".format(cam.name))
         return False
+		
+    # stream properties
+    cam.streamConfig = config.get("stream")
 
     cam.config = config
 
@@ -274,7 +277,7 @@ def TrackTheTarget(frame, sd):
         sd.putNumber('Block Center X', xcent)
         sd.putNumber('Block Center Y', ycent)
         sd.putNumber('Angle', angle) 
-        sd.putNumber('X', x)
+        #sd.putNum
 
     return frame
 

@@ -57,7 +57,7 @@
         },
         {
             "name": "exposure_auto",
-            "value": 1
+            "value": 2
         },
         {
             "name": "raw_exposure_absolute",
