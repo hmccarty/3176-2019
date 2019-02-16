@@ -27,7 +27,7 @@ public class pathfollower {
 	 */
 	public pathfollower(trajectory t) {
 		this.t = t;
-		spinHandler = new pid(.7,0.0,0.0);
+		spinHandler = new pid(.4,0.0,0.0);
 	}
 	public void init()
 	{

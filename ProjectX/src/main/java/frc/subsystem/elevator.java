@@ -2,9 +2,9 @@ package frc.subsystem;
 
 import javax.lang.model.util.ElementScanner6;
 
-import com.revrobotics.CANEncoder;
+/*import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+*/import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Encoder;
 import frc.subsystem.controller;
@@ -14,8 +14,8 @@ import frc.util.trajectory;
 
 public class elevator {
     private static elevator instance = new elevator();
-    private CANSparkMax motor;
-    private CANEncoder neoEncoder;
+    //private CANSparkMax motor;
+    //private CANEncoder neoEncoder;
     private controller joystick = controller.getInstance();
     private pid elevatorControlLoop;
     private double wantedFloor;
@@ -48,17 +48,17 @@ public class elevator {
     }
 
     private void setLevel(double wantedHeight) {
-        liftSpeed = elevatorControlLoop.returnOutput(neoEncoder.getPosition(), wantedHeight);
-        motor.set(liftSpeed);
+        //liftSpeed = elevatorControlLoop.returnOutput(neoEncoder.getPosition(), wantedHeight);
+        //motor.set(liftSpeed);
     }
 
     public void setWantedFloor(double wF) {
         this.wantedFloor = wF;
     }
 
-    public double getHeight() {
-        return neoEncoder.getPosition();
-    }
+    /*public double getHeight() {
+        //return neoEncoder.getPosition();
+    }*/
 
     public void setWantedState(systemStates wantedState) {
         this.wantedState = wantedState;
@@ -87,7 +87,7 @@ public class elevator {
             public void onLoop() {
                 switch(currentState) {
                     case NEUTRAL:
-                        motor.set(0.0);
+                        //motor.set(0.0);
                         checkState();
                         lastState = systemStates.NEUTRAL;
                         break;

@@ -29,6 +29,8 @@ public class drivetrain extends subsystem {
 	private coordType mCoordType;
 	private inputType mInputType;
 
+	private boolean autonVision; 
+
 	private pid visionForward;
 	private pid visionTurn;  
 	private pid visionStrafe;  
@@ -82,9 +84,11 @@ public class drivetrain extends subsystem {
 		mCoordType = coordType.FIELDCENTRIC;
 		mInputType = inputType.PERCENTPOWER;
 
+		autonVision = false;
+
 		visionForward = new pid(0.006, 0, 0, .8); 
-		visionTurn = new pid(0.01, 0, 0, .8); 
-		visionStrafe = new pid(0.009, 0, 0, .8); 
+		visionTurn = new pid(0.02, 0, 0, .8); 
+		visionStrafe = new pid(0.01, 0, 0, .8); 
 		
 		//Instantiate array list
 		mPods = new ArrayList<swervepod>();
@@ -183,6 +187,10 @@ public class drivetrain extends subsystem {
 		}
 	}
 
+	public void autonVision(boolean state){ 
+		autonVision = state; 
+	}
+
 	public void setForwardCommand(double wantedForwardCommand){
 		cForwardCommand = wantedForwardCommand; 
 	}
@@ -249,6 +257,14 @@ public class drivetrain extends subsystem {
 		}
 		return 0; 
 	}
+
+	public boolean isAtTarget(){
+		if(Math.abs((visionTurn.returnOutput(Robot.getDistance(), 0))) < .05){
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	public void resetGyro() {mGyro.reset();}
 	
@@ -301,20 +317,33 @@ public class drivetrain extends subsystem {
 					break;
 				case VISION:
 					//System.out.println(Robot.getDistance());
-					if(Robot.getDistance() != -1){
-						cForwardCommand = visionForward.returnOutput(Robot.getDistance(), 10);
+					double distance = Robot.getDistance();
+					if(distance != -1){
+						cForwardCommand = visionForward.returnOutput(distance, 15);
 					}
 					System.out.println(Robot.getAngle());
-					cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
-					//cStrafeCommand = visionStrafe.returnOutput(Robot.getX(), 0);
+					//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
+					cStrafeCommand = visionStrafe.returnOutput(Robot.getX(), 0);
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
 					crabDrive();
 					checkState();
 					break;
 				case AUTON:
-					setCoordType(coordType.FIELDCENTRIC); 
-					setInputType(inputType.VELOCITY);
+					if(autonVision){
+						if(Robot.getDistance() != -1){
+							cForwardCommand = visionForward.returnOutput(Robot.getDistance(), 15);
+						}
+						//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
+						if(Robot.getX() != 0){
+							cStrafeCommand = visionStrafe.returnOutput(Robot.getX(), 0);
+						}
+						setCoordType(coordType.ROBOTCENTRIC); 
+						setInputType(inputType.PERCENTPOWER);
+					} else {
+						setCoordType(coordType.FIELDCENTRIC); 
+						setInputType(inputType.VELOCITY);
+					}
 					crabDrive();
 					checkState();
 				default:

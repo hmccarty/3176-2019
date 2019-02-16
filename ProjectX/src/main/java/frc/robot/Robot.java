@@ -60,6 +60,7 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void autonomousPeriodic() {
+		myLoops.runLoops();
 		mDriveTrain.setWantedState(drivetrain.systemStates.AUTON);
 		leftHab.main.run();
 	}

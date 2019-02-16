@@ -25,7 +25,7 @@ public class auto {
 	 * registers a manager to run commands
 	 * @param manager Manager already with the commands registered to it
 	 */
-	public void registerManager(automanager manager)
+	public void registerManager(autonmanager manager)
 	{
 		this.manager = manager;
 	}
