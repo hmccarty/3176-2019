@@ -4,7 +4,9 @@ import javax.lang.model.util.ElementScanner6;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANPIDController;
 
 import edu.wpi.first.wpilibj.Encoder;
 
@@ -12,11 +14,12 @@ public class Elevator {
     private static Elevator instance = new Elevator();
     private CANSparkMax motor;
     private CANEncoder neoEncoder;
+    private CANPIDController motorController;
     private Controller joystick = Controller.getInstance();
-    private PIDLoop elevatorControlLoop;
+   // private PIDLoop elevatorControlLoop;
     private double wantedFloor;
     private double liftSpeed;
-    private Trajectory1D motionProfileTrajectory;
+    //private Trajectory1D motionProfileTrajectory;
     private double motionProfileStartTime;
 
     private enum systemStates {
@@ -31,12 +34,23 @@ public class Elevator {
     private systemStates lastState;
 
     public Elevator() {
-        motor = new CANSparkMax(Constants.ELEVATORMOTOR, MotorType.kBrushless);
+        motor = new CANSparkMax(Constants.ELEVATORMOTORID, MotorType.kBrushless);
         neoEncoder = motor.getEncoder();
-        elevatorControlLoop = new PIDLoop(Constants.ELEVATOR_KP,
-                                            Constants.ELEVATOR_KI,
-                                            Constants.ELEVATOR_KD,
-                                            1);
+        motorController = motor.getPIDController();
+        motorController.setP(Constants.ELEVATORKP);
+        motorController.setI(Constants.ELEVATORKI);
+        motorController.setD(Constants.ELEVATORKD);
+        motorController.setIZone(Constants.ELEVATORIZONE);
+        motorController.setFF(Constants.ELEVATORFF);
+        motorController.setOutputRange(Constants.ELEVATORMINOUT, Constants.ELEVATORMAXOUT);
+        motorController.setSmartMotionMaxVelocity(Constants.ELEVATORMAXVELOCITY, 0);
+        motorController.setSmartMotionMinOutputVelocity(Constants.ELEVATORMINVELOCITY, 0);
+        motorController.setSmartMotionMaxAccel(Constants.ELEVATORMAXACCELERATION, 0);
+        motorController.setSmartMotionAllowedClosedLoopError(Constants.ELEVATORALLOWEDERROR, 0);
+        // elevatorControlLoop = new PIDLoop(Constants.ELEVATORKP,
+        //                                     Constants.ELEVATORKI,
+        //                                     Constants.ELEVATORKD,
+        //                                     1);
     }
 
     public static Elevator getInstance() {
@@ -44,8 +58,9 @@ public class Elevator {
     }
 
     private void setLevel(double wantedHeight) {
-        liftSpeed = elevatorControlLoop.returnOutput(neoEncoder.getPosition(), wantedHeight);
-        motor.set(liftSpeed);
+        //liftSpeed = elevatorControlLoop.returnOutput(neoEncoder.getPosition(), wantedHeight);
+        //motor.set(liftSpeed);
+        motorController.setReference(wantedHeight, ControlType.kSmartMotion);
     }
 
     public void setWantedFloor(double wF) {
@@ -94,31 +109,32 @@ public class Elevator {
                         break;
                     case LEVEL_FOLLOW:
                         checkState();
-                        if(Math.abs(wantedFloor - getHeight()) > /*some distance away before switching to PID control*/){
-                            currentState = systemStates.MOTION_PROFILE;
-                        } else {
-                            setFloor(wantedFloor);
-                        }
+                        // if(Math.abs(wantedFloor - getHeight()) > 0/*some distance away before switching to PID control*/){
+                        //     currentState = systemStates.MOTION_PROFILE;
+                        // } else {
+                        //     setFloor(wantedFloor);
+                        // }
+                        setLevel(wantedFloor);
                         lastState = systemStates.LEVEL_FOLLOW;
                         break;
-                    case MOTION_PROFILE:
-                        if(lastState != systemStates.MOTION_PROFILE) {
-                            if (getHeight()<wantedFloor){
-                                motionProfileTrajectory = new Trajectory1D(/*velocity and acceleration to be determined*/);
-                            } else {
-                                motionProfileTrajectory = new Trajectory1D(/*velocity and acceleration TBD*/);
-                            }
-                            motionProfileTrajectory.addWaypoint(new Waypoint(getHeight(),0.0,0.0));
-							motionProfileTrajectory.addWaypoint(new Waypoint(wantedFloor,0.0,0.0));
-							motionProfileTrajectory.calculateTrajectory();
-							motionProfileStartTime = Timer.getFPGATimestamp();
-                        }   else if(Timer.getFPGATimestamp()-motionProfileStartTime<motionProfileTrajectory.getTimeToComplete()) {
-							setFloor(motionProfileTrajectory.getPosition(Timer.getFPGATimestamp()-motionProfileStartTime));
-						} else {
-							currentState = systemStates.POSITION_FOLLOW;
-						}
-						lastState = systemStates.MOTION_PROFILE;
-						break;
+                    // case MOTION_PROFILE:
+                    //     if(lastState != systemStates.MOTION_PROFILE) {
+                    //         if (getHeight()<wantedFloor){
+                    //             motionProfileTrajectory = new Trajectory1D(/*velocity and acceleration to be determined*/);
+                    //         } else {
+                    //             motionProfileTrajectory = new Trajectory1D(/*velocity and acceleration TBD*/);
+                    //         }
+                    //         motionProfileTrajectory.addWaypoint(new Waypoint(getHeight(),0.0,0.0));
+					// 		motionProfileTrajectory.addWaypoint(new Waypoint(wantedFloor,0.0,0.0));
+					// 		motionProfileTrajectory.calculateTrajectory();
+					// 		motionProfileStartTime = Timer.getFPGATimestamp();
+                    //     }   else if(Timer.getFPGATimestamp()-motionProfileStartTime<motionProfileTrajectory.getTimeToComplete()) {
+					// 		setFloor(motionProfileTrajectory.getPosition(Timer.getFPGATimestamp()-motionProfileStartTime));
+					// 	} else {
+					// 		currentState = systemStates.POSITION_FOLLOW;
+					// 	}
+					// 	lastState = systemStates.MOTION_PROFILE;
+					// 	break;
                         
                 }
             }
