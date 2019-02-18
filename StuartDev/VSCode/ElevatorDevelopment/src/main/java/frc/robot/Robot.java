@@ -11,7 +11,7 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void robotInit() {
-    elevator = new Elevator(0);
+    //elevator = new Elevator(0);
     stick = new Joystick(0);
 
   }
@@ -32,8 +32,8 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void teleopPeriodic() {
-    elevator.run(stick.getY());
-    elevator.getPostition();
+    // elevator.run(stick.getY());
+    // elevator.getPostition();
   }
 
   @Override

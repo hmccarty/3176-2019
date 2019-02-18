@@ -2,22 +2,30 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Robot extends IterativeRobot {
-  Joystick stick;
+  private Joystick stick;
   private HatchIntake mHatchIntake = HatchIntake.getInstance();
   private CargoIntake mCargoIntake = CargoIntake.getInstance();
   private NeoTesting mNeoTesting = NeoTesting.getInstance();
+  private Talon motor;
+  private Timer timer;
+
   
   @Override
   public void robotInit() {
-    //stick = new Joystick(0);
+    stick = new Joystick(0);
+    motor = new Talon(0);
+    timer = new Timer();
+    timer.start();
   }
 
   @Override
   public void robotPeriodic() {
   }
-
+4
   @Override
   public void autonomousInit() {
   }
@@ -50,5 +58,17 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void testPeriodic() {
+    double time = 1.0;
+
+    if(timer.get() <= time) {
+      motor.setPosition(4096);
+    }
+    else if(timer.get() > time) {
+      motor.setPosition(0);
+    }
+    else {
+      timer.reset();
+    }
+    
   }
 }

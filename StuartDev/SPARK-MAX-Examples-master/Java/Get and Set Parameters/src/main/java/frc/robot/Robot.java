@@ -11,10 +11,12 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANError;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANPIDController;
 
 /**
  * This is a demo program showing the use of the RobotDrive class, specifically
@@ -24,6 +26,9 @@ public class Robot extends TimedRobot {
   private Joystick m_stick;
   private static final int deviceID = 0;
   private CANSparkMax m_motor;
+  private CANPIDController m_controller;
+  private CANEncoder m_encoder;
+  private double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
 
   @Override
   public void robotInit() {
@@ -73,6 +78,22 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Ramp Rate", m_motor.getOpenLoopRampRate());
 
     m_stick = new Joystick(0);
+    m_controller = m_motor.getPIDController();
+
+    kP = 1;
+    kI = 1e-4;
+    kD = 0.1;
+    kIz = 0; 
+    kFF = 0; 
+    kMaxOutput = 1; 
+    kMinOutput = -1;
+
+    m_controller.setP(kP);
+    m_controller.setI(kI);
+    m_controller.setD(kD);
+    m_controller.setIZone(kIz);
+    m_controller.setFF(kFF);
+    m_controller.setOutputRange(kMinOutput, kMaxOutput);
   }
 
   @Override

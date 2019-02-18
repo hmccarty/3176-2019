@@ -51,7 +51,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  * effect of the GUI layout.
  */
 public class Robot extends TimedRobot {
-  private static final int deviceID = 1;
+  private static final int deviceID = 2;
   private CANSparkMax m_motor;
   private CANPIDController m_pidController;
   private CANEncoder m_encoder;
