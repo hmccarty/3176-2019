@@ -20,7 +20,7 @@ public class hatchintake {
     private Timer timer;
     private controller c;
 
-    
+    -
     public static hatchintake getInstance() {
         return instance;
     }
