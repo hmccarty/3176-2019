@@ -58,7 +58,7 @@ public class controller {
     }
 
     public double getForward(){
-        if(Math.abs(thrustStick.getY()) > 0.05){
+        if(Math.abs(thrustStick.getY()) > 0.07){
             return -thrustStick.getY();
         } else {
             return 0; 
@@ -66,7 +66,7 @@ public class controller {
     }
 
     public double getStrafe(){
-        if(Math.abs(thrustStick.getX()) > 0.05){
+        if(Math.abs(thrustStick.getX()) > 0.07){
             return -thrustStick.getX();
         } else {
             return 0; 
@@ -74,8 +74,8 @@ public class controller {
     }
 
     public double getSpin(){
-        if(Math.abs(yawStick.getX()) > 0.05){
-            return yawStick.getX()*0.2;
+        if(Math.abs(yawStick.getX()) > 0.07){
+            return yawStick.getX()*0.19;
         } else {
             return 0; 
         }

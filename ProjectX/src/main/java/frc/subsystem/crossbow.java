@@ -9,8 +9,8 @@ public class crossbow {
     private DoubleSolenoid dSol2;
 
     public crossbow() {
-        dSol = new DoubleSolenoid(0, 1);
-        dSol2 = new DoubleSolenoid(2, 3);
+        dSol = new DoubleSolenoid(3, 4);
+        dSol2 = new DoubleSolenoid(2, 5);
     }
 
     public static crossbow getInstance() {

@@ -33,7 +33,7 @@ public class autonmanager {
 			System.out.println("------Auto Started--------");
 			for(command c: commands)
 			{
-				System.out.println("qeuded: " + c.toString());
+				System.out.println("queued: " + c.toString());
 			}
 			isFirstTime = false;
 		}

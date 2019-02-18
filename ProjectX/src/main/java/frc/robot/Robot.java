@@ -32,7 +32,7 @@ public class Robot extends IterativeRobot {
 	private static NetworkTableEntry x;
 	private static NetworkTableEntry area;
 	private static NetworkTableEntry bLeftX;
-	private static NetworkTableEntry X;
+	private static NetworkTableEntry bRightX;
 	private static NetworkTableEntry bLeftY;
 	UsbCamera camera1;
 	UsbCamera camera2;
@@ -51,7 +51,7 @@ public class Robot extends IterativeRobot {
 		area = table.getEntry("Block Area");
 		bLeftX = table.getEntry("Point 2 X Coord");
 		bLeftY = table.getEntry("Point 2 Y Coord");
-		X = table.getEntry("X");
+		bRightX = table.getEntry("Point 3 X Coord");
 		bRightY = table.getEntry("Point 3 Y Coord");
 		angle = table.getEntry("Angle");
 		distance = table.getEntry("distance");
@@ -87,9 +87,8 @@ public class Robot extends IterativeRobot {
 		return angle.getDouble(0);
 	}
 	
-	public static double getX(){
-		return X.getDouble(0);
-	}
+	// public static double getType(){
+	// }
 
 	@Override
 	public void testPeriodic() { 
