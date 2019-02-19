@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.util.subsystem; 
 import frc.robot.constants; 
+import frc.subsystem.controller; 
 
 /**
  * Handles commands on the Talon Level. Ensuring that each pod is being
@@ -23,7 +24,7 @@ public class swervepod extends subsystem {
 	private double lastEncoderPosition; //Previous position in encoder units	
 	private double encoderError; //Error in encoder units
 	private double encoderPosition; //Current position in encoder units
-	private double encoderSetpoint; //Position wanted in encoder units
+	//private double encoderSetpoint; //Position wanted in encoder units
 	private double driveCommand;
 	
 	private double radianError; //Error in radians
@@ -31,14 +32,17 @@ public class swervepod extends subsystem {
 	
 	private double velocitySetpoint; //Wanted velocity in ft/s
 	private double fps2ups = constants.fps2ups; //Converts Feet/s to Encoder Units (770.24)
+
+	controller mController;
 	
 	swervepod(int id,TalonSRX driveMotor,TalonSRX steerMotor) {
 		this.id = id;
+		mController = controller.getInstance();
 		this.driveMotor = driveMotor;
 		this.steerMotor = steerMotor;
 		this.driveMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,0,0);
 		this.steerMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,0,0);
-		
+		//this.steerMotor.setSelectedSensorPosition(0,0,0);
 		this.steerMotor.config_kP(0, constants.SWERVE_kP, 0);
 		this.steerMotor.config_kI(0, constants.SWERVE_kI, 0);
 		this.steerMotor.config_kD(0, constants.SWERVE_kD, 0);
@@ -61,8 +65,9 @@ public class swervepod extends subsystem {
 	 * @param Angle Position value from 0 - 2pi
 	 */
 	public void setPod(double Speed, double Angle) {
+		System.out.println("Angle: " + Angle);
 		velocitySetpoint  = Speed * fps2ups;
-		encoderSetpoint = findSteerPosition(Angle);
+		double encoderSetpoint = findSteerPosition(Angle);
 		
 		if(Speed != 0.0) {
 			steerMotor.set(ControlMode.Position, encoderSetpoint);

@@ -213,8 +213,8 @@ def determineBlockType(target):
 
 #This should be a class lowkey but it'll work
 def TrackTheTarget(frame, sd):
-    TargetLower = (10,25,70)
-    TargetUpper = (120,255,255)
+    TargetLower = (50,25,70)
+    TargetUpper = (110,255,255)
 
     #Tells Smartdashbord if rpi is receiving frames
     if frame is None:

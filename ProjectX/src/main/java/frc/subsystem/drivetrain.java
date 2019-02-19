@@ -86,9 +86,9 @@ public class drivetrain extends subsystem {
 
 		autonVision = false;
 
-		visionForward = new pid(0.006, 0, 0, .8); 
+		visionForward = new pid(0.007, 0, 0, .8); 
 		visionTurn = new pid(0.02, 0, 0, .8); 
-		visionStrafe = new pid(0.01, 0, 0, .8); 
+		visionStrafe = new pid(0.1, 0, 0, .8); 
 		
 		//Instantiate array list
 		mPods = new ArrayList<swervepod>();
@@ -112,9 +112,9 @@ public class drivetrain extends subsystem {
 		updateAngle();
 		
 		//Initializing the commands
-		cForwardCommand = Math.pow(10, -15); //Puts wheels in forward-facing direction
-		cStrafeCommand = 0.0;
-		cSpinCommand = 0.0;
+		//cForwardCommand = Math.pow(10, -15); //Puts wheels in forward-facing direction
+		//cStrafeCommand = 0.0;
+		//cSpinCommand = 0.0;
 	}
 	
 	/**
@@ -259,7 +259,7 @@ public class drivetrain extends subsystem {
 	}
 
 	public boolean isAtTarget(){
-		if(Math.abs((visionTurn.returnOutput(Robot.getDistance(), 0))) < .05){
+		if(Math.abs((visionTurn.returnOutput(Robot.getDistance(), 0))) < .5){
 			return true;
 		} else {
 			return false;
@@ -319,24 +319,25 @@ public class drivetrain extends subsystem {
 					//System.out.println(Robot.getDistance());
 					double distance = Robot.getDistance();
 					if(distance != -1){
-						cForwardCommand = visionForward.returnOutput(distance, 15);
+						cForwardCommand = visionForward.returnOutput(distance, 20);
 					}
 					System.out.println(Robot.getAngle());
 					//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
-					cStrafeCommand = visionStrafe.returnOutput(Robot.getX(), 0);
+					cStrafeCommand = visionStrafe.returnOutput(Robot.getAngle(), 0);
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
 					crabDrive();
 					checkState();
 					break;
 				case AUTON:
+					System.out.println(isAtTarget());
 					if(autonVision){
 						if(Robot.getDistance() != -1){
 							cForwardCommand = visionForward.returnOutput(Robot.getDistance(), 15);
 						}
 						//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
-						if(Robot.getX() != 0){
-							cStrafeCommand = visionStrafe.returnOutput(Robot.getX(), 0);
+						if(Robot.getAngle() != 0){
+							cStrafeCommand = visionStrafe.returnOutput(Robot.getAngle(), 0);
 						}
 						setCoordType(coordType.ROBOTCENTRIC); 
 						setInputType(inputType.PERCENTPOWER);

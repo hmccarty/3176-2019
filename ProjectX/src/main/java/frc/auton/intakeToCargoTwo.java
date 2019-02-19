@@ -4,13 +4,12 @@ import frc.robot.*;
 import frc.util.*;
 import frc.subsystem.drivetrain; 
 
-public class leftHabT extends path{
-	public static leftHabT main = new leftHabT();
+public class intakeToCargoTwo extends path{
+	public static intakeToCargoTwo main = new intakeToCargoTwo();
 	private trajectory t = new trajectory();
-	private leftHabT() {
+	private intakeToCargoTwo() {
 		t.addWaypoint(new waypoint(0.0, 0.0, 0.0));
-		t.addWaypoint(new waypoint(0.0, -3.0, 0.0));
-		t.addWaypoint(new waypoint(3.0, -16.0,-Math.PI/2));
+		t.addWaypoint(new waypoint(6, 17.5,Math.PI/2));
 		super.regesterTrajectory(t);
 	}
 }

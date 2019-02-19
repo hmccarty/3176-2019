@@ -40,10 +40,11 @@ public class constants {
 	\************************/
 
 	//Gear Facing Right
-	public static double OFFSETS[] = {957,1701,1647,1321};
+	public static double OFFSETS[] = {3955,3103,2908,328};
 	public static double OFFSETS_P[] = {268.0,3228.0,1184.0,2160.0};
 	public static double DRIVETRAINLENGTH = 23.5;
-	public static double DRIVETRAINWIDTH = 26.0;
+	public static double DRIVETRAINWIDTH = 24.0;
+	public static double DRIVETRAINWIDTH_2 = 26.0;
 	public static final double WHEELDIAMETER = 3.0;
 	public static double DRIVETRAINMAXWHEELSPEED = 13.5; // ft/s
 	public static double DRIVETRAINMAXROTATIONSPEED = 5.0; // radians/s
@@ -53,7 +54,7 @@ public class constants {
 	|* Swervepod Constants *|
 	\***********************/
 
-	public static final double SWERVE_kP = 4.5;
+	public static final double SWERVE_kP = 4.0;
 	public static final double SWERVE_kI = 0.0023;
 	public static final double SWERVE_kD = 210.0;
 	public static final double SWERVE_kF = 0.0;

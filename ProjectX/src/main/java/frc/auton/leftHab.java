@@ -14,6 +14,10 @@ public class leftHab extends auto {
 			registerManager(manager);
 			manager.qeueCommand(new drivetrajectory(leftHabT.main.get()));
 			manager.qeueCommand(new visiontrack());
+			manager.qeueCommand(new drivetrajectory(rightCargoOneToIntake.main.get()));
+			manager.qeueCommand(new visiontrack());
+			manager.qeueCommand(new drivetrajectory(intakeToCargoTwo.main.get()));
+			manager.qeueCommand(new visiontrack());
 		}
 		
 
