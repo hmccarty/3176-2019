@@ -23,11 +23,12 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  */
 public class Robot extends TimedRobot {
   private Joystick m_stick;
-  private static final int deviceID = 1;
+  private static final int deviceID = 33;
   private CANSparkMax m_motor;
   private CANPIDController m_pidController;
   private CANEncoder m_encoder;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
+  int loops = 0;
 
   @Override
   public void robotInit() {
@@ -61,7 +62,7 @@ public class Robot extends TimedRobot {
     kFF = 0; 
     kMaxOutput = 1; 
     kMinOutput = -1;
-    maxRPM = 5700;
+    maxRPM = 2000;
 
     // set PID coefficients
     m_pidController.setP(kP);
@@ -117,9 +118,27 @@ public class Robot extends TimedRobot {
      *  com.revrobotics.ControlType.kVelocity
      *  com.revrobotics.ControlType.kVoltage
      */
-    double setPoint = m_stick.getY()*maxRPM;
-    m_pidController.setReference(setPoint, ControlType.kVelocity);
+    double setPoint = 0;
+    // if(Math.abs(m_stick.getY())<.25){
+    //   setPoint = 0;
+    // }
+    // else {
+    //   setPoint = m_stick.getY()*maxRPM;
+    // }      
+    // m_pidController.setReference(setPoint, ControlType.kVelocity);
     
+    if(loops < 200){
+      setPoint = 2500;
+    }
+    else if (loops >= 200 && loops < 400){
+      setPoint = 1000;
+    }
+    else{
+      loops = 0;
+    }
+
+    m_pidController.setReference(setPoint, ControlType.kVelocity);
+    loops++;
     SmartDashboard.putNumber("SetPoint", setPoint);
     SmartDashboard.putNumber("ProcessVariable", m_encoder.getVelocity());
   }

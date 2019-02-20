@@ -29,7 +29,7 @@ public class SPI_Coms {
         byte buffer[] = new byte[1];
         // mSPI.forceAutoRead();
         // mSPI.readAutoReceivedData(buffer, 0, 50);
-        mSPI.read(true, buffer, 2);
+        mSPI.read(true, buffer, 1);
         return buffer[0];
     }
 }
