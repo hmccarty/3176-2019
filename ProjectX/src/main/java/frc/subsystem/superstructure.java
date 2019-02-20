@@ -2,6 +2,7 @@ package frc.subsystem;
 
 //import frc.subsystem.cargointake;
 import frc.util.loop;
+import edu.wpi.first.wpilibj.Compressor;
 
 public class superstructure {
     private static superstructure instance = new superstructure();
@@ -10,8 +11,9 @@ public class superstructure {
     private state mWantedState;
     private state mCurrentState;
 
+    Compressor mCompressor = new Compressor(1);
     controller mController = controller.getInstance();
-    // crossbow mCrossBow = crossbow.getInstance();
+    crossbow mCrossbow = crossbow.getInstance();
     // hatchintake mHatchIntake = hatchintake.getInstance();
     // claw mClaw = claw.getInstance();
     // cargointake mCargoIntake = cargointake.getInstance();
@@ -25,7 +27,9 @@ public class superstructure {
         return instance; 
     }
 
-    public void setWantedState(state wantedState){}
+    public void setWantedState(state wantedState){
+        mWantedState = wantedState;
+    }
 
     public void checkState(){
         if(mCurrentState != mWantedState){
@@ -37,22 +41,31 @@ public class superstructure {
         mLoopMan.addLoop(new loop() {
             public void onStart(){
                 mCurrentState = state.NEUTRAL;
+                mWantedState = state.NEUTRAL;
             }
             public void onLoop(){
+                if(mController.runCompressor()){
+                    mCompressor.start();
+                } else {
+                    mCompressor.stop();
+                }
                 switch(mCurrentState){
                     case INTAKE_C_ROLLER:
                        // mCargoIntake.deploy();
                         //mCargoIntake.run(-.2);
                         break;
                     case INTAKE_H_CB:
-                    /*  mHatchIntake.stow();
-                    *   mClaw.stow();
-                    *   mCrossbow.set();
-                    */
+                       // mHatchIntake.stow();
+                    /*   mClaw.stow();
+                    */  mCompressor.stop(); 
+                        mCrossbow.set();
+                        mLastState = mCurrentState;
+                        checkState();
                         break;
                     case HOLD_H_CB:
-                    /*  mCrossbow.draw();
-                    */
+                        mCrossbow.draw();
+                        mLastState = mCurrentState;
+                        checkState();
                         break;
                     case INTAKE_C_CLAW:
                     /*  if(mLastState != mCurrentState){
@@ -82,6 +95,9 @@ public class superstructure {
                     case DELIVER_CARGO:
                         break;
                     case DELIVER_HATCH:
+                        mCrossbow.shoot();
+                        mLastState = mCurrentState;
+                        checkState();
                         break;
                     case OPENLOOP_HATCH:
                         
@@ -91,15 +107,18 @@ public class superstructure {
                         //
                         break;
                     case NEUTRAL:
+                        mCompressor.start();
+                        System.out.println("Test");
                         //mCargoIntake.stow();
                         //mClaw.stow();
                         //mHatchIntake.stow();
                         //mCrossbow.stow();
                         //mCrossbow.draw();
+
+                        checkState();
                         break;
                 }
                 mLastState = mCurrentState;
-                checkState();
             }
 
             public void onStop(){}

@@ -40,7 +40,7 @@ public class constants {
 	\************************/
 
 	//Gear Facing Right
-	public static double OFFSETS[] = {3955,3103,2908,328};
+	public static double OFFSETS[] = {1945,1058,878,2363};
 	public static double OFFSETS_P[] = {268.0,3228.0,1184.0,2160.0};
 	public static double DRIVETRAINLENGTH = 23.5;
 	public static double DRIVETRAINWIDTH = 24.0;

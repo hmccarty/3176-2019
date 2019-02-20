@@ -25,6 +25,7 @@ public class Robot extends IterativeRobot {
 	private loopmanager myLoops = loopmanager.getInstance();
 	private drivetrain mDriveTrain = drivetrain.getInstance(); 
 	private controller mController = controller.getInstance();
+	private superstructure mSuperstructure = superstructure.getInstance();
 	int testID = 0;
 	String gameData;
 	private boolean isIntakeOpenLoop;
@@ -39,9 +40,11 @@ public class Robot extends IterativeRobot {
 	private static NetworkTableEntry bRightY;
 	private static NetworkTableEntry angle; 
 	private static NetworkTableEntry distance; 
+	crossbow mCrossbow = crossbow.getInstance();
 	@Override
 	public void robotInit() {
 		mDriveTrain.registerLoop(); 
+		mSuperstructure.registerLoop();
 		myLoops.startLoops();
 		CameraServer.getInstance().startAutomaticCapture();
 		
@@ -61,6 +64,7 @@ public class Robot extends IterativeRobot {
 	
 	public void autonomousPeriodic() {
 		myLoops.runLoops();
+		mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
 		mDriveTrain.setWantedState(drivetrain.systemStates.AUTON);
 		leftHab.main.run();
 	}
@@ -77,6 +81,19 @@ public class Robot extends IterativeRobot {
 		} else {
 			mDriveTrain.setWantedState(drivetrain.systemStates.DRIVE);
 		}		
+
+		if(mController.crossbowIntake()){
+			mSuperstructure.setWantedState(superstructure.state.INTAKE_H_CB);
+		}
+		else if(mController.crossbowHold()){
+			mSuperstructure.setWantedState(superstructure.state.HOLD_H_CB);
+		}
+		else if(mController.crossbowDeliver()){
+			mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
+		}
+		//mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
+		//mCrossbow.set();
+		
 	}
 
 	public static double getDistance(){

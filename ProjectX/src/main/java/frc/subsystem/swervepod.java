@@ -65,7 +65,6 @@ public class swervepod extends subsystem {
 	 * @param Angle Position value from 0 - 2pi
 	 */
 	public void setPod(double Speed, double Angle) {
-		System.out.println("Angle: " + Angle);
 		velocitySetpoint  = Speed * fps2ups;
 		double encoderSetpoint = findSteerPosition(Angle);
 		
