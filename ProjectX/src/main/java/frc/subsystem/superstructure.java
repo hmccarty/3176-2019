@@ -38,86 +38,85 @@ public class superstructure {
     }
 
     public void registerLoop(){
-        mLoopMan.addLoop(new loop() {
-            public void onStart(){
-                mCurrentState = state.NEUTRAL;
-                mWantedState = state.NEUTRAL;
-            }
-            public void onLoop(){
-                if(mController.runCompressor()){
-                    mCompressor.start();
-                } else {
-                    mCompressor.stop();
+        mLoopMan.addLoop(
+            new loop() {
+                public void onStart(){
+                    mCurrentState = state.NEUTRAL;
+                    mWantedState = state.NEUTRAL;
                 }
-                switch(mCurrentState){
-                    case INTAKE_C_ROLLER:
-                       // mCargoIntake.deploy();
-                        //mCargoIntake.run(-.2);
-                        break;
-                    case INTAKE_H_CB:
-                       // mHatchIntake.stow();
-                    /*   mClaw.stow();
-                    */  mCompressor.stop(); 
-                        mCrossbow.set();
-                        mLastState = mCurrentState;
-                        checkState();
-                        break;
-                    case HOLD_H_CB:
-                        mCrossbow.draw();
-                        mLastState = mCurrentState;
-                        checkState();
-                        break;
-                    case INTAKE_C_CLAW:
-                    /*  if(mLastState != mCurrentState){
-                    *       mClaw.aim();
-                    *       mClaw.prepare();
-                    *   }
-                    *   mClaw.clamp();
-                    */
-                        break;    
-                    case INTAKE_H_G:
-                    /*  mHatchIntake.deploy(); 
-                    *   mHatchIntake.intake();
-                    */
-                        break;
-                    case TRANSFER_CARGO:
-                    /*  mCargoIntake.stow();
-                    */
-                        break;
-                    case TRANSFER_HATCH:
-                        //mCrossbow.set();
-                        //mClaw.stow();
-                        /*if(mHatchIntake.stowError() < 1000){
-                        *   
-                        *
-                        */ 
-                        break;
-                    case DELIVER_CARGO:
-                        break;
-                    case DELIVER_HATCH:
-                        mCrossbow.shoot();
-                        mLastState = mCurrentState;
-                        checkState();
-                        break;
-                    case OPENLOOP_HATCH:
-                        
-                        break;
-                    case OPENLOOP_CARGO:
-                       // mCargoIntake.openLoop();
-                        //
-                        break;
-                    case NEUTRAL:
+                public void onLoop(){
+                    if(mController.runCompressor()){
                         mCompressor.start();
-                        System.out.println("Test");
-                        //mCargoIntake.stow();
-                        //mClaw.stow();
-                        //mHatchIntake.stow();
-                        //mCrossbow.stow();
-                        //mCrossbow.draw();
-
-                        checkState();
-                        break;
+                    } else {
+                        mCompressor.stop();
+                    }
+                    switch(mCurrentState){
+                        case INTAKE_C_ROLLER:
+                        // mCargoIntake.deploy();
+                            //mCargoIntake.run(-.2);
+                            break;
+                        case INTAKE_H_CB:
+                        // mHatchIntake.stow();
+                        /*   mClaw.stow();
+                        */  mCompressor.stop(); 
+                            mCrossbow.set();
+                            mLastState = mCurrentState;
+                            checkState();
+                            break;
+                        case HOLD_H_CB:
+                            mCrossbow.draw();
+                            mLastState = mCurrentState;
+                            checkState();
+                            break;
+                        case INTAKE_C_CLAW:
+                        /*  if(mLastState != mCurrentState){
+                        *       mClaw.aim();
+                        *       mClaw.prepare();
+                        *   }
+                        *   mClaw.clamp();
+                        */
+                            break;    
+                        case INTAKE_H_G:
+                        /*  mHatchIntake.deploy(); 
+                        *   mHatchIntake.intake();
+                        */
+                            break;
+                        case TRANSFER_CARGO:
+                        /*  mCargoIntake.stow();
+                        */
+                            break;
+                        case TRANSFER_HATCH:
+                            //mCrossbow.set();
+                            //mClaw.stow();
+                            /*if(mHatchIntake.stowError() < 1000){
+                            *   
+                            *
+                            */ 
+                            break;
+                        case DELIVER_CARGO:
+                            break;
+                        case DELIVER_HATCH:
+                            mCrossbow.shoot();
+                            mLastState = mCurrentState;
+                            checkState();
+                            break;
+                        case OPENLOOP_HATCH:
+                            
+                            break;
+                        case OPENLOOP_CARGO:
+                        // mCargoIntake.openLoop();
+                            //
+                            break;
+                        case NEUTRAL:
+                            mCompressor.start();
+                            //mCargoIntake.stow();
+                            //mClaw.stow();
+                            //mHatchIntake.stow();
+                            //mCrossbow.hold(); 
+                            checkState();
+                            break;
                 }
+                checkState();
                 mLastState = mCurrentState;
             }
 

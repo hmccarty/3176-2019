@@ -11,14 +11,9 @@ import frc.subsystem.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.auton.*;
 
-import edu.wpi.first.networktables.*;
 
 public class Robot extends IterativeRobot {
 	private SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -35,8 +30,6 @@ public class Robot extends IterativeRobot {
 	private static NetworkTableEntry bLeftX;
 	private static NetworkTableEntry bRightX;
 	private static NetworkTableEntry bLeftY;
-	UsbCamera camera1;
-	UsbCamera camera2;
 	private static NetworkTableEntry bRightY;
 	private static NetworkTableEntry angle; 
 	private static NetworkTableEntry distance; 
@@ -46,20 +39,6 @@ public class Robot extends IterativeRobot {
 		mDriveTrain.registerLoop(); 
 		mSuperstructure.registerLoop();
 		myLoops.startLoops();
-		CameraServer.getInstance().startAutomaticCapture();
-		
-		NetworkTableInstance inst = NetworkTableInstance.getDefault();
-		NetworkTable table = inst.getTable("SmartDashboard");
-		//x = table.getEntry("Block Center X");
-		area = table.getEntry("Block Area");
-		bLeftX = table.getEntry("Point 2 X Coord");
-		bLeftY = table.getEntry("Point 2 Y Coord");
-		bRightX = table.getEntry("Point 3 X Coord");
-		bRightY = table.getEntry("Point 3 Y Coord");
-		angle = table.getEntry("Angle");
-		distance = table.getEntry("distance");
-		isIntakeOpenLoop = false;
-		isElevatorOpenLoop = false;
 	}
 	
 	public void autonomousPeriodic() {
@@ -91,21 +70,7 @@ public class Robot extends IterativeRobot {
 		else if(mController.crossbowDeliver()){
 			mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
 		}
-		//mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
-		//mCrossbow.set();
-		
 	}
-
-	public static double getDistance(){
-		return distance.getDouble(-1.0);
-	}
-
-	public static double getAngle(){
-		return angle.getDouble(0);
-	}
-	
-	// public static double getType(){
-	// }
 
 	@Override
 	public void testPeriodic() { 

@@ -3,22 +3,21 @@ package frc.robot;
 public class constants {
 	/***************\
 	|* Motor Ports *|
-	\***************/
-	public static int DRIVE_ONE = 1;
-	public static int DRIVE_TWO = 2;
-	public static int DRIVE_THREE = 3;
-	public static int DRIVE_FOUR = 4; 
+	\***************/							/***PORT TYPE***/
+	public static int DRIVE_ONE = 1;			     /*CAN*/
+	public static int DRIVE_TWO = 2;    		     /*CAN*/
+	public static int DRIVE_THREE = 3;			     /*CAN*/
+	public static int DRIVE_FOUR = 4;			     /*CAN*/
 
-	public static int STEER_ONE = 11;
-	public static int STEER_TWO = 22; 
-	public static int STEER_THREE = 33; 
-	public static int STEER_FOUR = 44; 
+	public static int STEER_ONE = 11;			     /*CAN*/
+	public static int STEER_TWO = 22;			     /*CAN*/
+	public static int STEER_THREE = 33;			     /*CAN*/
+	public static int STEER_FOUR = 44;			     /*CAN*/
 
-	public static int ELEVATOR_LEFT = 5; 
-	public static int ELEVATOR_RIGHT = 9; 
+	public static int ELEVATOR_LEFT = 5;		     /*CAN*/
 
-	public static int CARGO_INTAKE_ACTUATOR = 0; 
-	public static int CARGO_INTAKE_ROLLER = 1; 
+	public static int CARGO_INTAKE_ACTUATOR = 0;     /*PWM*/
+	public static int CARGO_INTAKE_ROLLER = 1;       /*PWM*/
 	
 	/****************\
 	|* Sensor Ports *|
@@ -59,17 +58,11 @@ public class constants {
 	public static final double SWERVE_kD = 210.0;
 	public static final double SWERVE_kF = 0.0;
 	public static final int SWERVE_ALLOWABLE_ERROR = 5;
-	/*
-	public static final double DRIVE_kP = .096;//Practice Values .096;
-	public static final double DRIVE_kI = 0.0;//Practice Values 0.0;
-	public static final double DRIVE_kD = 9.33;//Practice Values: 9.33;
-	public static final double DRIVE_kF = 0.110654611;//Practice Value 0.09654611
-	*/
-	//as of 3/25/3018
-	public static final double DRIVE_kP = .4;//Practice Values .096;
-	public static final double DRIVE_kI = 0.0001;//Practice Values 0.0;
-	public static final double DRIVE_kD = 9.33;//Practice Values: 9.33;
-	public static final double DRIVE_kF = 0.130654611;//Practice Value 0.09654611
+
+	public static final double DRIVE_kP = .4;
+	public static final double DRIVE_kI = 0.0001;
+	public static final double DRIVE_kD = 9.33;
+	public static final double DRIVE_kF = 0.130654611;
 	public static final int DRIVE_IZONE = 200;
 	public static double fps2ups = 12.0 /(constants.WHEELDIAMETER * Math.PI) * 4096.0/10.0 *48.0/30.0;
 	public static final int DRIVE_ALLOWABLE_ERROR = 50;
