@@ -1,14 +1,14 @@
 #include "Adafruit_VL53L0X.h"
-#include <Wire.h>
+//#include <Wire.h>
 
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
-int piOutput = "none";
-String input = "blank";
+//int piOutput = "none";
+//String input = "blank";
 
 void setup() {
   Serial.begin(115200);
-  Wire.begin(9);
-  Wire.onRequest(requestEvent);
+ // Wire.begin(9);
+ // Wire.onRequest(requestEvent);
   // wait until serial port opens for native USB devices
   while (! Serial) {
     delay(1);
@@ -31,12 +31,12 @@ void loop() {
 
   if (measure.RangeStatus != 4) {  // phase failures have incorrect data
     Serial.print("Distance (mm): "); Serial.println(measure.RangeMilliMeter);
-    piOutput = measure.RangeMilliMeter;
+//    piOutput = measure.RangeMilliMeter;
   } else {
     Serial.println(" out of range ");
   }  
 }
 
-void requestEvent() {
-  Wire.write(piOutput);
-}
+//void requestEvent() {
+//  Wire.write(piOutput);
+//}

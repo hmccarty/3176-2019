@@ -27,7 +27,7 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void robotInit() {
-    motor = new CANSparkMax(5, MotorType.kBrushless);
+    motor = new CANSparkMax(33, MotorType.kBrushless);
     encoder = motor.getEncoder();
     controller = motor.getPIDController();
     timer = new Timer();

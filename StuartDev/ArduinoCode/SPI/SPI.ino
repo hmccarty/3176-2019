@@ -1,12 +1,88 @@
-#include <SPI.h>
+#include "pins_arduino.h"
+#include "Adafruit_VL53L0X.h"
 
-void setup() {
-  // put your setup code here, to run once:
-  SPI.begin();
+char buf [1] = {5};
+volatile byte pos;
+volatile boolean process_it;
+boolean hasRan = false;
+Adafruit_VL53L0X lox = Adafruit_VL53L0X();
+
+void setup (void)
+{
+ Serial.begin (9600);   // debugging
+ while (! Serial) {
+    delay(1);
+  }
+  
+  Serial.println("Adafruit VL53L0X test");
+  if (!lox.begin()) {
+    Serial.println(F("Failed to boot VL53L0X"));
+    while(1);
+  }
+  // power 
+  Serial.println(F("VL53L0X API Simple Ranging example\n\n")); 
+
+ // have to send on master in, *slave out*
+ pinMode(MISO, OUTPUT);
+ 
+ // turn on SPI in slave mode
+ SPCR |= _BV(SPE);
+ 
+ // turn on interrupts
+ SPCR |= _BV(SPIE);
+ 
+ pos = 0;
+ process_it = false;
+}  // end of setup
+
+
+// SPI interrupt routine
+ISR (SPI_STC_vect)
+{
+//byte c = SPDR;
+// 
+// // add to buffer if room
+// if (pos < sizeof buf)
+//   {
+//   buf [pos++] = c;
+//   
+//   // example: newline means time to process buffer
+//   if (c == '\n')
+//     process_it = true;
+//     
+//   }  // end of room available
+  buf [0] = sensorData();
+  SPDR = buf[0];
+  hasRan = true;
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  int data = 5;
-  SPI.transfer(data);
+int sensorData() {
+  VL53L0X_RangingMeasurementData_t measure;
+//    
+// // Serial.print("Reading a measurement... ");
+  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
+//
+//  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
+//   // Serial.print("Distance (mm): "); Serial.println(measure.RangeMilliMeter);
+  return measure.RangeMilliMeter;
+//  
+//  } else {
+   // Serial.println(" out of range ");
+//    return 5;
+//  }  
 }
+
+// main loop - wait for flag set in interrupt routine
+void loop (void)
+{
+// if (process_it)
+//   {
+//   buf [pos] = 0;  
+//   Serial.println (buf);
+//   pos = 0;
+//   process_it = false;
+//   }  // end of flag set
+  //Serial.println(hasRan);
+//  Serial.println(sensorData());
+   
+}  // end of loop
