@@ -1,11 +1,14 @@
 #include "pins_arduino.h"
 #include "Adafruit_VL53L0X.h"
 
-char buf [1] = {5};
+char buf [2] = {5};
 volatile byte pos;
 volatile boolean process_it;
 boolean hasRan = false;
 Adafruit_VL53L0X lox = Adafruit_VL53L0X();
+int data = -1;
+int lastEventTime;
+
 
 void setup (void)
 {
@@ -33,6 +36,7 @@ void setup (void)
  
  pos = 0;
  process_it = false;
+ lastEventTime = millis();
 }  // end of setup
 
 
@@ -51,7 +55,8 @@ ISR (SPI_STC_vect)
 //     process_it = true;
 //     
 //   }  // end of room available
-  buf [0] = sensorData();
+  buf[0] = data&0xFF;
+  buf[1] = (data>>8)&0xFF;
   SPDR = buf[0];
   hasRan = true;
 }
@@ -82,7 +87,9 @@ void loop (void)
 //   pos = 0;
 //   process_it = false;
 //   }  // end of flag set
-  //Serial.println(hasRan);
-//  Serial.println(sensorData());
+  if(millis() > (lastEventTime + 30) {
+    data = sensorData();
+  }
+  
    
 }  // end of loop

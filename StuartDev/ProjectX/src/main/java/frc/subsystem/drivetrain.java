@@ -39,9 +39,9 @@ public class drivetrain extends subsystem {
 	private pid visionTurn;  
 	private pid visionStrafe;  
 	
-	public TalonSRX[] mDriveTalons = {null, new TalonSRX(constants.DRIVE_TWO), new TalonSRX(constants.DRIVE_TWO), new TalonSRX(constants.DRIVE_FOUR)}; 
+	public TalonSRX[] mDriveTalons = {null, null, null, null}; 
 	public TalonSRX[] mGearTalons = {new TalonSRX(constants.STEER_ONE), new TalonSRX(constants.STEER_TWO), new TalonSRX(constants.STEER_THREE), new TalonSRX(constants.STEER_FOUR)};
-	public CANSparkMax[] mDriveSparks = {new CANSparkMax(constants.DRIVE_ONE, MotorType.kBrushless), null, null, null};
+	public CANSparkMax[] mDriveSparks = {new CANSparkMax(constants.DRIVE_ONE, MotorType.kBrushless), new CANSparkMax(constants.DRIVE_TWO, MotorType.kBrushless), new CANSparkMax(constants.DRIVE_THREE, MotorType.kBrushless), new CANSparkMax(constants.DRIVE_FOUR, MotorType.kBrushless)};
 
 	private double kLength;
 	private double kWidth;
@@ -382,5 +382,9 @@ public class drivetrain extends subsystem {
 	}
 
 	@Override
-	public void outputToSmartDashboard() {}
+	public void outputToSmartDashboard() {
+		for(neoSwervepod pod : mNeoPods) {
+			pod.outputToSmartDashboard();
+		}
+	}
 }

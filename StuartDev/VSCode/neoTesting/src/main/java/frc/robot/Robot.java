@@ -24,10 +24,12 @@ public class Robot extends IterativeRobot {
   private CANPIDController controller;
   private double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
   private Timer timer;
+  public static double fps2rpm = 12/(3*Math.PI)*(48/30)*(54/17)*60;
+	public static double rev2ft = (17/54)*(30/48)*3*Math.PI*(1/12);
 
   @Override
   public void robotInit() {
-    motor = new CANSparkMax(33, MotorType.kBrushless);
+    motor = new CANSparkMax(1, MotorType.kBrushless);
     encoder = motor.getEncoder();
     controller = motor.getPIDController();
     timer = new Timer();
@@ -72,6 +74,7 @@ public class Robot extends IterativeRobot {
     SmartDashboard.putNumber("Set Time Interval", 1);
     SmartDashboard.putNumber("Set Low Position", 0);
     SmartDashboard.putNumber("Set High Position", 100);
+    SmartDashboard.putNumber("Set fps", 0);
 
     SmartDashboard.putBoolean("mode", false);
     SmartDashboard.putBoolean("Square Wave", false);
@@ -107,6 +110,7 @@ public class Robot extends IterativeRobot {
     double minP = SmartDashboard.getNumber("Set Low Position", 0);
     double maxP = SmartDashboard.getNumber("Set High Position", 0);
     double time = SmartDashboard.getNumber("Set Time Interval", 0);
+    double fps = SmartDashboard.getNumber("Set fps", 0);
 
     if((p != kP)) { controller.setP(p); kP = p; }
     if((i != kI)) { controller.setI(i); kI = i; }
@@ -131,7 +135,7 @@ public class Robot extends IterativeRobot {
         setPoint = 0;
       }
       else {
-        setPoint = SmartDashboard.getNumber("Set Velocity", 0);
+        setPoint = SmartDashboard.getNumber("Set fps", 0)*fps2rpm;
       }
       controller.setReference(setPoint, ControlType.kVelocity);
       processVariable = encoder.getVelocity();
@@ -173,6 +177,9 @@ public class Robot extends IterativeRobot {
     SmartDashboard.putNumber("Process Variable", processVariable);
     SmartDashboard.putNumber("Set Point", setPoint);
     SmartDashboard.putNumber("Output", motor.getAppliedOutput());
+    SmartDashboard.putNumber("Linear velocity", encoder.getVelocity()*(1/fps2rpm));
+    SmartDashboard.putNumber("Linear feet", encoder.getPosition()*rev2ft);
+    SmartDashboard.putNumber("Motor velocity", encoder.getVelocity());
   }
 
   @Override

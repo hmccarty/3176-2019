@@ -31,6 +31,10 @@ public class neoSwervepod extends subsystem {
 	private double PI = Math.PI;
 	private double kEncoderUnits = constants.ENCODER_UNITS; //# of ticks on Mag Encoder
 	private double kConstants[] = constants.OFFSETS;
+	private double gearRatio = constants.DRIVE_GEAR_RATI0;
+	private double fps2ups = constants.fps2ups; //Converts Feet/s to Encoder Units (770.24)
+	private double fps2rpm = constants.fps2rpm;
+	private double rev2ft = constants.rev2ft;
 	
 	private double lastEncoderPosition; //Previous position in encoder units	
 	private double encoderError; //Error in encoder units
@@ -42,13 +46,9 @@ public class neoSwervepod extends subsystem {
 	private double radianPosition; //Current position in radian units
 	
 	private double velocitySetpoint; //Wanted velocity in ft/s
-    private double fps2ups = constants.fps2ups; //Converts Feet/s to Encoder Units (770.24)
-    private double fps2rpm = constants.fps2rpm;
 
     private CANPIDController m_pidController;
     private CANEncoder driveEncoder;
-
-    private double gearRatio = constants.DRIVE_GEAR_RATI0;
 
 	controller mController;
 	
@@ -214,6 +214,8 @@ public class neoSwervepod extends subsystem {
 
 	@Override public void outputToSmartDashboard() {
 		SmartDashboard.putNumber("Pod " + id + "'s Encoder Position", encoderPosition);
-		SmartDashboard.putNumber("Pod " + id + "'s velocity", driveEncoder.getVelocity());
+		SmartDashboard.putNumber("Pod " + id + "'s motor velocity", driveEncoder.getVelocity());
+		SmartDashboard.putNumber("Pod " + id + "'s linear feet", driveEncoder.getPosition()*rev2ft);
+		SmartDashboard.putNumber("Pod " + id + "'s linear velocity'", driveEncoder.getVelocity() * (1/fps2rpm));
 	}
 }

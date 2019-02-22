@@ -81,7 +81,8 @@ public class constants {
 	public static final double DRIVE_kF = 0.130654611;//Practice Value 0.09654611
 	public static final int DRIVE_IZONE = 200;
 	public static double fps2ups = 12.0 /(constants.WHEELDIAMETER * Math.PI) * 4096.0/10.0 *48.0/30.0;
-	public static double fps2rpm = 240 / Math.PI;
+	public static double fps2rpm = 12/(3*Math.PI)*(48/30)*(54/17)*60;
+	public static double rev2ft = (17/54)*(30/48)*3*Math.PI*(1/12);
 	public static final int DRIVE_ALLOWABLE_ERROR = 50;
 	
 	public static final double MAXSLOWPERCENTSPEED = .4;
