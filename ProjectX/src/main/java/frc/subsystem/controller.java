@@ -69,6 +69,14 @@ public class controller {
         return yawStick.getRawButton(1);
     }
 
+    public boolean visionFront(){
+        return yawStick.getRawButton(6);
+    }
+    
+    public boolean visionBack(){
+        return yawStick.getRawButton(4);
+    }
+
     public boolean defenseEnabled(){
         return thrustStick.getRawButton(4);
     }
