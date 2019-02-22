@@ -16,18 +16,19 @@ public class vision extends subsystem{
 
     NetworkTableEntry distanceToTarget = table.getEntry("distance");
     NetworkTableEntry angleToTarget = table.getEntry("Angle");
+    NetworkTableEntry WhichCamera = table.getEntry("WhichCamera");
 
     private state mWantedState; 
     private state mCurrentState;
 
     public vision(){}
 
-    public vision getInstance(){
+    public static vision getInstance(){
         return instance; 
     }
 
     public double getDistance(){
-        return distanceToTarget.getDouble(-1); 
+        return distanceToTarget.getDouble(-1);
     }
 
     public double getAngle(){
@@ -55,9 +56,12 @@ public class vision extends subsystem{
                 public void onLoop(){
                     switch(mCurrentState){
                         case TRACK_TARGET:
+                            WhichCamera.setDouble(0);
                         case TRACK_AND_STREAM: 
                         case STREAM_FRONT:
+                            WhichCamera.setDouble(0);
                         case STREAM_BACK: 
+                            WhichCamera.setDouble(1);
                     }
                     checkState(); 
                 }
@@ -67,6 +71,9 @@ public class vision extends subsystem{
             }
         );
     }
+
+    public void zeroAllSensors(){}
+    public void outputToSmartDashboard(){}
 
     public enum state {
         TRACK_TARGET, 

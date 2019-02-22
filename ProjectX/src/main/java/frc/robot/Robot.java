@@ -16,27 +16,16 @@ import frc.auton.*;
 
 
 public class Robot extends IterativeRobot {
-	private SendableChooser<String> m_chooser = new SendableChooser<>();
 	private loopmanager myLoops = loopmanager.getInstance();
 	private drivetrain mDriveTrain = drivetrain.getInstance(); 
+	private vision mVision = vision.getInstance();
 	private controller mController = controller.getInstance();
 	private superstructure mSuperstructure = superstructure.getInstance();
-	int testID = 0;
-	String gameData;
-	private boolean isIntakeOpenLoop;
-	private boolean isElevatorOpenLoop;
-	private static NetworkTableEntry x;
-	private static NetworkTableEntry area;
-	private static NetworkTableEntry bLeftX;
-	private static NetworkTableEntry bRightX;
-	private static NetworkTableEntry bLeftY;
-	private static NetworkTableEntry bRightY;
-	private static NetworkTableEntry angle; 
-	private static NetworkTableEntry distance; 
 	crossbow mCrossbow = crossbow.getInstance();
 	@Override
 	public void robotInit() {
 		mDriveTrain.registerLoop(); 
+		mVision.registerLoop();
 		mSuperstructure.registerLoop();
 		myLoops.startLoops();
 	}
@@ -69,6 +58,13 @@ public class Robot extends IterativeRobot {
 		}
 		else if(mController.crossbowDeliver()){
 			mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
+		}
+
+		if(mController.visionFront()){
+			mVision.setWantedState(vision.state.STREAM_FRONT);
+		}
+		else if(mController.visionBack()){
+			mVision.setWantedState(vision.state.STREAM_BACK);
 		}
 	}
 
