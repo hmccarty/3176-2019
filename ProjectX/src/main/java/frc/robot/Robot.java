@@ -66,6 +66,24 @@ public class Robot extends IterativeRobot {
 		else if(mController.visionBack()){
 			mVision.setWantedState(vision.state.STREAM_BACK);
 		}
+
+
+		if(mController.stowCargoIntake()){
+			cargointake.getInstance().stow();
+		}
+		else if (mController.deployCargoIntake()){
+			cargointake.getInstance().deploy();
+		} else {
+			cargointake.getInstance().stopActuator();
+		}
+		if(mController.intakeCargo()){
+			cargointake.getInstance().intake();
+		} 
+		else if (mController.spitCargoIntake()){
+			cargointake.getInstance().spit();
+		} else {
+			cargointake.getInstance().stopRoller();
+		}
 	}
 
 	@Override

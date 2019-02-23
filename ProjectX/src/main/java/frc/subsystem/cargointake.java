@@ -12,7 +12,7 @@ public class cargointake {
     private static cargointake instance = new cargointake(); 
 
     private pid cargoPID;
-    private DigitalInput sensor;
+    //private DigitalInput sensor;
     private Encoder encoder; 
     private Talon actuator;
     private Talon roller; 
@@ -22,7 +22,7 @@ public class cargointake {
 
     public cargointake(){
         cargoPID = new pid(0,0,0);
-        sensor = new DigitalInput(constants.CARGO_INTAKE_DOWN);
+        //sensor = new DigitalInput(constants.CARGO_INTAKE_DOWN);
         encoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
         actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
         roller = new Talon(constants.CARGO_INTAKE_ROLLER);
@@ -36,22 +36,43 @@ public class cargointake {
         return instance;
     }
 
-    private void closedLoopControl (int wantedHeight) {
-        actuator.set(cargoPID.returnOutput(encoder.getRaw(), wantedHeight));
-    }
+    // private void closedLoopControl (int wantedHeight) {
+    //     actuator.set(cargoPID.returnOutput(encoder.getRaw(), wantedHeight));
+    // }
+
+    // public void deploy(){
+    //     if(sensor.get()){
+    //         actuator.set(0);
+    //         encoder.reset();
+    //     }
+    //     else {
+    //         //closedLoopControl(intakeHeight);
+    //     }
+    // }
 
     public void deploy(){
-        if(sensor.get()){
-            actuator.set(0);
-            encoder.reset();
-        }
-        else {
-            //closedLoopControl(intakeHeight);
-        }
+        actuator.set(-.5);
     }
 
     public void stow(){
+        actuator.set(.5);
         //closedLoopControl(stowedHeight);
+    }
+
+    public void intake(){
+        roller.set(-.5);
+    }
+
+    public void stopRoller(){
+        roller.set(0);
+    }
+
+    public void stopActuator(){
+        actuator.set(0);
+    }
+
+    public void spit(){
+        roller.set(.5);
     }
 
     public void run(double speed) {
