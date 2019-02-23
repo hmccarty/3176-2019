@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 import frc.util.pid;
 import frc.robot.constants;
 
@@ -12,21 +13,25 @@ public class cargointake {
     private static cargointake instance = new cargointake(); 
 
     private pid cargoPID;
+    private pid cargoStowPID;
     //private DigitalInput sensor;
     private Encoder encoder; 
     private Talon actuator;
     private Talon roller; 
     private Timer timer; 
-    //private int stowedHeight = constants.CARGO_STOWED_HEIGHT; 
-    //private int intakeHeight = constants.CARGO_INTAKE_HEIGHT;
+    private int stowedHeight = -10;
+    private int intakeHeight = -45000;
+    private int rocketHeight = -14000;
 
     public cargointake(){
-        cargoPID = new pid(0,0,0);
+        cargoStowPID = new pid(0.00009, 0,0,.25);
+        cargoPID = new pid(0.00009,0,0, .8);
         //sensor = new DigitalInput(constants.CARGO_INTAKE_DOWN);
         encoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
         actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
         roller = new Talon(constants.CARGO_INTAKE_ROLLER);
         
+        encoder.reset();
 
         timer = new Timer();
         timer.start();
@@ -36,27 +41,25 @@ public class cargointake {
         return instance;
     }
 
-    // private void closedLoopControl (int wantedHeight) {
-    //     actuator.set(cargoPID.returnOutput(encoder.getRaw(), wantedHeight));
-    // }
-
-    // public void deploy(){
-    //     if(sensor.get()){
-    //         actuator.set(0);
-    //         encoder.reset();
-    //     }
-    //     else {
-    //         //closedLoopControl(intakeHeight);
-    //     }
-    // }
-
-    public void deploy(){
-        actuator.set(-.5);
+    private void closedLoopControl (int wantedHeight) {
+        if(wantedHeight > encoder.getRaw()){
+            actuator.set(-cargoStowPID.returnOutput(encoder.getRaw(), wantedHeight));
+        } else {
+        actuator.set(-cargoPID.returnOutput(encoder.getRaw(), wantedHeight));
+        }
     }
 
+    public void deploy(){
+        closedLoopControl(intakeHeight);
+    }
+
+
     public void stow(){
-        actuator.set(.5);
-        //closedLoopControl(stowedHeight);
+        closedLoopControl(stowedHeight);
+    }
+
+    public void moveToRocket(){
+        closedLoopControl(rocketHeight);
     }
 
     public void intake(){
@@ -72,7 +75,7 @@ public class cargointake {
     }
 
     public void spit(){
-        roller.set(.5);
+        roller.set(.7);
     }
 
     public void run(double speed) {
@@ -80,10 +83,10 @@ public class cargointake {
     }
 
     public void zeroAllSensors() {
-
+        encoder.reset();
     }
 
     public void outputToSmartDashboard() {
-
+        SmartDashboard.putNumber("Encoder", encoder.get()); 
     }
 }

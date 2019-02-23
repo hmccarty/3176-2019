@@ -49,11 +49,11 @@ public class controller {
         return buttonMonkey.getRawButton(10);
     }
 
-    public boolean stowCargoIntake(){
+    public boolean moveToCargo(){
         return buttonMonkey.getRawButton(6);
     }    
 
-    public boolean intakeCargo(){
+    public boolean neutral(){
         return buttonMonkey.getRawButton(1);
     }
 
