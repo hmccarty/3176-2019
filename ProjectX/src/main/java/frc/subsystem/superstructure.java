@@ -45,14 +45,14 @@ public class superstructure {
                     mWantedState = state.NEUTRAL;
                 }
                 public void onLoop(){
-                    if(mController.runCompressor()){
-                        mCompressor.start();
-                    } else {
-                        mCompressor.stop();
-                    }
+                    // if(mController.runCompressor()){
+                    //     mCompressor.start();
+                    // } else {
+                    //     mCompressor.stop();
+                    // }
                     switch(mCurrentState){
                         case INTAKE_C_ROLLER:
-                        // mCargoIntake.deploy();
+                            //mCargoIntake.deploy();
                             //mCargoIntake.run(-.2);
                             break;
                         case INTAKE_H_CB:

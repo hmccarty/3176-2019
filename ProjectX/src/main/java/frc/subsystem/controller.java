@@ -41,6 +41,22 @@ public class controller {
         return thrustStick.getRawButton(11);
     }
 
+    public boolean deployCargoIntake(){
+        return buttonMonkey.getRawButton(5);
+    }
+
+    public boolean spitCargoIntake(){
+        return buttonMonkey.getRawButton(10);
+    }
+
+    public boolean stowCargoIntake(){
+        return buttonMonkey.getRawButton(6);
+    }    
+
+    public boolean intakeCargo(){
+        return buttonMonkey.getRawButton(1);
+    }
+
     /***********************\
 	|* Drivetrain Controls *|
 	\***********************/

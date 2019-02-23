@@ -16,15 +16,14 @@ public class constants {
 
 	public static int ELEVATOR_LEFT = 5;		     /*CAN*/
 
-	public static int CARGO_INTAKE_ACTUATOR = 0;     /*PWM*/
-	public static int CARGO_INTAKE_ROLLER = 1;       /*PWM*/
+	public static int CARGO_INTAKE_ACTUATOR = 1;     /*PWM*/
+	public static int CARGO_INTAKE_ROLLER = 0;       /*PWM*/
 	
 	/****************\
 	|* Sensor Ports *|
 	\****************/
 
     public static int CARGO_INTAKE_DOWN = 0; 
-    public static int CARGO_INTAKE_UP = 1;
 
 	/****************************\
 	|* Driver Station Constants *|
