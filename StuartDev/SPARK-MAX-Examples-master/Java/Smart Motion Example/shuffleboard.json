@@ -93,7 +93,8 @@
               "_source0": "network_table:///SmartDashboard/SetPoint",
               "_source1": "network_table:///SmartDashboard/Process Variable",
               "_title": "Process Variable",
-              "Graph/Visible time": 30.0
+              "Graph/Visible time": 30.0,
+              "Visible data/SmartDashboard/Process Variable": true
             }
           },
           "0,3": {
@@ -105,7 +106,8 @@
               "_type": "Graph",
               "_source0": "network_table:///SmartDashboard/Output",
               "_title": "Output",
-              "Graph/Visible time": 30.0
+              "Graph/Visible time": 30.0,
+              "Visible data/SmartDashboard/Output": true
             }
           },
           "5,1": {
@@ -211,6 +213,50 @@
               "_source0": "network_table:///SmartDashboard/Set Point",
               "_title": "Set Point"
             }
+          },
+          "10,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Set fps",
+              "_title": "Set fps"
+            }
+          },
+          "9,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Linear velocity",
+              "_title": "Linear velocity"
+            }
+          },
+          "10,1": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Linear feet",
+              "_title": "Linear feet"
+            }
+          },
+          "8,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Motor velocity",
+              "_title": "Motor velocity"
+            }
           }
         }
       }
@@ -243,9 +289,9 @@
     }
   ],
   "windowGeometry": {
-    "x": -44.0,
-    "y": 0.0,
-    "width": 1486.0,
-    "height": 831.0
+    "x": -8.0,
+    "y": -8.0,
+    "width": 1696.0,
+    "height": 1026.0
   }
 }

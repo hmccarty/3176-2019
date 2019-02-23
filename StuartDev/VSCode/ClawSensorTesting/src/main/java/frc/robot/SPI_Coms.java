@@ -18,11 +18,18 @@ public class SPI_Coms {
 
     public SPI_Coms() {
         mSPI = new SPI(Port.kOnboardCS0);
+        mSPI.setClockRate(300000);
+        mSPI.setMSBFirst();
+        mSPI.setSampleDataOnRising();
+        mSPI.setClockActiveHigh();
+        mSPI.setChipSelectActiveLow();
     }
 
     public int getInt() {
-        int buffer[] = {};
-        mSPI.readAutoReceivedData(buffer, 1, 50);
+        byte buffer[] = new byte[2];
+        // mSPI.forceAutoRead();
+        // mSPI.readAutoReceivedData(buffer, 0, 50);
+        mSPI.read(true, buffer, 1);
         return buffer[0];
     }
 }

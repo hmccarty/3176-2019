@@ -3,29 +3,27 @@ package frc.robot;
 public class constants {
 	/***************\
 	|* Motor Ports *|
-	\***************/
-	public static int DRIVE_ONE = 1;
-	public static int DRIVE_TWO = 2;
-	public static int DRIVE_THREE = 3;
-	public static int DRIVE_FOUR = 4; 
+	\***************/							/***PORT TYPE***/
+	public static int DRIVE_ONE = 1;			     /*CAN*/
+	public static int DRIVE_TWO = 2;    		     /*CAN*/
+	public static int DRIVE_THREE = 3;			     /*CAN*/
+	public static int DRIVE_FOUR = 4;			     /*CAN*/
 
-	public static int STEER_ONE = 11;
-	public static int STEER_TWO = 22; 
-	public static int STEER_THREE = 33; 
-	public static int STEER_FOUR = 44; 
+	public static int STEER_ONE = 11;			     /*CAN*/
+	public static int STEER_TWO = 22;			     /*CAN*/
+	public static int STEER_THREE = 33;			     /*CAN*/
+	public static int STEER_FOUR = 44;			     /*CAN*/
 
-	public static int ELEVATOR_LEFT = 5; 
-	public static int ELEVATOR_RIGHT = 9; 
+	public static int ELEVATOR_LEFT = 5;		     /*CAN*/
 
-	public static int CARGO_INTAKE_ACTUATOR = 0; 
-	public static int CARGO_INTAKE_ROLLER = 1; 
+	public static int CARGO_INTAKE_ACTUATOR = 1;     /*PWM*/
+	public static int CARGO_INTAKE_ROLLER = 0;       /*PWM*/
 	
 	/****************\
 	|* Sensor Ports *|
 	\****************/
 
     public static int CARGO_INTAKE_DOWN = 0; 
-    public static int CARGO_INTAKE_UP = 1;
 
 	/****************************\
 	|* Driver Station Constants *|
@@ -40,7 +38,7 @@ public class constants {
 	\************************/
 
 	//Gear Facing Right
-	public static double OFFSETS[] = {3955,3103,2908,328};
+	public static double OFFSETS[] = {1945,1058,878,2363};
 	public static double OFFSETS_P[] = {268.0,3228.0,1184.0,2160.0};
 	public static double DRIVETRAINLENGTH = 23.5;
 	public static double DRIVETRAINWIDTH = 24.0;
@@ -59,17 +57,11 @@ public class constants {
 	public static final double SWERVE_kD = 210.0;
 	public static final double SWERVE_kF = 0.0;
 	public static final int SWERVE_ALLOWABLE_ERROR = 5;
-	/*
-	public static final double DRIVE_kP = .096;//Practice Values .096;
-	public static final double DRIVE_kI = 0.0;//Practice Values 0.0;
-	public static final double DRIVE_kD = 9.33;//Practice Values: 9.33;
-	public static final double DRIVE_kF = 0.110654611;//Practice Value 0.09654611
-	*/
-	//as of 3/25/3018
-	public static final double DRIVE_kP = .4;//Practice Values .096;
-	public static final double DRIVE_kI = 0.0001;//Practice Values 0.0;
-	public static final double DRIVE_kD = 9.33;//Practice Values: 9.33;
-	public static final double DRIVE_kF = 0.130654611;//Practice Value 0.09654611
+
+	public static final double DRIVE_kP = .4;
+	public static final double DRIVE_kI = 0.0001;
+	public static final double DRIVE_kD = 9.33;
+	public static final double DRIVE_kF = 0.130654611;
 	public static final int DRIVE_IZONE = 200;
 	public static double fps2ups = 12.0 /(constants.WHEELDIAMETER * Math.PI) * 4096.0/10.0 *48.0/30.0;
 	public static final int DRIVE_ALLOWABLE_ERROR = 50;

@@ -4,7 +4,7 @@ import javax.lang.model.util.ElementScanner6;
 
 /*import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
-*/import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+*///import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Encoder;
 import frc.subsystem.controller;

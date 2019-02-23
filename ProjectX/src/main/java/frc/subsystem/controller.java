@@ -9,7 +9,7 @@ public class controller {
     private Joystick buttonMonkey; 
 
     public controller(){
-        buttonMonkey = new Joystick(0);
+        buttonMonkey = new Joystick(2);
     }
     
     public static controller getInstance(){
@@ -23,6 +23,38 @@ public class controller {
         else {
             return buttonMonkey.getRawButton(1);
         }
+    }
+
+    public  boolean crossbowIntake(){
+        return buttonMonkey.getRawButton(2);
+    }
+
+    public  boolean crossbowHold(){
+        return buttonMonkey.getRawButton(3);
+    }
+
+    public  boolean crossbowDeliver(){
+        return buttonMonkey.getRawButton(4);
+    }
+
+    public boolean runCompressor(){
+        return thrustStick.getRawButton(11);
+    }
+
+    public boolean deployCargoIntake(){
+        return buttonMonkey.getRawButton(5);
+    }
+
+    public boolean spitCargoIntake(){
+        return buttonMonkey.getRawButton(10);
+    }
+
+    public boolean stowCargoIntake(){
+        return buttonMonkey.getRawButton(6);
+    }    
+
+    public boolean intakeCargo(){
+        return buttonMonkey.getRawButton(1);
     }
 
     /***********************\
@@ -53,13 +85,21 @@ public class controller {
         return yawStick.getRawButton(1);
     }
 
+    public boolean visionFront(){
+        return yawStick.getRawButton(6);
+    }
+    
+    public boolean visionBack(){
+        return yawStick.getRawButton(4);
+    }
+
     public boolean defenseEnabled(){
         return thrustStick.getRawButton(4);
     }
 
     public double getForward(){
         if(Math.abs(thrustStick.getY()) > 0.07){
-            return -thrustStick.getY();
+            return thrustStick.getY();
         } else {
             return 0; 
         }
@@ -67,7 +107,7 @@ public class controller {
 
     public double getStrafe(){
         if(Math.abs(thrustStick.getX()) > 0.07){
-            return -thrustStick.getX();
+            return thrustStick.getX();
         } else {
             return 0; 
         }
@@ -75,7 +115,7 @@ public class controller {
 
     public double getSpin(){
         if(Math.abs(yawStick.getX()) > 0.07){
-            return yawStick.getX()*0.19;
+            return -yawStick.getX()*0.19;
         } else {
             return 0; 
         }
