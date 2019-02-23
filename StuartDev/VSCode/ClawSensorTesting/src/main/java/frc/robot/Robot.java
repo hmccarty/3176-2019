@@ -25,12 +25,12 @@ public class Robot extends IterativeRobot {
   @Override
   public void robotInit() {
     // irSensor = new I2C_Coms();
-    // talon1 = new TalonSRX(22);
+    talon1 = new TalonSRX(44);
     // timer1 = new Timer();
     // timer1.start();
-    // loops = 0;
-    // talon1.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,0,0);
-    arduino = new SPI_Coms();
+    loops = 0;
+    talon1.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,0,0);
+    // arduino = new SPI_Coms();
     
   }
 
@@ -49,21 +49,21 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void teleopPeriodic() {
-    System.out.println(arduino.getInt());
+    // System.out.println(arduino.getInt());
   }
 
   @Override
   public void testPeriodic() {
-    // if(loops < 150){
-    //   talon1.set(ControlMode.Position, 1024);
-    // }
-    // else if(loops >= 150 && loops <300){
-    //   talon1.set(ControlMode.Position, 0);      
-    // }
-    // else{
-    //   loops = 0;
-    // }
-    // System.out.println(loops);
-    // loops++;
+    if(loops < 150){
+      talon1.set(ControlMode.Position, 2048);
+    }
+    else if(loops >= 150 && loops <300){
+      talon1.set(ControlMode.Position, 0);      
+    }
+    else{
+      loops = 0;
+    }
+    System.out.println(loops);
+    loops++;
   }
 }

@@ -81,9 +81,9 @@ public class drivetrain extends subsystem {
 	private drivetrain(){
 		//instantiate the mPods
 		mUpperRight = new neoSwervepod(0, mDriveSparks[0], mGearTalons[0]);
-		mUpperLeft = new neoSwervepod(0, mDriveSparks[1], mGearTalons[1]);
-		mLowerLeft = new neoSwervepod(0, mDriveSparks[2], mGearTalons[2]);
-		mLowerRight = new neoSwervepod(0, mDriveSparks[3], mGearTalons[3]);
+		mUpperLeft = new neoSwervepod(1, mDriveSparks[1], mGearTalons[1]);
+		mLowerLeft = new neoSwervepod(2, mDriveSparks[2], mGearTalons[2]);
+		mLowerRight = new neoSwervepod(3, mDriveSparks[3], mGearTalons[3]);
 
 		//set drive type
 		mCoordType = coordType.FIELDCENTRIC;
@@ -107,8 +107,8 @@ public class drivetrain extends subsystem {
 
 		mNeoPods.add(mUpperRight);
 		mNeoPods.add(mUpperLeft);
-		mNeoPods.add(mLowerRight);
 		mNeoPods.add(mLowerLeft);
+		mNeoPods.add(mLowerRight);
 		
 		//Setting constants
 		kLength = constants.DRIVETRAINLENGTH;
@@ -156,10 +156,10 @@ public class drivetrain extends subsystem {
 		double[] podGear = new double[4];
 		
 		//Calculating components
-		double a = cStrafeCommand + cSpinCommand * getRadius("A"); 
-		double b = cStrafeCommand - cSpinCommand * getRadius("B"); 
-		double c = cForwardCommand - cSpinCommand * getRadius("C"); 
-		double d = cForwardCommand + cSpinCommand * getRadius("D"); 
+		double a = cStrafeCommand + cSpinCommand * kLength/2;//getRadius("A"); 
+		double b = cStrafeCommand - cSpinCommand * kLength/2;//getRadius("B"); 
+		double c = cForwardCommand - cSpinCommand * kWidth/2;//getRadius("C"); 
+		double d = cForwardCommand + cSpinCommand * kWidth/2;//getRadius("D"); 
 		
 		//Calculating the speed and angle of each pod
 		podDrive[0] = Math.sqrt(Math.pow(b, 2)+ Math.pow(c, 2));
@@ -185,13 +185,13 @@ public class drivetrain extends subsystem {
 		}
 		
 		//If enabled, sends each pod to a defensive lock when not moving 
-		if(mController.defenseEnabled()) {
-			// Sending each pod their respective commands
-			mNeoPods.get(0).setPod(0.0,-1.0*Math.PI/4.0);
-			mNeoPods.get(1).setPod(0.0, 1.0*Math.PI/4.0);
-			mNeoPods.get(2).setPod(0.0, 3.0*Math.PI/4.0);
-			mNeoPods.get(3).setPod(0.0, -3.0* Math.PI/4.0);
-		} else { 			//Sending each pod their respective commands
+		// if(mController.defenseEnabled()) {
+		// 	// Sending each pod their respective commands
+		 	//mNeoPods.get(0).setPod(0.0,0);//podGear[0]+1.0*Math.PI/4.0);
+		 	//mNeoPods.get(1).setPod(0.0,0);// podGear[1]-1.0*Math.PI/4.0);
+		 	//mNeoPods.get(2).setPod(0.0,0);// podGear[2]-3.0*Math.PI/4.0);
+		 	//mNeoPods.get(3).setPod(0.0,0);// podGear[3]+3.0* Math.PI/4.0);
+		// } else { 			//Sending each pod their respective commands
 			for(int idx = 0; idx < mNeoPods.size(); idx++) {
 				// if(mPods.get(idx) != null){
 				// 	mPods.get(idx).setPod(podDrive[idx],podGear[idx]); 
@@ -199,8 +199,12 @@ public class drivetrain extends subsystem {
 				// else {
 					mNeoPods.get(idx).setPod(podDrive[idx], podGear[idx]);
 				// }
+				// mNeoPods.get(0).setPod(0.0, mController.getForward()*4096);
+				// mNeoPods.get(1).setPod(0.0, mController.getForward()*4096);
+				// mNeoPods.get(2).setPod(0.0, mController.getForward()*4096);
+				// mNeoPods.get(3).setPod(0.0, mController.getForward()*4096);
 			}
-		}
+		//}
 	}
 
 	public void autonVision(boolean state){ 
