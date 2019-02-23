@@ -59,30 +59,24 @@ public class Robot extends IterativeRobot {
 		else if(mController.crossbowDeliver()){
 			mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
 		}
+		else if(mController.deployCargoIntake()){
+			mSuperstructure.setWantedState(superstructure.state.INTAKE_C_ROLLER);
+		} 
+		else if (mController.spitCargoIntake()){
+			mSuperstructure.setWantedState(superstructure.state.DELIVER_CARGO);
+		} 
+		else if (mController.moveToCargo()){
+			mSuperstructure.setWantedState(superstructure.state.C_ROLLER_TO_ROCKET);
+		}
+		else if (mController.neutral()){
+			mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
+		}
 
 		if(mController.visionFront()){
 			mVision.setWantedState(vision.state.STREAM_FRONT);
 		}
 		else if(mController.visionBack()){
 			mVision.setWantedState(vision.state.STREAM_BACK);
-		}
-
-
-		if(mController.stowCargoIntake()){
-			cargointake.getInstance().stow();
-		}
-		else if (mController.deployCargoIntake()){
-			cargointake.getInstance().deploy();
-		} else {
-			cargointake.getInstance().stopActuator();
-		}
-		if(mController.intakeCargo()){
-			cargointake.getInstance().intake();
-		} 
-		else if (mController.spitCargoIntake()){
-			cargointake.getInstance().spit();
-		} else {
-			cargointake.getInstance().stopRoller();
 		}
 	}
 
