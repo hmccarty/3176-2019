@@ -49,7 +49,7 @@ public class Robot extends IterativeRobot {
   @Override
   public void teleopPeriodic() {
    // System.out.println(irSensor.getValue());
-    //System.out.println(arduino.getInt());\
+    //System.out.println(arduino.getInt());
     // if(timer1.get() < 2) {
     //   talon1.set(ControlMode.Position, 4096*5);
     // }
@@ -69,16 +69,40 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void testPeriodic() {
-    if(loops < 150){
-      talon1.set(ControlMode.Position, 1024);
-    }
-    else if(loops >= 150 && loops <300){
-      talon1.set(ControlMode.Position, 0);      
-    }
-    else{
-      loops = 0;
-    }
-    System.out.println(loops);
-    loops++;
+  //   if(loops < 150){
+      talon1.set(ControlMode.Position, 20000);
+  //   }
+  //   else if(loops >= 150 && loops <300){
+  //     talon1.set(ControlMode.Position, 0);      
+  //   }
+  //   else{
+  //     loops = 0;
+  //   }
+  //   //System.out.println(loops);
+  //   loops++;
   }
+
+  private double ToDeg(double units) {
+		double deg = units * (360.0 / 4096.0);
+
+		/* truncate to 0.1 res */
+		deg *= 10;
+		deg = (int) deg;
+		deg /= 10;
+
+		return deg;
+  }
+  
+  private double ToUnits(double degs) {
+    double unit = degs * (4096.0 / 360.0);
+    return unit;
+  } 
 }
+
+// 50
+// 50
+// 0
+// 0.001
+// 3
+// 1
+// 204000
