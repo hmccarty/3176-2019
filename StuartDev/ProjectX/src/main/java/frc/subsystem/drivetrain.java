@@ -26,9 +26,9 @@ public class drivetrain extends subsystem {
 	private ArrayList<neoSwervepod> mNeoPods;
 	
 	private neoSwervepod mUpperRight;
-	private swervepod mUpperLeft;
-	private swervepod mLowerLeft;
-	private swervepod mLowerRight;
+	private neoSwervepod mUpperLeft;
+	private neoSwervepod mLowerLeft;
+	private neoSwervepod mLowerRight;
 	
 	private coordType mCoordType;
 	private inputType mInputType;
@@ -81,9 +81,9 @@ public class drivetrain extends subsystem {
 	private drivetrain(){
 		//instantiate the mPods
 		mUpperRight = new neoSwervepod(0, mDriveSparks[0], mGearTalons[0]);
-		mUpperLeft = new swervepod(1, mDriveTalons[1], mGearTalons[1]);
-		mLowerLeft = new swervepod(2, mDriveTalons[2], mGearTalons[2]);
-		mLowerRight = new swervepod(3, mDriveTalons[3], mGearTalons[3]);
+		mUpperLeft = new neoSwervepod(0, mDriveSparks[1], mGearTalons[1]);
+		mLowerLeft = new neoSwervepod(0, mDriveSparks[2], mGearTalons[2]);
+		mLowerRight = new neoSwervepod(0, mDriveSparks[3], mGearTalons[3]);
 
 		//set drive type
 		mCoordType = coordType.FIELDCENTRIC;
@@ -101,14 +101,14 @@ public class drivetrain extends subsystem {
 				
 		//Add instantiated mPods to the array list
 		mPods.add(null);
-		mPods.add(mUpperLeft);
-		mPods.add(mLowerLeft);
-		mPods.add(mLowerRight);
+		mPods.add(null);
+		mPods.add(null);
+		mPods.add(null);
 
 		mNeoPods.add(mUpperRight);
-		mNeoPods.add(null);
-		mNeoPods.add(null);
-		mNeoPods.add(null);
+		mNeoPods.add(mUpperLeft);
+		mNeoPods.add(mLowerRight);
+		mNeoPods.add(mLowerLeft);
 		
 		//Setting constants
 		kLength = constants.DRIVETRAINLENGTH;
@@ -128,7 +128,7 @@ public class drivetrain extends subsystem {
 		//cSpinCommand = 0.0;
 	}
 	
-	/**
+	/*
 	 * Prevents more than one instance of Drivetrain
 	 */
 	public static drivetrain getInstance(){
@@ -179,7 +179,7 @@ public class drivetrain extends subsystem {
 		
 		//Reducing mPods by the relative max speed
 		if(cMaxSpeed > kMaxSpeed) {
-			for(int idx = 0; idx < mPods.size(); idx++) {
+			for(int idx = 0; idx < mNeoPods.size(); idx++) {
 				podDrive[idx] /= cMaxSpeed/kMaxSpeed;
 			}
 		}
@@ -188,17 +188,17 @@ public class drivetrain extends subsystem {
 		if(mController.defenseEnabled()) {
 			// Sending each pod their respective commands
 			mNeoPods.get(0).setPod(0.0,-1.0*Math.PI/4.0);
-			mPods.get(1).setPod(0.0, 1.0*Math.PI/4.0);
-			mPods.get(2).setPod(0.0, 3.0*Math.PI/4.0);
-			mPods.get(3).setPod(0.0, -3.0* Math.PI/4.0);
+			mNeoPods.get(1).setPod(0.0, 1.0*Math.PI/4.0);
+			mNeoPods.get(2).setPod(0.0, 3.0*Math.PI/4.0);
+			mNeoPods.get(3).setPod(0.0, -3.0* Math.PI/4.0);
 		} else { 			//Sending each pod their respective commands
-			for(int idx = 0; idx < mPods.size(); idx++) {
-				if(mPods.get(idx) != null){
-					mPods.get(idx).setPod(podDrive[idx],podGear[idx]); 
-				}
-				else {
+			for(int idx = 0; idx < mNeoPods.size(); idx++) {
+				// if(mPods.get(idx) != null){
+				// 	mPods.get(idx).setPod(podDrive[idx],podGear[idx]); 
+				// }
+				// else {
 					mNeoPods.get(idx).setPod(podDrive[idx], podGear[idx]);
-				}
+				// }
 			}
 		}
 	}
@@ -239,17 +239,17 @@ public class drivetrain extends subsystem {
 	
 	public PowerDistributionPanel getmPDP() {return mPDP;}
 	
-	public swervepod getPod(int idx) {return mPods.get(idx);}
+	public neoSwervepod getPod(int idx) {return mNeoPods.get(idx);}
 	
 	public double getAvgWheelSpeed() {
 		double average =0;
-		for(swervepod pod: mPods) {
-			average += pod.getWheelSpeed();
-		}
+		// for(swervepod pod: mPods) {
+		// 	average += pod.getWheelSpeed();
+		// }
 		for(neoSwervepod pod: mNeoPods) {
 			average += pod.getWheelSpeed();
 		}
-		return average/mPods.size();
+		return average/mNeoPods.size();
 	}
 	
 	public double getAngle() {return ((mGyro.getAngle()* Math.PI/180.0) % (2*Math.PI));} //Converts mGyro Angle (0-360) to Radians (0-2pi)
@@ -290,12 +290,12 @@ public class drivetrain extends subsystem {
 	@Override public void zeroAllSensors() {
 		for(int idx = 0; idx < 4; idx++)
 		{
-			if(mPods.get(idx) != null) {
-				mPods.get(idx).zeroAllSensors();
-			}
-			else {
+			// if(mPods.get(idx) != null) {
+			// 	mPods.get(idx).zeroAllSensors();
+			// }
+			// else {
 				mNeoPods.get(idx).zeroAllSensors();
-			}
+			// }
 		}
 	}
 	
@@ -383,8 +383,8 @@ public class drivetrain extends subsystem {
 
 	@Override
 	public void outputToSmartDashboard() {
-		for(neoSwervepod pod : mNeoPods) {
-			pod.outputToSmartDashboard();
-		}
+		// for(neoSwervepod pod : mNeoPods) {
+		// 	pod.outputToSmartDashboard();
+		// }
 	}
 }
