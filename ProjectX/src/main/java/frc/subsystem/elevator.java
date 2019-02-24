@@ -1,13 +1,10 @@
 package frc.subsystem;
 
-import javax.lang.model.util.ElementScanner6;
-
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.Encoder;
 import frc.subsystem.controller;
 import frc.robot.constants;
 import frc.util.*;
@@ -41,6 +38,7 @@ public class elevator {
         mWinch = new CANSparkMax(constants.ELEVATOR, MotorType.kBrushless);
         mEncoder = mWinch.getEncoder();
         mPIDController = mWinch.getPIDController();
+
         mPIDController.setP(constants.ELEVATOR_KP);
         mPIDController.setI(constants.ELEVATOR_KI);
         mPIDController.setD(constants.ELEVATOR_KD);
@@ -51,8 +49,7 @@ public class elevator {
     }
 
     private void setLevel(double wantedHeight) {
-        //liftSpeed = elevatorControlLoop.returnOutput(neoEncoder.getPosition(), wantedHeight);
-        //motor.set(liftSpeed);
+        mPIDController.setReference(wantedHeight, ControlType.kSmartMotion); 
     }
 
     public void setWantedFloor(double wF) {
