@@ -2,9 +2,10 @@ package frc.subsystem;
 
 import javax.lang.model.util.ElementScanner6;
 
-/*import com.revrobotics.CANEncoder;
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
-*///import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Encoder;
 import frc.subsystem.controller;
@@ -14,33 +15,35 @@ import frc.util.trajectory;
 
 public class elevator {
     private static elevator instance = new elevator();
-    //private CANSparkMax motor;
-    //private CANEncoder neoEncoder;
-    private controller joystick = controller.getInstance();
-    private pid elevatorControlLoop;
-    private double wantedFloor;
-    private double liftSpeed;
-    private trajectory motionProfileTrajectory;
-    private double motionProfileStartTime;
+    private controller mController = controller.getInstance();
 
-    private enum systemStates {
+    private CANSparkMax mWinch;
+    private CANPIDController mPIDController;
+    private CANEncoder mEncoder; 
+
+    private trajectory mTrajectory;
+
+    private double cWantedFloor;
+    private double cLiftSpeed;
+    private double cTrajectoryStartTime;
+
+    private enum state {
         NEUTRAL,
         LEVEL_FOLLOW,
         OPEN_LOOP,
         MOTION_PROFILE
     }
 
-    private systemStates currentState;
-    private systemStates wantedState;
-    private systemStates lastState;
+    private state mCurrentState;
+    private state mWantedState;
 
     public elevator() {
-        /*motor = new CANSparkMax(constants.ELEVATORMOTOR, MotorType.kBrushless);
-        neoEncoder = motor.getEncoder();
-        elevatorControlLoop = new pid(constants.ELEVATOR_KP,
-                                            constants.ELEVATOR_KI,
-                                            constants.ELEVATOR_KD,
-                                            1);*/
+        mWinch = new CANSparkMax(constants.ELEVATOR, MotorType.kBrushless);
+        mEncoder = mWinch.getEncoder();
+        mPIDController = mWinch.getPIDController();
+        mPIDController.setP(constants.ELEVATOR_KP);
+        mPIDController.setI(constants.ELEVATOR_KI);
+        mPIDController.setD(constants.ELEVATOR_KD);
     }
 
     public static elevator getInstance() {
@@ -53,24 +56,24 @@ public class elevator {
     }
 
     public void setWantedFloor(double wF) {
-        this.wantedFloor = wF;
+        this.cWantedFloor = wF;
     }
 
-    /*public double getHeight() {
-        //return neoEncoder.getPosition();
-    }*/
-
-    public void setWantedState(systemStates wantedState) {
-        this.wantedState = wantedState;
+    public double getHeight() {
+        return mEncoder.getPosition();
     }
 
-    public systemStates getState() {
-        return currentState;
+    public void setWantedState(state wantedState) {
+        this.mWantedState = wantedState;
+    }
+
+    public state getState() {
+        return mCurrentState;
     }
 
     public void checkState() {
-        if (currentState != wantedState) {
-            currentState = wantedState;
+        if (mCurrentState != mWantedState) {
+            mCurrentState = mWantedState;
         }
     }
 
@@ -79,22 +82,18 @@ public class elevator {
         {
             @Override
             public void onStart() {
-                currentState = systemStates.NEUTRAL;
-                wantedState = systemStates.NEUTRAL;
+                mCurrentState = state.NEUTRAL;
+                mWantedState = state.NEUTRAL;
             }
 
             @Override
             public void onLoop() {
-                switch(currentState) {
+                switch(mCurrentState) {
                     case NEUTRAL:
-                        //motor.set(0.0);
-                        checkState();
-                        lastState = systemStates.NEUTRAL;
+                        setLevel(getHeight());
                         break;
                     case OPEN_LOOP:
                         //motor.set(joystick.elevatorPosition());
-                        checkState();
-                        lastState = systemStates.OPEN_LOOP;
                         break;
                     case LEVEL_FOLLOW:
                         checkState();
@@ -103,7 +102,6 @@ public class elevator {
                         // } else {
                         //     setFloor(wantedFloor);
                         // }
-                        lastState = systemStates.LEVEL_FOLLOW;
                         break;
                     case MOTION_PROFILE:
                         // if(lastState != systemStates.MOTION_PROFILE) {
@@ -125,6 +123,7 @@ public class elevator {
 						// break;
                         
                 }
+            checkState();
             }
             public void onStop(){}
         });

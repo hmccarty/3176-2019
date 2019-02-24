@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import frc.robot.constants;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import frc.util.*;
-import frc.robot.*;
 
 /** 
  * Handles crab drive states and manages individual swervemPods, see {@link Swervepod}
@@ -41,7 +40,6 @@ public class drivetrain extends subsystem {
 	
 	private double kLength;
 	private double kWidth;
-	private double kRadius; 
 	
 	private double kMaxSpeed;
 	private double kMaxRotation;
@@ -53,7 +51,7 @@ public class drivetrain extends subsystem {
 	private double cStrafeCommand;
 	private double cSpinCommand;
 	
-	public enum systemStates{
+	public enum state{
 		NEUTRAL,
 		HOMING,
 		DRIVE,
@@ -71,8 +69,8 @@ public class drivetrain extends subsystem {
 		VELOCITY
 	}
 	
-	private systemStates mCurrentState;
-	private systemStates mWantedState;
+	private state mCurrentState;
+	private state mWantedState;
 	
 	private drivetrain(){
 		//instantiate the mPods
@@ -103,19 +101,19 @@ public class drivetrain extends subsystem {
 		//Setting constants
 		kLength = constants.DRIVETRAINLENGTH;
 		kWidth = constants.DRIVETRAINWIDTH;
-		kRadius = Math.sqrt(Math.pow(kLength,2)+Math.pow(kWidth,2));
+
 		kMaxSpeed = constants.DRIVETRAINMAXWHEELSPEED;
 		kMaxRotation = constants.DRIVETRAINMAXROTATIONSPEED;
 		
-		//Instantiating the mGyro
+		//Instantiating the Gyro
 		mGyro = new AHRS(SPI.Port.kMXP);
 		resetGyro();
 		updateAngle();
 		
-		//Initializing the commands
-		//cForwardCommand = Math.pow(10, -15); //Puts wheels in forward-facing direction
-		//cStrafeCommand = 0.0;
-		//cSpinCommand = 0.0;
+		//Start wheels in a forward facing direction
+		cForwardCommand = Math.pow(10, -15); 
+		cStrafeCommand = 0.0;
+		cSpinCommand = 0.0;
 	}
 	
 	/**
@@ -126,7 +124,7 @@ public class drivetrain extends subsystem {
 	}
 	
 	/**
-	 * Handles each swerve command and communicates with the swervemPods
+	 * Handles each swerve command and communicates with the Swerve Pods
 	 */
 	private void crabDrive() {
 		if(mCoordType == coordType.FIELDCENTRIC){
@@ -212,7 +210,7 @@ public class drivetrain extends subsystem {
 		this.mInputType = mInputType; 
 	}
 	
-	public void setWantedState(systemStates wanted) {
+	public void setWantedState(state wanted) {
 		mWantedState = wanted;
 	}
 	
@@ -282,8 +280,8 @@ public class drivetrain extends subsystem {
 		mLoopMan.addLoop(new loop() {
 		@Override
 		public void onStart() {
-			mCurrentState = systemStates.NEUTRAL;
-			mWantedState = systemStates.NEUTRAL;		
+			mCurrentState = state.NEUTRAL;
+			mWantedState = state.NEUTRAL;		
 		}
 		@Override
 		public void onLoop() {

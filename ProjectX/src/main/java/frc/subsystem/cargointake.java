@@ -19,9 +19,10 @@ public class cargointake {
     private Talon actuator;
     private Talon roller; 
     private Timer timer; 
-    private int stowedHeight = -10;
-    private int intakeHeight = -45000;
-    private int rocketHeight = -14000;
+
+    private int kStowedHeight = -10;
+    private int kIntakeHeight = -45000;
+    private int kRocketHeight = -24000;
 
     public cargointake(){
         cargoStowPID = new pid(0.00009, 0,0,.25);
@@ -50,16 +51,16 @@ public class cargointake {
     }
 
     public void deploy(){
-        closedLoopControl(intakeHeight);
+        closedLoopControl(kIntakeHeight);
     }
 
 
     public void stow(){
-        closedLoopControl(stowedHeight);
+        closedLoopControl(kStowedHeight);
     }
 
     public void moveToRocket(){
-        closedLoopControl(rocketHeight);
+        closedLoopControl(kRocketHeight);
     }
 
     public void intake(){
