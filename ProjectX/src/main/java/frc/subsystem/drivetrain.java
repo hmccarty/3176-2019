@@ -298,13 +298,13 @@ public class drivetrain extends subsystem {
 					cStrafeCommand = mController.getStrafe();
 					cSpinCommand = mController.getSpin();
 
-					if (!mController.Boosted()){
+					if (!mController.boost()){
 						cForwardCommand *= constants.MAXSLOWPERCENTSPEED;
 						cStrafeCommand *= constants.MAXSLOWPERCENTSPEED;
 						cSpinCommand *= constants.MAXSLOWPERCENTSPEED;
 					}
 
-					if(mController.RobotCentric()){
+					if(mController.robotCentric()){
 						setCoordType(coordType.ROBOTCENTRIC);
 					} else {
 						setCoordType(coordType.FIELDCENTRIC);

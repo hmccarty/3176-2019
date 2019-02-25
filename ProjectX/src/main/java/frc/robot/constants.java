@@ -3,7 +3,8 @@ package frc.robot;
 public class constants {
 	/***************\
 	|* Motor Ports *|
-	\***************/							/***PORT TYPE***/
+	\***************/	
+												/***PORT TYPE***/
 	public static int DRIVE_ONE = 1;			     /*CAN*/
 	public static int DRIVE_TWO = 2;    		     /*CAN*/
 	public static int DRIVE_THREE = 3;			     /*CAN*/
@@ -78,8 +79,12 @@ public class constants {
 	|* Elevator Constants *|
 	\**********************/
 
-	public static final double ELEVATOR_KP = 0; 
-	public static final double ELEVATOR_KI = 0; 
-	public static final double ELEVATOR_KD = 0; 
+	public static final double[] ELEVATOR_PID_CONFIG = { /*kP*/ 0.0, /*kI*/ 0.0, /*kD*/ 0.0, 
+														 /*I-Zone*/ 0.0, 
+														 /*Output Range Min*/ 0.0, /*Output Range Max*/ 0.0, 
+														 /*kF*/ 0.0};
+	public static final double[] ELEVATOR_MOTION_CONFIG = { /*Max Velocity*/ 0.0, /*Min Velocity*/ 0.0, 
+															/*Max Acceleration*/ 0.0, 
+															/*Allowed Error*/ 0.0 };
 
 }
