@@ -87,4 +87,11 @@ public class constants {
 															/*Max Acceleration*/ 0.0, 
 															/*Allowed Error*/ 0.0 };
 
+	/**************************\
+	|* Cargo Intake Constants *|
+	\**************************/
+	
+	public static final int DEPLOYED_HEIGHT = 10;
+    public static final int STOWED_HEIGHT = 45000;
+    public static final int ROCKET_HEIGHT = 24000;
 }

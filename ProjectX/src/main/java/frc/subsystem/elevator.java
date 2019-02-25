@@ -27,7 +27,6 @@ public class elevator {
     private double cTrajectoryStartTime;
 
     public enum state {
-        HOME,
         HOLDING,
         OPEN_LOOP,
         VELOCITY_CONTROL,
@@ -57,14 +56,6 @@ public class elevator {
 
     private void setSpeed(double wantedSpeed) {
         mPIDController.setReference(wantedSpeed, ControlType.kVelocity);
-    }
-
-    public void setWantedHeight(double wantedHeight) {
-        this.cWantedHeight = wantedHeight;
-    }
-
-    public void setWantedSpeed(double wantedSpeed) {
-        this.cWantedSpeed = wantedSpeed; 
     }
 
     public boolean inPosition() {
@@ -98,28 +89,26 @@ public class elevator {
         {
             @Override
             public void onStart() {
-                mCurrentState = state.HOME;
-                mWantedState = state.HOME;
+                mCurrentState = state.HOLDING;
+                mWantedState = state.HOLDING;
             }
 
             @Override
             public void onLoop() {
                 switch(mCurrentState) {
-                    case HOME:
-                        setHeight(getHeight());
-                        break;
                     case OPEN_LOOP:
-                        double cReducedCommand = mController.getElevatorVelocity()/2.0;
-                        mWinch.set(cReducedCommand); 
+                        cWantedSpeed = mController.getElevatorVelocity()/2.0;
+                        mWinch.set(cWantedSpeed); 
                         break;
                     case HOLDING:
                         setHeight(getHeight());
                         break; 
                     case VELOCITY_CONTROL:
-                        double cScaledCommand = mController.getElevatorVelocity()*3; 
-                        setSpeed(cScaledCommand);
+                        cWantedSpeed = mController.getElevatorVelocity()*3; 
+                        setSpeed(cWantedSpeed);
                         break;
                     case POSITION_CONTROL:
+                        cWantedHeight = mController.getElevatorHeight()/(2*Math.PI);
                         setHeight(cWantedHeight);
 						break;     
                 }

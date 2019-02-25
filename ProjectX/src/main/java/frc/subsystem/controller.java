@@ -1,15 +1,21 @@
 package frc.subsystem; 
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.constants;
 
 public class controller {
     private static controller instance = new controller();
     private Joystick thrustStick = new Joystick(0);
     private Joystick yawStick = new Joystick(1);
-    private Joystick buttonMonkey; 
+    private Joystick buttonMonkey = new Joystick(2); 
+
+    private boolean openLoop = false; 
+    private Timer openLoopTimer = new Timer();
+    private boolean firstTime = true;
 
     public controller(){
-        buttonMonkey = new Joystick(2);
+        openLoopTimer.start();
     }
     
     public static controller getInstance(){
@@ -48,11 +54,28 @@ public class controller {
         return buttonMonkey.getRawButton(10);
     }    
 
-    public double getCargoIntake(){
-        if(Math.abs(buttonMonkey.getThrottle()) > 0.07){
-            return buttonMonkey.getThrottle();
+    public boolean openLoopEnabled(){
+        if(buttonMonkey.getRawButton(11) && buttonMonkey.getRawButton(12)) {
+            if(firstTime == true){
+                firstTime = false; 
+                openLoopTimer.reset();
+            }
+            if(openLoopTimer.get() > 2.0){
+                firstTime = true;
+                openLoop = !openLoop;
+            }
+        }
+        return openLoop;
+    }
+
+    public int getWantedCargoIntakePosition(){
+        if(cargoIntakeToRocketHeight()){
+            return constants.ROCKET_HEIGHT;
+        }
+        else if(Math.abs(buttonMonkey.getThrottle()) > 0.07){
+            return (int)(buttonMonkey.getThrottle()*25000);
         } else {
-            return 0; 
+            return -1; 
         }
     }
 
@@ -77,7 +100,6 @@ public class controller {
             return -1; 
         }
     }
-
 
     /****************\
 	|* Thrust Stick *|
