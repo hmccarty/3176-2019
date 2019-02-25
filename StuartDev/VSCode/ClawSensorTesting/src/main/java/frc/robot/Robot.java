@@ -49,7 +49,6 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void teleopPeriodic() {
-<<<<<<< HEAD
    // System.out.println(irSensor.getValue());
     //System.out.println(arduino.getInt());
     // if(timer1.get() < 2) {
@@ -67,26 +66,10 @@ public class Robot extends IterativeRobot {
     // timer1.delay(2);
     // talon1.set(ControlMode.Velocity,-200);
     
-=======
-    System.out.println(arduino.getInt());
->>>>>>> 96d21044cac49d262b8d368d4d8d5467e1455059
   }
 
   @Override
   public void testPeriodic() {
-<<<<<<< HEAD
-  //   if(loops < 150){
-      talon1.set(ControlMode.Position, 20000);
-  //   }
-  //   else if(loops >= 150 && loops <300){
-  //     talon1.set(ControlMode.Position, 0);      
-  //   }
-  //   else{
-  //     loops = 0;
-  //   }
-  //   //System.out.println(loops);
-  //   loops++;
-=======
     // if(loops < 150){
     //   talon1.set(ControlMode.Position, 1024);
     // }
@@ -98,7 +81,6 @@ public class Robot extends IterativeRobot {
     // }
     // System.out.println(loops);
     // loops++;
->>>>>>> 96d21044cac49d262b8d368d4d8d5467e1455059
   }
 
   private double ToDeg(double units) {
