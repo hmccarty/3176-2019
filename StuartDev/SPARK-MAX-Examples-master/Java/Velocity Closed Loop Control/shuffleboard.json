@@ -12,20 +12,20 @@
         "tiles": {
           "0,0": {
             "size": [
-              3,
-              3
+              9,
+              6
             ],
             "content": {
               "_type": "Graph",
-              "_source0": "network_table:///SmartDashboard/ProcessVariable",
-              "_source1": "network_table:///SmartDashboard/SetPoint",
+              "_source0": "network_table:///SmartDashboard/SetPoint",
+              "_source1": "network_table:///SmartDashboard/ProcessVariable",
               "_title": "ProcessVariable",
               "Graph/Visible time": 30.0,
               "Visible data/SmartDashboard/ProcessVariable": true,
               "Visible data/SmartDashboard/SetPoint": true
             }
           },
-          "3,0": {
+          "9,1": {
             "size": [
               2,
               3
@@ -90,9 +90,9 @@
     }
   ],
   "windowGeometry": {
-    "x": -1640.0,
-    "y": 54.0,
-    "width": 1540.0,
-    "height": 832.0
+    "x": -8.0,
+    "y": -8.0,
+    "width": 1696.0,
+    "height": 1026.0
   }
 }

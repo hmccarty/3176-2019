@@ -8,60 +8,31 @@
 package frc.robot;
 
 import frc.subsystem.*;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.TimedRobot;
 import frc.auton.*;
 
-import edu.wpi.first.networktables.*;
 
-public class Robot extends IterativeRobot {
-	private SendableChooser<String> m_chooser = new SendableChooser<>();
+public class Robot extends TimedRobot {
 	private loopmanager myLoops = loopmanager.getInstance();
 	private drivetrain mDriveTrain = drivetrain.getInstance(); 
+	private vision mVision = vision.getInstance();
 	private controller mController = controller.getInstance();
-	int testID = 0;
-	String gameData;
-	private boolean isIntakeOpenLoop;
-	private boolean isElevatorOpenLoop;
-	private static NetworkTableEntry x;
-	private static NetworkTableEntry area;
-	private static NetworkTableEntry bLeftX;
-	private static NetworkTableEntry bRightX;
-	private static NetworkTableEntry bLeftY;
-	UsbCamera camera1;
-	UsbCamera camera2;
-	private static NetworkTableEntry bRightY;
-	private static NetworkTableEntry angle; 
-	private static NetworkTableEntry distance; 
+	private superstructure mSuperstructure = superstructure.getInstance();
+	private elevator mElevator = elevator.getInstance();
+
 	@Override
 	public void robotInit() {
 		mDriveTrain.registerLoop(); 
+		mVision.registerLoop();
+		mSuperstructure.registerLoop();
+		mElevator.registerLoop();
 		myLoops.startLoops();
-		CameraServer.getInstance().startAutomaticCapture();
-		
-		NetworkTableInstance inst = NetworkTableInstance.getDefault();
-		NetworkTable table = inst.getTable("SmartDashboard");
-		//x = table.getEntry("Block Center X");
-		area = table.getEntry("Block Area");
-		bLeftX = table.getEntry("Point 2 X Coord");
-		bLeftY = table.getEntry("Point 2 Y Coord");
-		bRightX = table.getEntry("Point 3 X Coord");
-		bRightY = table.getEntry("Point 3 Y Coord");
-		angle = table.getEntry("Angle");
-		distance = table.getEntry("distance");
-		isIntakeOpenLoop = false;
-		isElevatorOpenLoop = false;
 	}
 	
 	public void autonomousPeriodic() {
 		myLoops.runLoops();
-		mDriveTrain.setWantedState(drivetrain.systemStates.AUTON);
+		mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
+		mDriveTrain.setWantedState(drivetrain.state.AUTON);
 		leftHab.main.run();
 	}
 
@@ -72,23 +43,65 @@ public class Robot extends IterativeRobot {
 		/*********************\
 		|* Drivetrain States *|
 		\*********************/
-		if(mController.TrackTarget()){
-			mDriveTrain.setWantedState(drivetrain.systemStates.VISION);
+		if(mController.trackTarget()){
+			mDriveTrain.setWantedState(drivetrain.state.VISION);
 		} else {
-			mDriveTrain.setWantedState(drivetrain.systemStates.DRIVE);
+			mDriveTrain.setWantedState(drivetrain.state.DRIVE);
 		}		
-	}
 
-	public static double getDistance(){
-		return distance.getDouble(-1.0);
-	}
+		/*************************\
+		|* Superstructure States *|
+		\*************************/
 
-	public static double getAngle(){
-		return angle.getDouble(0);
+		if(mController.crossbowIntake()){
+			mSuperstructure.setWantedState(superstructure.state.INTAKE_H_CB);
+		}
+		else if(mController.crossbowHold()){
+			mSuperstructure.setWantedState(superstructure.state.HOLD_H_CB);
+		}
+		else if(mController.crossbowDeliver()){
+			mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
+		}
+		else if(mController.deployCargoIntake()){
+			mSuperstructure.setWantedState(superstructure.state.INTAKE_C_ROLLER);
+		} 
+		else if (mController.spitCargoIntake()){
+			mSuperstructure.setWantedState(superstructure.state.DELIVER_CARGO);
+		} 
+		else if (mController.getWantedCargoIntakePosition() != -1){
+			mSuperstructure.setWantedState(superstructure.state.C_ROLLER_MANUAL);
+		}
+		else if (mController.neutral()){
+			mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
+		}
+
+		/*******************\
+		|* Elevator States *|
+		\*******************/
+
+		if(mController.openLoopEnabled()){
+			mElevator.setWantedState(elevator.state.OPEN_LOOP);
+		}
+		else if (mController.getElevatorHeight() != -1){
+			mElevator.setWantedState(elevator.state.POSITION_CONTROL);
+		}
+		else if (mController.getElevatorVelocity() != 0){
+			mElevator.setWantedState(elevator.state.VELOCITY_CONTROL);
+		}
+		else if (mElevator.inPosition()){
+			mElevator.setWantedState(elevator.state.HOLDING);
+		}
+
+		/*****************\
+		|* Vision States *|
+		\*****************/
+		if(mController.visionFront()){
+			mVision.setWantedState(vision.state.STREAM_FRONT);
+		}
+		else if(mController.visionBack()){
+			mVision.setWantedState(vision.state.STREAM_BACK);
+		}
 	}
-	
-	// public static double getType(){
-	// }
 
 	@Override
 	public void testPeriodic() { 

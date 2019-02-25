@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import frc.robot.constants;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import frc.util.*;
-import frc.robot.*;
 
 /** 
  * Handles crab drive states and manages individual swervemPods, see {@link Swervepod}
@@ -15,6 +14,7 @@ import frc.robot.*;
 public class drivetrain extends subsystem {
 	private static drivetrain instance = new drivetrain();
 	private loopmanager mLoopMan = loopmanager.getInstance();
+	private vision mVision = vision.getInstance();
 	private controller mController = controller.getInstance(); 
 	private PowerDistributionPanel mPDP = new PowerDistributionPanel(0);
 	private AHRS mGyro;
@@ -40,7 +40,6 @@ public class drivetrain extends subsystem {
 	
 	private double kLength;
 	private double kWidth;
-	private double kRadius; 
 	
 	private double kMaxSpeed;
 	private double kMaxRotation;
@@ -52,7 +51,7 @@ public class drivetrain extends subsystem {
 	private double cStrafeCommand;
 	private double cSpinCommand;
 	
-	public enum systemStates{
+	public enum state{
 		NEUTRAL,
 		HOMING,
 		DRIVE,
@@ -70,8 +69,8 @@ public class drivetrain extends subsystem {
 		VELOCITY
 	}
 	
-	private systemStates mCurrentState;
-	private systemStates mWantedState;
+	private state mCurrentState;
+	private state mWantedState;
 	
 	private drivetrain(){
 		//instantiate the mPods
@@ -102,19 +101,19 @@ public class drivetrain extends subsystem {
 		//Setting constants
 		kLength = constants.DRIVETRAINLENGTH;
 		kWidth = constants.DRIVETRAINWIDTH;
-		kRadius = Math.sqrt(Math.pow(kLength,2)+Math.pow(kWidth,2));
+
 		kMaxSpeed = constants.DRIVETRAINMAXWHEELSPEED;
 		kMaxRotation = constants.DRIVETRAINMAXROTATIONSPEED;
 		
-		//Instantiating the mGyro
+		//Instantiating the Gyro
 		mGyro = new AHRS(SPI.Port.kMXP);
 		resetGyro();
 		updateAngle();
 		
-		//Initializing the commands
-		//cForwardCommand = Math.pow(10, -15); //Puts wheels in forward-facing direction
-		//cStrafeCommand = 0.0;
-		//cSpinCommand = 0.0;
+		//Start wheels in a forward facing direction
+		cForwardCommand = Math.pow(10, -15); 
+		cStrafeCommand = 0.0;
+		cSpinCommand = 0.0;
 	}
 	
 	/**
@@ -125,7 +124,7 @@ public class drivetrain extends subsystem {
 	}
 	
 	/**
-	 * Handles each swerve command and communicates with the swervemPods
+	 * Handles each swerve command and communicates with the Swerve Pods
 	 */
 	private void crabDrive() {
 		if(mCoordType == coordType.FIELDCENTRIC){
@@ -211,7 +210,7 @@ public class drivetrain extends subsystem {
 		this.mInputType = mInputType; 
 	}
 	
-	public void setWantedState(systemStates wanted) {
+	public void setWantedState(state wanted) {
 		mWantedState = wanted;
 	}
 	
@@ -259,7 +258,7 @@ public class drivetrain extends subsystem {
 	}
 
 	public boolean isAtTarget(){
-		if(Math.abs((visionTurn.returnOutput(Robot.getDistance(), 0))) < .5){
+		if(Math.abs((visionTurn.returnOutput(mVision.getDistance(), 0))) < .5){
 			return true;
 		} else {
 			return false;
@@ -281,8 +280,8 @@ public class drivetrain extends subsystem {
 		mLoopMan.addLoop(new loop() {
 		@Override
 		public void onStart() {
-			mCurrentState = systemStates.NEUTRAL;
-			mWantedState = systemStates.NEUTRAL;		
+			mCurrentState = state.NEUTRAL;
+			mWantedState = state.NEUTRAL;		
 		}
 		@Override
 		public void onLoop() {
@@ -299,13 +298,13 @@ public class drivetrain extends subsystem {
 					cStrafeCommand = mController.getStrafe();
 					cSpinCommand = mController.getSpin();
 
-					if (!mController.Boosted()){
+					if (!mController.boost()){
 						cForwardCommand *= constants.MAXSLOWPERCENTSPEED;
 						cStrafeCommand *= constants.MAXSLOWPERCENTSPEED;
 						cSpinCommand *= constants.MAXSLOWPERCENTSPEED;
 					}
 
-					if(mController.RobotCentric()){
+					if(mController.robotCentric()){
 						setCoordType(coordType.ROBOTCENTRIC);
 					} else {
 						setCoordType(coordType.FIELDCENTRIC);
@@ -317,13 +316,13 @@ public class drivetrain extends subsystem {
 					break;
 				case VISION:
 					//System.out.println(Robot.getDistance());
-					double distance = Robot.getDistance();
+					double distance = mVision.getDistance();
 					if(distance != -1){
 						cForwardCommand = visionForward.returnOutput(distance, 20);
 					}
-					System.out.println(Robot.getAngle());
+					System.out.println(mVision.getAngle());
 					//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
-					cStrafeCommand = visionStrafe.returnOutput(Robot.getAngle(), 0);
+					cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), 0);
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
 					crabDrive();
@@ -332,12 +331,12 @@ public class drivetrain extends subsystem {
 				case AUTON:
 					System.out.println(isAtTarget());
 					if(autonVision){
-						if(Robot.getDistance() != -1){
-							cForwardCommand = visionForward.returnOutput(Robot.getDistance(), 15);
+						if(mVision.getDistance() != -1){
+							cForwardCommand = visionForward.returnOutput(mVision.getDistance(), 15);
 						}
 						//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
-						if(Robot.getAngle() != 0){
-							cStrafeCommand = visionStrafe.returnOutput(Robot.getAngle(), 0);
+						if(mVision.getAngle() != 0){
+							cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), 0);
 						}
 						setCoordType(coordType.ROBOTCENTRIC); 
 						setInputType(inputType.PERCENTPOWER);

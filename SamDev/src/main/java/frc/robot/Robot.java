@@ -9,7 +9,7 @@ public class Robot extends IterativeRobot {
   private Joystick stick;
   private HatchIntake mHatchIntake = HatchIntake.getInstance();
   private CargoIntake mCargoIntake = CargoIntake.getInstance();
-  private NeoTesting mNeoTesting = NeoTesting.getInstance();
+  //private NeoTesting mNeoTesting = NeoTesting.getInstance();
   private Talon motor;
   private Timer timer;
 

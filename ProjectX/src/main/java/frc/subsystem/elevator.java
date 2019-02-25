@@ -1,12 +1,10 @@
 package frc.subsystem;
 
-import javax.lang.model.util.ElementScanner6;
-
-/*import com.revrobotics.CANEncoder;
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
-*/import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.Encoder;
+import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import frc.subsystem.controller;
 import frc.robot.constants;
 import frc.util.*;
@@ -14,63 +12,75 @@ import frc.util.trajectory;
 
 public class elevator {
     private static elevator instance = new elevator();
-    //private CANSparkMax motor;
-    //private CANEncoder neoEncoder;
-    private controller joystick = controller.getInstance();
-    private pid elevatorControlLoop;
-    private double wantedFloor;
-    private double liftSpeed;
-    private trajectory motionProfileTrajectory;
-    private double motionProfileStartTime;
+    private controller mController = controller.getInstance();
 
-    private enum systemStates {
-        NEUTRAL,
-        LEVEL_FOLLOW,
+    private CANSparkMax mWinch;
+    private CANPIDController mPIDController;
+    private CANEncoder mEncoder; 
+    private sparkconfig mSparkConfig; 
+
+    private trajectory mTrajectory;
+
+    private double cWantedHeight;
+    private double cWantedSpeed; 
+    private double cSpeed;
+    private double cTrajectoryStartTime;
+
+    public enum state {
+        HOLDING,
         OPEN_LOOP,
-        MOTION_PROFILE
+        VELOCITY_CONTROL,
+        POSITION_CONTROL
     }
 
-    private systemStates currentState;
-    private systemStates wantedState;
-    private systemStates lastState;
+    private state mCurrentState;
+    private state mWantedState;
 
     public elevator() {
-        /*motor = new CANSparkMax(constants.ELEVATORMOTOR, MotorType.kBrushless);
-        neoEncoder = motor.getEncoder();
-        elevatorControlLoop = new pid(constants.ELEVATOR_KP,
-                                            constants.ELEVATOR_KI,
-                                            constants.ELEVATOR_KD,
-                                            1);*/
+        mWinch = new CANSparkMax(constants.ELEVATOR, MotorType.kBrushless);
+        mEncoder = mWinch.getEncoder();
+        mPIDController = mWinch.getPIDController();
+
+        mSparkConfig = new sparkconfig(mPIDController, constants.ELEVATOR);
+        mSparkConfig.configPID(constants.ELEVATOR_PID_CONFIG);
+        mSparkConfig.configSmartMotion(constants.ELEVATOR_MOTION_CONFIG); 
     }
 
     public static elevator getInstance() {
         return instance;
     }
 
-    private void setLevel(double wantedHeight) {
-        //liftSpeed = elevatorControlLoop.returnOutput(neoEncoder.getPosition(), wantedHeight);
-        //motor.set(liftSpeed);
+    private void setHeight(double wantedHeight) {
+        mPIDController.setReference(wantedHeight, ControlType.kSmartMotion); 
     }
 
-    public void setWantedFloor(double wF) {
-        this.wantedFloor = wF;
+    private void setSpeed(double wantedSpeed) {
+        mPIDController.setReference(wantedSpeed, ControlType.kVelocity);
     }
 
-    /*public double getHeight() {
-        //return neoEncoder.getPosition();
-    }*/
-
-    public void setWantedState(systemStates wantedState) {
-        this.wantedState = wantedState;
+    public boolean inPosition() {
+        if(Math.abs(mEncoder.getVelocity())  < .1){
+            return true; 
+        } else {
+            return false; 
+        }
     }
 
-    public systemStates getState() {
-        return currentState;
+    public double getHeight() {
+        return mEncoder.getPosition();
+    }
+
+    public void setWantedState(state wantedState) {
+        this.mWantedState = wantedState;
+    }
+
+    public state getState() {
+        return mCurrentState;
     }
 
     public void checkState() {
-        if (currentState != wantedState) {
-            currentState = wantedState;
+        if (mCurrentState != mWantedState) {
+            mCurrentState = mWantedState;
         }
     }
 
@@ -79,52 +89,30 @@ public class elevator {
         {
             @Override
             public void onStart() {
-                currentState = systemStates.NEUTRAL;
-                wantedState = systemStates.NEUTRAL;
+                mCurrentState = state.HOLDING;
+                mWantedState = state.HOLDING;
             }
 
             @Override
             public void onLoop() {
-                switch(currentState) {
-                    case NEUTRAL:
-                        //motor.set(0.0);
-                        checkState();
-                        lastState = systemStates.NEUTRAL;
-                        break;
+                switch(mCurrentState) {
                     case OPEN_LOOP:
-                        //motor.set(joystick.elevatorPosition());
-                        checkState();
-                        lastState = systemStates.OPEN_LOOP;
+                        cWantedSpeed = mController.getElevatorVelocity()/2.0;
+                        mWinch.set(cWantedSpeed); 
                         break;
-                    case LEVEL_FOLLOW:
-                        checkState();
-                        // if(Math.abs(wantedFloor - getHeight()) > /*some distance away before switching to PID control*/){
-                        //     currentState = systemStates.MOTION_PROFILE;
-                        // } else {
-                        //     setFloor(wantedFloor);
-                        // }
-                        lastState = systemStates.LEVEL_FOLLOW;
+                    case HOLDING:
+                        setHeight(getHeight());
+                        break; 
+                    case VELOCITY_CONTROL:
+                        cWantedSpeed = mController.getElevatorVelocity()*3; 
+                        setSpeed(cWantedSpeed);
                         break;
-                    case MOTION_PROFILE:
-                        // if(lastState != systemStates.MOTION_PROFILE) {
-                        //     if (getHeight()<wantedFloor){
-                        //         motionProfileTrajectory = new trajectory(/*velocity and acceleration to be determined*/);
-                        //     } else {
-                        //         motionProfileTrajectory = new trajectory(/*velocity and acceleration TBD*/);
-                        //     }
-                        //     motionProfileTrajectory.addWaypoint(new Waypoint(getHeight(),0.0,0.0));
-						// 	motionProfileTrajectory.addWaypoint(new Waypoint(wantedFloor,0.0,0.0));
-						// 	motionProfileTrajectory.calculateTrajectory();
-						// 	motionProfileStartTime = Timer.getFPGATimestamp();
-                        // }   else if(Timer.getFPGATimestamp()-motionProfileStartTime<motionProfileTrajectory.getTimeToComplete()) {
-						// 	setFloor(motionProfileTrajectory.getPosition(Timer.getFPGATimestamp()-motionProfileStartTime));
-						// } else {
-						// 	currentState = systemStates.POSITION_FOLLOW;
-						// }
-						// lastState = systemStates.MOTION_PROFILE;
-						// break;
-                        
+                    case POSITION_CONTROL:
+                        cWantedHeight = mController.getElevatorHeight()/(2*Math.PI);
+                        setHeight(cWantedHeight);
+						break;     
                 }
+            checkState();
             }
             public void onStop(){}
         });

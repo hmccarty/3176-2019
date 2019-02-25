@@ -26,10 +26,10 @@ public class SPI_Coms {
     }
 
     public int getInt() {
-        byte buffer[] = new byte[1];
+        byte buffer[] = new byte[2];
         // mSPI.forceAutoRead();
         // mSPI.readAutoReceivedData(buffer, 0, 50);
-        mSPI.read(true, buffer, 2);
+        mSPI.read(true, buffer, 1);
         return buffer[0];
     }
 }
