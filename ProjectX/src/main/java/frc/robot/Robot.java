@@ -8,32 +8,31 @@
 package frc.robot;
 
 import frc.subsystem.*;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.TimedRobot;
 import frc.auton.*;
 
 
-public class Robot extends IterativeRobot {
+public class Robot extends TimedRobot {
 	private loopmanager myLoops = loopmanager.getInstance();
 	private drivetrain mDriveTrain = drivetrain.getInstance(); 
 	private vision mVision = vision.getInstance();
 	private controller mController = controller.getInstance();
 	private superstructure mSuperstructure = superstructure.getInstance();
-	crossbow mCrossbow = crossbow.getInstance();
+	private elevator mElevator = elevator.getInstance();
+
 	@Override
 	public void robotInit() {
 		mDriveTrain.registerLoop(); 
 		mVision.registerLoop();
 		mSuperstructure.registerLoop();
+		mElevator.registerLoop();
 		myLoops.startLoops();
 	}
 	
 	public void autonomousPeriodic() {
 		myLoops.runLoops();
 		mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
-		mDriveTrain.setWantedState(drivetrain.systemStates.AUTON);
+		mDriveTrain.setWantedState(drivetrain.state.AUTON);
 		leftHab.main.run();
 	}
 
@@ -44,11 +43,15 @@ public class Robot extends IterativeRobot {
 		/*********************\
 		|* Drivetrain States *|
 		\*********************/
-		if(mController.TrackTarget()){
-			mDriveTrain.setWantedState(drivetrain.systemStates.VISION);
+		if(mController.trackTarget()){
+			mDriveTrain.setWantedState(drivetrain.state.VISION);
 		} else {
-			mDriveTrain.setWantedState(drivetrain.systemStates.DRIVE);
+			mDriveTrain.setWantedState(drivetrain.state.DRIVE);
 		}		
+
+		/*************************\
+		|* Superstructure States *|
+		\*************************/
 
 		if(mController.crossbowIntake()){
 			mSuperstructure.setWantedState(superstructure.state.INTAKE_H_CB);
@@ -59,30 +62,44 @@ public class Robot extends IterativeRobot {
 		else if(mController.crossbowDeliver()){
 			mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
 		}
+		else if(mController.deployCargoIntake()){
+			mSuperstructure.setWantedState(superstructure.state.INTAKE_C_ROLLER);
+		} 
+		else if (mController.spitCargoIntake()){
+			mSuperstructure.setWantedState(superstructure.state.DELIVER_CARGO);
+		} 
+		else if (mController.getWantedCargoIntakePosition() != -1){
+			mSuperstructure.setWantedState(superstructure.state.C_ROLLER_MANUAL);
+		}
+		else if (mController.neutral()){
+			mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
+		}
 
+		/*******************\
+		|* Elevator States *|
+		\*******************/
+
+		if(mController.openLoopEnabled()){
+			mElevator.setWantedState(elevator.state.OPEN_LOOP);
+		}
+		else if (mController.getElevatorHeight() != -1){
+			mElevator.setWantedState(elevator.state.POSITION_CONTROL);
+		}
+		else if (mController.getElevatorVelocity() != 0){
+			mElevator.setWantedState(elevator.state.VELOCITY_CONTROL);
+		}
+		else if (mElevator.inPosition()){
+			mElevator.setWantedState(elevator.state.HOLDING);
+		}
+
+		/*****************\
+		|* Vision States *|
+		\*****************/
 		if(mController.visionFront()){
 			mVision.setWantedState(vision.state.STREAM_FRONT);
 		}
 		else if(mController.visionBack()){
 			mVision.setWantedState(vision.state.STREAM_BACK);
-		}
-
-
-		if(mController.stowCargoIntake()){
-			cargointake.getInstance().stow();
-		}
-		else if (mController.deployCargoIntake()){
-			cargointake.getInstance().deploy();
-		} else {
-			cargointake.getInstance().stopActuator();
-		}
-		if(mController.intakeCargo()){
-			cargointake.getInstance().intake();
-		} 
-		else if (mController.spitCargoIntake()){
-			cargointake.getInstance().spit();
-		} else {
-			cargointake.getInstance().stopRoller();
 		}
 	}
 

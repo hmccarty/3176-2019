@@ -43,15 +43,15 @@ public class swervepod extends subsystem {
 		this.driveMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,0,0);
 		this.steerMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,0,0);
 		//this.steerMotor.setSelectedSensorPosition(0,0,0);
-		this.steerMotor.config_kP(0, constants.SWERVE_kP, 0);
-		this.steerMotor.config_kI(0, constants.SWERVE_kI, 0);
-		this.steerMotor.config_kD(0, constants.SWERVE_kD, 0);
+		this.steerMotor.config_kP(0, constants.SWERVE_KP, 0);
+		this.steerMotor.config_kI(0, constants.SWERVE_KI, 0);
+		this.steerMotor.config_kD(0, constants.SWERVE_KD, 0);
 		
 		
-		this.driveMotor.config_kP(0, constants.DRIVE_kP, 0);
-		this.driveMotor.config_kI(0, constants.DRIVE_kI, 0);
-		this.driveMotor.config_kD(0, constants.DRIVE_kD, 0);
-		this.driveMotor.config_kF(0, constants.DRIVE_kF,0);
+		this.driveMotor.config_kP(0, constants.DRIVE_KP, 0);
+		this.driveMotor.config_kI(0, constants.DRIVE_KI, 0);
+		this.driveMotor.config_kD(0, constants.DRIVE_KD, 0);
+		this.driveMotor.config_kF(0, constants.DRIVE_KF,0);
 		this.driveMotor.config_IntegralZone(0, constants.DRIVE_IZONE, 0);
 		this.driveMotor.configClosedloopRamp(constants.DRIVE_RAMPRATE, 0);
 		
