@@ -318,11 +318,17 @@ public class drivetrain extends subsystem {
 					//System.out.println(Robot.getDistance());
 					double distance = mVision.getDistance();
 					if(distance != -1){
-						cForwardCommand = visionForward.returnOutput(distance, 20);
+						cForwardCommand = visionForward.returnOutput(distance, 15);
+					} else {
+						cForwardCommand = 0;
 					}
 					System.out.println(mVision.getAngle());
 					//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
-					cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), 0);
+					if(mVision.getAngle() != -1){
+						cStrafeCommand = -visionStrafe.returnOutput(mVision.getAngle(), 130);
+					} else {
+						cStrafeCommand = 0;
+					}
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
 					crabDrive();
@@ -335,8 +341,9 @@ public class drivetrain extends subsystem {
 							cForwardCommand = visionForward.returnOutput(mVision.getDistance(), 15);
 						}
 						//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
-						if(mVision.getAngle() != 0){
-							cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), 0);
+						if(mVision.getAngle() != -1){
+							cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), 130);
+							System.out.println(mVision.getAngle());
 						}
 						setCoordType(coordType.ROBOTCENTRIC); 
 						setInputType(inputType.PERCENTPOWER);
