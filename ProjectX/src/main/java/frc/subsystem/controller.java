@@ -1,28 +1,33 @@
 package frc.subsystem; 
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.constants;
 
 public class controller {
     private static controller instance = new controller();
     private Joystick thrustStick = new Joystick(0);
     private Joystick yawStick = new Joystick(1);
-    private Joystick buttonMonkey; 
+    private Joystick buttonMonkey = new Joystick(2); 
+
+    private boolean openLoop = false; 
+    private Timer openLoopTimer = new Timer();
+    private boolean firstTime = true;
 
     public controller(){
-        buttonMonkey = new Joystick(2);
+        openLoopTimer.start();
     }
     
     public static controller getInstance(){
         return instance; 
     }
 
-    public boolean getCargoIntake(int version){
-        if(version == 0){
-            return buttonMonkey.getRawButtonPressed(1);
-        }
-        else {
-            return buttonMonkey.getRawButton(1);
-        }
+    /*****************\
+	|* Button Monkey *|
+    \*****************/
+
+    public boolean neutral(){
+        return buttonMonkey.getRawButton(1);
     }
 
     public  boolean crossbowIntake(){
@@ -37,36 +42,83 @@ public class controller {
         return buttonMonkey.getRawButton(4);
     }
 
-    public boolean runCompressor(){
-        return thrustStick.getRawButton(11);
-    }
-
     public boolean deployCargoIntake(){
         return buttonMonkey.getRawButton(5);
     }
 
     public boolean spitCargoIntake(){
-        return buttonMonkey.getRawButton(10);
+        return buttonMonkey.getRawButton(6);
     }
 
-    public boolean moveToCargo(){
-        return buttonMonkey.getRawButton(6);
+    public boolean cargoIntakeToRocketHeight(){
+        return buttonMonkey.getRawButton(10);
     }    
 
-    public boolean neutral(){
-        return buttonMonkey.getRawButton(1);
+    public boolean openLoopEnabled(){
+        if(buttonMonkey.getRawButton(11) && buttonMonkey.getRawButton(12)) {
+            if(firstTime == true){
+                firstTime = false; 
+                openLoopTimer.reset();
+            }
+            if(openLoopTimer.get() > 2.0){
+                firstTime = true;
+                openLoop = !openLoop;
+            }
+        }
+        return openLoop;
     }
 
-    /***********************\
-	|* Drivetrain Controls *|
-	\***********************/
+    public int getWantedCargoIntakePosition(){
+        if(cargoIntakeToRocketHeight()){
+            return constants.ROCKET_HEIGHT;
+        }
+        else if(Math.abs(buttonMonkey.getThrottle()) > 0.07){
+            return (int)(buttonMonkey.getThrottle()*25000);
+        } else {
+            return -1; 
+        }
+    }
+
+    public double getElevatorVelocity(){
+        if(Math.abs(buttonMonkey.getY()) > 0.07){
+            return buttonMonkey.getY();
+        } else {
+            return 0; 
+        }
+    }
+
+    public double getElevatorHeight(){
+        if(buttonMonkey.getPOV() == 0){
+            return 74.3; 
+        }
+        else if(buttonMonkey.getPOV() == 2){
+            return 46.3; 
+        }
+        else if(buttonMonkey.getPOV() == 4){
+            return 0.0; 
+        } else {
+            return -1; 
+        }
+    }
+
+    /****************\
+	|* Thrust Stick *|
+    \****************/
+
+    public boolean boost(){
+        return thrustStick.getRawButton(1);
+    }
 
     public boolean getGyroReset(){
         return thrustStick.getRawButton(2);
     }
 
-    public boolean RobotCentric(){
+    public boolean robotCentric(){
         return thrustStick.getRawButton(3);
+    }
+
+    public boolean defenseEnabled(){
+        return thrustStick.getRawButton(4);
     }
 
     public boolean frontLeftRotation(){
@@ -77,28 +129,8 @@ public class controller {
         return thrustStick.getRawButton(6);
     }
 
-    public boolean Boosted(){
-        return thrustStick.getRawButton(1);
-    }
-
-    public boolean TrackTarget(){
-        return yawStick.getRawButton(1);
-    }
-
-    public boolean visionFront(){
-        return yawStick.getRawButton(6);
-    }
-    
-    public boolean visionBack(){
-        return yawStick.getRawButton(4);
-    }
-
-    public boolean defenseEnabled(){
-        return thrustStick.getRawButton(4);
-    }
-
     public double getForward(){
-        if(Math.abs(thrustStick.getY()) > 0.07){
+        if(Math.abs(thrustStick.getY()) > 0.08){
             return thrustStick.getY();
         } else {
             return 0; 
@@ -106,11 +138,27 @@ public class controller {
     }
 
     public double getStrafe(){
-        if(Math.abs(thrustStick.getX()) > 0.07){
+        if(Math.abs(thrustStick.getX()) > 0.08){
             return thrustStick.getX();
         } else {
             return 0; 
         }
+    }
+
+    /*************\
+	|* Yaw Stick *|
+    \*************/
+
+    public boolean trackTarget(){
+        return yawStick.getRawButton(1);
+    }
+
+    public boolean visionFront(){
+        return yawStick.getRawButton(4);
+    }
+
+    public boolean visionBack(){
+        return yawStick.getRawButton(6);
     }
 
     public double getSpin(){

@@ -126,7 +126,8 @@ public class Elevator {
                     //         }
                     //         motionProfileTrajectory.addWaypoint(new Waypoint(getHeight(),0.0,0.0));
 					// 		motionProfileTrajectory.addWaypoint(new Waypoint(wantedFloor,0.0,0.0));
-					// 		motionProfileTrajectory.calculateTrajectory();
+
+                    // 		motionProfileTrajectory.calculateTrajectory();
 					// 		motionProfileStartTime = Timer.getFPGATimestamp();
                     //     }   else if(Timer.getFPGATimestamp()-motionProfileStartTime<motionProfileTrajectory.getTimeToComplete()) {
 					// 		setFloor(motionProfileTrajectory.getPosition(Timer.getFPGATimestamp()-motionProfileStartTime));

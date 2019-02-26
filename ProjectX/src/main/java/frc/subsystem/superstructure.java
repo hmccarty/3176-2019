@@ -52,16 +52,16 @@ public class superstructure {
                     //     mCompressor.stop();
                     // }
                     switch(mCurrentState){
-                        case C_ROLLER_TO_ROCKET:
-                            mCargoIntake.moveToRocket();
+                        case C_ROLLER_MANUAL:
+                            mCargoIntake.moveTo(mController.getWantedCargoIntakePosition());
                             break;
                         case INTAKE_C_ROLLER:
                             mCargoIntake.deploy();
-                            mCargoIntake.run(-.7);
+                            mCargoIntake.hold();
                             break;
                         case STOW_C_ROLLER:
                             mCargoIntake.stow();
-                            mCargoIntake.run(0);
+                            mCargoIntake.hold();
                             checkState();
                             break;
                         case INTAKE_H_CB:
@@ -121,7 +121,7 @@ public class superstructure {
                         case NEUTRAL:
                             mCompressor.start();
                             mCargoIntake.stow();
-                            mCargoIntake.run(0);
+                            mCargoIntake.hold();
                             //mClaw.stow();
                             //mHatchIntake.stow();
                             //mCrossbow.hold(); 
@@ -138,7 +138,7 @@ public class superstructure {
     }
 
     public enum state {
-        C_ROLLER_TO_ROCKET,
+        C_ROLLER_MANUAL,
         INTAKE_C_ROLLER,
         STOW_C_ROLLER,
         INTAKE_C_CLAW,

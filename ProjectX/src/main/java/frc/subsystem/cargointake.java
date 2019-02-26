@@ -14,20 +14,32 @@ public class cargointake {
 
     private pid cargoPID;
     private pid cargoStowPID;
-    //private DigitalInput sensor;
+
+    private DigitalInput mStowedSwitch;
+    private DigitalInput mCargoSwitch;
+
     private Encoder encoder; 
+
     private Talon actuator;
     private Talon roller; 
+
     private Timer timer; 
-    private int stowedHeight = -10;
-    private int intakeHeight = -45000;
-    private int rocketHeight = -14000;
+
+    private int kStowedHeight = constants.STOWED_HEIGHT;
+    private int kIntakeHeight = constants.DEPLOYED_HEIGHT;
+    private int kRocketHeight = constants.ROCKET_HEIGHT;
 
     public cargointake(){
         cargoStowPID = new pid(0.00009, 0,0,.25);
         cargoPID = new pid(0.00009,0,0, .8);
-        //sensor = new DigitalInput(constants.CARGO_INTAKE_DOWN);
-        encoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
+
+        mStowedSwitch = new DigitalInput(constants.CARGO_INTAKE_DOWN);
+        mCargoSwitch = new DigitalInput(constants.CARGO_IN_INTAKE);
+
+        encoder = new Encoder(constants.CARGO_INTAKE_ENCODER[0],
+                              constants.CARGO_INTAKE_ENCODER[1], 
+                              false, Encoder.EncodingType.k4X);
+
         actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);
         roller = new Talon(constants.CARGO_INTAKE_ROLLER);
         
@@ -42,44 +54,44 @@ public class cargointake {
     }
 
     private void closedLoopControl (int wantedHeight) {
-        if(wantedHeight > encoder.getRaw()){
-            actuator.set(-cargoStowPID.returnOutput(encoder.getRaw(), wantedHeight));
+        if(!mStowedSwitch.get()){
+            if(wantedHeight > encoder.getRaw()){
+                actuator.set(-cargoStowPID.returnOutput(encoder.getRaw(), wantedHeight));
+            } else {
+                actuator.set(-cargoPID.returnOutput(encoder.getRaw(), wantedHeight));
+            }
         } else {
-        actuator.set(-cargoPID.returnOutput(encoder.getRaw(), wantedHeight));
+            actuator.set(0);
+            encoder.reset();
         }
     }
 
     public void deploy(){
-        closedLoopControl(intakeHeight);
+        closedLoopControl(kIntakeHeight);
     }
-
 
     public void stow(){
-        closedLoopControl(stowedHeight);
+        closedLoopControl(kStowedHeight);
     }
 
-    public void moveToRocket(){
-        closedLoopControl(rocketHeight);
+    public void moveTo(int height){
+        closedLoopControl(height);
+    }
+
+    public double getHeight(){
+        return encoder.getRaw();
     }
 
     public void intake(){
         roller.set(-.5);
     }
 
-    public void stopRoller(){
-        roller.set(0);
-    }
-
-    public void stopActuator(){
-        actuator.set(0);
-    }
-
     public void spit(){
-        roller.set(.7);
+        roller.set(.9);
     }
 
-    public void run(double speed) {
-        roller.set(speed);
+    public void hold(){
+        roller.set(0);
     }
 
     public void zeroAllSensors() {
