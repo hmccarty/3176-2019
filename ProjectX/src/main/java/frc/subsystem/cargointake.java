@@ -37,7 +37,7 @@ public class cargointake {
         mCargoSwitch = new DigitalInput(constants.CARGO_IN_INTAKE);
 
         encoder = new Encoder(constants.CARGO_INTAKE_ENCODER[0],
-                              constants.CARGO_INTAKE_ENCODER[0], 
+                              constants.CARGO_INTAKE_ENCODER[1], 
                               false, Encoder.EncodingType.k4X);
 
         actuator = new Talon(constants.CARGO_INTAKE_ACTUATOR);

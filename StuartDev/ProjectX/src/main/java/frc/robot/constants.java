@@ -40,11 +40,11 @@ public class constants {
 	\************************/
 
 	//Gear Facing Right
-	public static double OFFSETS[] = {2663,-363,-329,3331};
-	public static double OFFSETS_P[] = {268.0,3228.0,1184.0,2160.0};
+	public static double OFFSETS[] = {526,3323,1881,3910};
+	//public static double OFFSETS_P[] = {268.0,3228.0,1184.0,2160.0};
 	public static double DRIVETRAINLENGTH = 23.5;
-	public static double DRIVETRAINWIDTH = 24.0;
-	public static double DRIVETRAINWIDTH_2 = 26.0;
+	//public static double DRIVETRAINWIDTH = 24.0;
+	public static double DRIVETRAINWIDTH = 26.0;
 	public static final double WHEELDIAMETER = 3.0;
 	public static double DRIVETRAINMAXWHEELSPEED = 13.5; // ft/s
 	public static double DRIVETRAINMAXROTATIONSPEED = 5.0; // radians/s
@@ -80,8 +80,8 @@ public class constants {
 	public static final double DRIVE_kD = 9.33;//Practice Values: 9.33;
 	public static final double DRIVE_kF = 0.130654611;//Practice Value 0.09654611
 	public static final int DRIVE_IZONE = 200;
-	public static double fps2ups = 12.0 /(constants.WHEELDIAMETER * Math.PI) * 4096.0/10.0 *48.0/30.0;
-	public static double fps2rpm = 12/(3*Math.PI)*(48/30)*(54/17)*60;
+	public static double fps2ups = 12 * (1/3) * (48/30) * (54/17);//12.0 /(constants.WHEELDIAMETER * Math.PI) * 4096.0/10.0 *48.0/30.0;
+	public static double fps2rpm = 12 * (1/(3*Math.PI)) * (48/30) * (54/14) * (60) * (2);//12/(3*Math.PI)*(48/30)*(54/17)*60;
 	public static double rev2ft = (17/54)*(30/48)*3*Math.PI*(1/12);
 	public static final int DRIVE_ALLOWABLE_ERROR = 50;
 	

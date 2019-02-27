@@ -15,7 +15,7 @@ public class vision extends subsystem{
     NetworkTable table = inst.getTable("SmartDashboard");
 
     NetworkTableEntry distanceToTarget = table.getEntry("distance");
-    NetworkTableEntry angleToTarget = table.getEntry("Angle");
+    NetworkTableEntry angleToTarget = table.getEntry("Center X");
     NetworkTableEntry WhichCamera = table.getEntry("WhichCamera");
 
     private state mWantedState; 
