@@ -54,10 +54,12 @@ public class superstructure {
                     switch(mCurrentState){
                         case C_ROLLER_MANUAL:
                             mCargoIntake.moveTo(mController.getWantedCargoIntakePosition());
+                            checkState();
                             break;
                         case INTAKE_C_ROLLER:
                             mCargoIntake.deploy();
-                            mCargoIntake.hold();
+                            mCargoIntake.intake();
+                            checkState();
                             break;
                         case STOW_C_ROLLER:
                             mCargoIntake.stow();

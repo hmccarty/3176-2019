@@ -26,8 +26,8 @@ public class constants {
 	\****************/
 
 	public static int CARGO_INTAKE_ENCODER[] = {0,1}; 
-	public static int CARGO_INTAKE_DOWN = 2; 
-	public static int CARGO_IN_INTAKE = 3; 
+	public static int CARGO_INTAKE_DOWN = 3; 
+	public static int CARGO_IN_INTAKE = 2; 
 
 	/****************************\
 	|* Driver Station Constants *|
@@ -92,6 +92,6 @@ public class constants {
 	\**************************/
 	
 	public static final int DEPLOYED_HEIGHT = 10;
-    public static final int STOWED_HEIGHT = 45000;
-    public static final int ROCKET_HEIGHT = 24000;
+    public static final int STOWED_HEIGHT = 10000;
+	public static final int ROCKET_HEIGHT = 24000;
 }

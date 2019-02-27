@@ -54,16 +54,16 @@ public class cargointake {
     }
 
     private void closedLoopControl (int wantedHeight) {
-        if(!mStowedSwitch.get()){
-            if(wantedHeight > encoder.getRaw()){
+        //if(!mStowedSwitch.get()){
+            if(wantedHeight < encoder.getRaw()){
                 actuator.set(-cargoStowPID.returnOutput(encoder.getRaw(), wantedHeight));
             } else {
                 actuator.set(-cargoPID.returnOutput(encoder.getRaw(), wantedHeight));
             }
-        } else {
-            actuator.set(0);
-            encoder.reset();
-        }
+        //} else {
+          //  actuator.set(0);
+           // encoder.reset();
+        //}
     }
 
     public void deploy(){
