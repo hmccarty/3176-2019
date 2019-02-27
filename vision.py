@@ -259,6 +259,7 @@ def TrackTheTarget(frame, sd):
         print(distance)
         angle = calculateAngle(2.0, (80-xcent), length)
         x = calculateX(2.0, (80-xcent), length)
+        print(x)
         #print("Width: " + str(target[1][0]) + " Height: " + str(target[1][1]))
         print("Distance: " + str(distance)) 
         try:
