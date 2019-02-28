@@ -14,7 +14,7 @@ public class NeoTesting {
 
     private NeoTesting() {
         stick = new Joystick(0);
-        spark = new CANSparkMax(0, MotorType.kBrushless);
+        spark = new CANSparkMax(1, MotorType.kBrushless);
     }
 
     public static NeoTesting getInstance() {

@@ -54,7 +54,11 @@ public class controller {
         return buttonMonkey.getRawButton(10);
     }    
 
-    public boolean openLoopEnabled(){
+    public boolean stowCargoIntake(){
+        return buttonMonkey.getRawButton(9);
+    }
+
+    /*public boolean openLoopEnabled(){
         if(buttonMonkey.getRawButton(11) && buttonMonkey.getRawButton(12)) {
             if(firstTime == true){
                 firstTime = false; 
@@ -66,7 +70,7 @@ public class controller {
             }
         }
         return openLoop;
-    }
+    }*/
 
     public int getWantedCargoIntakePosition(){
         if(cargoIntakeToRocketHeight()){

@@ -57,7 +57,7 @@ public class neoSwervepod extends subsystem {
 		mController = controller.getInstance();
 		this.driveMotor = driveMotor;
 		this.steerMotor = steerMotor;
-		this.steerMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,0,0);
+		this.steerMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,0,0);
         driveEncoder = this.driveMotor.getEncoder();
         //this.steerMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,0,0);
 		//this.steerMotor.setSelectedSensorPosition(0,0,0);
@@ -70,7 +70,8 @@ public class neoSwervepod extends subsystem {
         m_pidController.setI(constants.NEO_kI);
         m_pidController.setD(constants.NEO_kD);
         m_pidController.setFF(constants.NEO_FF);
-       m_pidController.setIZone(constants.NEO_IZ);
+	    m_pidController.setIZone(constants.NEO_IZ);
+	    driveMotor.setSmartCurrentLimit(60);
 		
 		// this.driveMotor.config_kP(0, constants.DRIVE_kP, 0);
 		// this.driveMotor.config_kI(0, constants.DRIVE_kI, 0);
@@ -90,7 +91,7 @@ public class neoSwervepod extends subsystem {
 	 */
 	public void setPod(double Speed, double Angle) {
 		System.out.println("Angle: " + Angle);
-		velocitySetpoint  = Speed * fps2rpm * (54/17);
+		velocitySetpoint  = Speed * fps2rpm;
 		double encoderSetpoint = findSteerPosition(Angle);
 		
 		if(Speed != 0.0) {

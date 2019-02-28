@@ -243,16 +243,25 @@ def TrackTheTarget(frame, sd):
         box = cv2.boxPoints(target)
         box = np.int0(box)
         M = cv2.moments(blocks[0])
-
+        pidx = 0
+        for points in target:
+            cidx = 0
+            for coords in points:
+                print("Point " + str(pidx) + " Corner " + str(cidx) + ": " + str(coords))
+                cidx += 1
+            pidx += 1
+            
         xcent = int(M['m10']/M['m00'])
         ycent = int(M['m01']/M['m00'])
         width = min(target[1][0], target[1][1])
         length = max(target[1][0], target[1][1])
         distance = calculateDistance(2, H_FOCAL_LENGTH, width)
+        print(distance)
         angle = calculateAngle(2.0, (80-xcent), length)
         x = calculateX(2.0, (80-xcent), length)
+        print(x)
         #print("Width: " + str(target[1][0]) + " Height: " + str(target[1][1]))
-        #print("Distance: " + str(distance)) 
+        print("Distance: " + str(distance)) 
         try:
             otherTarget = blocks[1]
             for block in blocks:
@@ -271,7 +280,7 @@ def TrackTheTarget(frame, sd):
             sd.putNumber('Center X', xcent-10)
 
         cv2.drawContours(img, [box], -1, (125, 0, 125), 3)
-        sd.putNumber('Block Area', M['m00'])
+        #sd.putNumber('Block Area', M['m00'])
         sd.putNumber('distance', distance) 
         sd.putNumber('Block Center X', xcent)
         sd.putNumber('Block Center Y', ycent)

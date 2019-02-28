@@ -9,7 +9,7 @@ public class Robot extends IterativeRobot {
   private Joystick stick;
   private HatchIntake mHatchIntake = HatchIntake.getInstance();
   private CargoIntake mCargoIntake = CargoIntake.getInstance();
-  //private NeoTesting mNeoTesting = NeoTesting.getInstance();
+  private NeoTesting mNeoTesting = NeoTesting.getInstance();
   private Talon motor;
   private Timer timer;
 
@@ -25,7 +25,7 @@ public class Robot extends IterativeRobot {
   @Override
   public void robotPeriodic() {
   }
-4
+
   @Override
   public void autonomousInit() {
   }
@@ -47,7 +47,7 @@ public class Robot extends IterativeRobot {
     // }
 
     // if (stick.getRawButton(4)) {
-    //   mCargoIntake.deployIntake();+
+    //   mCargoIntake.deployIntake();
     // } else if (stick.getRawButton(5)) {
     //   mCargoIntake.stowIntake();
     // }
@@ -58,17 +58,17 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void testPeriodic() {
-    double time = 1.0;
+    // double time = 1.0;
 
-    if(timer.get() <= time) {
-      motor.setPosition(4096);
-    }
-    else if(timer.get() > time) {
-      motor.setPosition(0);
-    }
-    else {
-      timer.reset();
-    }
+    // if(timer.get() <= time) {
+    //   motor.setPosition(4096);
+    // }
+    // else if(timer.get() > time) {
+    //   motor.setPosition(0);
+    // }
+    // else {
+    //   timer.reset();
+    // }
     
   }
 }

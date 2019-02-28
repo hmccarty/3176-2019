@@ -9,8 +9,8 @@ import java.util.ArrayList;
 
 public class trajectory {
 	private double kMaxVelocity = 4.0;
-	private double kMaxAcceleration=4.0;
-	private double kMaxAngularAccel = 1.0;
+	private double kMaxAcceleration=1.0;
+	private double kMaxAngularAccel = .33;
 	private double timeStep = .05;
 	private double simTime = 0.0;
 	private double timeToComplete;

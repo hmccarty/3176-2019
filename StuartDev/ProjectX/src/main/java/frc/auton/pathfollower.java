@@ -68,7 +68,7 @@ public class pathfollower {
                     drivetrain.getInstance().setSpinCommand(spinCommand);
 					double wheelSpeed = drivetrain.getInstance().getPod(0).getWheelSpeed();
 					double reqWheelSpeed = drivetrain.getInstance().getPod(0).getSpeed();
-					double wheelSpeedfps = wheelSpeed / constants.fps2ups;
+					double wheelSpeedfps = wheelSpeed / constants.fps2rpm;
 					SmartDashboard.putNumber("wheelSpeed", wheelSpeedfps);
 					SmartDashboard.putNumber("requested wheel Speed", reqWheelSpeed);
 					currY2 += wheelSpeedfps * dt;
