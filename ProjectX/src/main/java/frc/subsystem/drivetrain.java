@@ -325,7 +325,7 @@ public class drivetrain extends subsystem {
 					System.out.println(mVision.getAngle());
 					//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
 					if(mVision.getAngle() != -1){
-						cStrafeCommand = -visionStrafe.returnOutput(mVision.getAngle(), 75);
+						cStrafeCommand = -visionStrafe.returnOutput(mVision.getAngle(), 90);
 					} else {
 						cStrafeCommand = 0;
 					}
