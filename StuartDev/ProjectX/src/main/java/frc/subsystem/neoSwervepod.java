@@ -71,7 +71,8 @@ public class neoSwervepod extends subsystem {
         m_pidController.setD(constants.NEO_kD);
         m_pidController.setFF(constants.NEO_FF);
 	    m_pidController.setIZone(constants.NEO_IZ);
-	    driveMotor.setSmartCurrentLimit(60);
+		driveMotor.setSmartCurrentLimit(100);
+		driveEncoder.setPosition(0);
 		
 		// this.driveMotor.config_kP(0, constants.DRIVE_kP, 0);
 		// this.driveMotor.config_kI(0, constants.DRIVE_kI, 0);
@@ -217,6 +218,10 @@ public class neoSwervepod extends subsystem {
 		SmartDashboard.putNumber("Pod " + id + "'s Encoder Position", encoderPosition);
 		SmartDashboard.putNumber("Pod " + id + "'s motor velocity", driveEncoder.getVelocity());
 		SmartDashboard.putNumber("Pod " + id + "'s linear feet", driveEncoder.getPosition()*rev2ft);
-		SmartDashboard.putNumber("Pod " + id + "'s linear velocity'", driveEncoder.getVelocity() * (1/fps2rpm));
+		SmartDashboard.putNumber("Pod " + id + "'s linear velocity", driveEncoder.getVelocity() * (1/fps2rpm));
+		SmartDashboard.putNumber("Pod " + id + "'s velocity setpoint", velocitySetpoint);
+		SmartDashboard.putNumber("Pod " + id + "'s kP", m_pidController.getP());
+		SmartDashboard.putNumber("Pod " + id + "'s kI", m_pidController.getI());
+		SmartDashboard.putNumber("Pod " + id + "'s kD", m_pidController.getD());
 	}
 }

@@ -9,7 +9,7 @@ public class leftHabT extends path{
 	private trajectory t = new trajectory();
 	private leftHabT() {
 		t.addWaypoint(new waypoint(0.0, 0.0, 0.0));
-		t.addWaypoint(new waypoint(0.0, -10.0, 0.0));
+		t.addWaypoint(new waypoint(0.0, -20.0, 0.0));
 		//t.addWaypoint(new waypoint(3.0, -16.0,-Math.PI/2));
 		super.regesterTrajectory(t);
 	}
