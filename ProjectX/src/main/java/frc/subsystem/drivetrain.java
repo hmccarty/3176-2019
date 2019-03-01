@@ -87,7 +87,7 @@ public class drivetrain extends subsystem {
 
 		visionForward = new pid(0.007, 0, 0, .8); 
 		visionTurn = new pid(0.02, 0, 0, .8); 
-		visionStrafe = new pid(0.1, 0, 0, .8); 
+		visionStrafe = new pid(0.001, 0, 0, .8); 
 		
 		//Instantiate array list
 		mPods = new ArrayList<swervepod>();
@@ -318,14 +318,14 @@ public class drivetrain extends subsystem {
 					//System.out.println(Robot.getDistance());
 					double distance = mVision.getDistance();
 					if(distance != -1){
-						cForwardCommand = visionForward.returnOutput(distance, 15);
+						cForwardCommand = visionForward.returnOutput(distance, 12.7);
 					} else {
 						cForwardCommand = 0;
 					}
 					System.out.println(mVision.getAngle());
 					//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
 					if(mVision.getAngle() != -1){
-						cStrafeCommand = -visionStrafe.returnOutput(mVision.getAngle(), 130);
+						cStrafeCommand = -visionStrafe.returnOutput(mVision.getAngle(), 90);
 					} else {
 						cStrafeCommand = 0;
 					}
@@ -338,7 +338,7 @@ public class drivetrain extends subsystem {
 					System.out.println(isAtTarget());
 					if(autonVision){
 						if(mVision.getDistance() != -1){
-							cForwardCommand = visionForward.returnOutput(mVision.getDistance(), 15);
+							cForwardCommand = visionForward.returnOutput(mVision.getDistance(), 12.7);
 						}
 						//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
 						if(mVision.getAngle() != -1){

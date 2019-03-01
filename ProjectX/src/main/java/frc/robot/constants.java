@@ -26,8 +26,9 @@ public class constants {
 	\****************/
 
 	public static int CARGO_INTAKE_ENCODER[] = {0,1}; 
-	public static int CARGO_INTAKE_DOWN = 2; 
-	public static int CARGO_IN_INTAKE = 3; 
+	public static int PORTSW_CARGO_INTAKE_STOWED = 3;  // DIO port that detects when the cargo intake is 
+	public static int PORTSW_CARGO_INTAKE_DOWN = 4;
+	public static int PORTSW_CARGO_IN_INTAKE = 2;   // DIO port for switch that detects when cargo is in intake
 
 	/****************************\
 	|* Driver Station Constants *|
@@ -91,7 +92,7 @@ public class constants {
 	|* Cargo Intake Constants *|
 	\**************************/
 	
-	public static final int DEPLOYED_HEIGHT = 10;
-    public static final int STOWED_HEIGHT = 45000;
-    public static final int ROCKET_HEIGHT = 24000;
+	public static final int DEPLOYED_HEIGHT = 39356;
+    public static final int STOWED_HEIGHT = 0;
+	public static final int ROCKET_HEIGHT = 12000;
 }

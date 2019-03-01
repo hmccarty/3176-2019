@@ -69,14 +69,16 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		myLoops.runLoops();
 		
-		/*********************\
-		|* Drivetrain States *|
-		\*********************/
-		if(mController.TrackTarget()){
-			mDriveTrain.setWantedState(drivetrain.systemStates.VISION);
-		} else {
-			mDriveTrain.setWantedState(drivetrain.systemStates.DRIVE);
-		}		
+		// /*********************\
+		// |* Drivetrain States *|
+		// \*********************/
+		// if(mController.TrackTarget()){
+		// 	mDriveTrain.setWantedState(drivetrain.systemStates.VISION);
+		// } else {
+		// 	mDriveTrain.setWantedState(drivetrain.systemStates.DRIVE);
+		// }
+
+		mDriveTrain.setWantedState(drivetrain.systemStates.DRIVE);
 	}
 
 	public static double getDistance(){
