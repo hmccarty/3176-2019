@@ -45,7 +45,7 @@ public class constants {
 	public static double DRIVETRAINLENGTH = 23.5;
 	//public static double DRIVETRAINWIDTH = 24.0;
 	public static double DRIVETRAINWIDTH = 26.0;
-	public static final double WHEELDIAMETER = 3.0;
+	public static final double WHEELDIAMETER = 3.25;
 	public static double DRIVETRAINMAXWHEELSPEED = 13.5; // ft/s
 	public static double DRIVETRAINMAXROTATIONSPEED = 5.0; // radians/s
 	public static double ENCODER_UNITS = 4096.0;
@@ -58,6 +58,8 @@ public class constants {
 	public static final double SWERVE_kI = 0.0023;
 	public static final double SWERVE_kD = 210.0;
 	public static final double SWERVE_kF = 0.0;
+	public static final double NEO_MAX_ACCEL = 2;
+	public static final double NEO_MAX_VEL = 6000;
 	public static final int SWERVE_ALLOWABLE_ERROR = 5;
 
 	public static final double NEO_kP = 0.000095;
@@ -67,7 +69,7 @@ public class constants {
 	public static final double NEO_IZ = 0;
 	
 	public static final double DRIVE_GEAR_RATI0 = 17/54;
-	
+
 	/*
 	public static final double DRIVE_kP = .096;//Practice Values .096;
 	public static final double DRIVE_kI = 0.0;//Practice Values 0.0;
@@ -81,8 +83,8 @@ public class constants {
 	public static final double DRIVE_kF = 0.130654611;//Practice Value 0.09654611
 	public static final int DRIVE_IZONE = 200;
 	public static double fps2ups = 12 * (1/3) * (48/30) * (54/17);//12.0 /(constants.WHEELDIAMETER * Math.PI) * 4096.0/10.0 *48.0/30.0;
-	public static double fps2rpm = 12.0 * (1.0/(3.5*Math.PI)) * (48.0/30.0) * (54.0/17.0) * (60.0);//12/(3*Math.PI)*(48/30)*(54/17)*60;
-	public static double rev2ft = (17.0/54.0)*(30.0/48.0)*(3.0*Math.PI)*(1.0/12.0);
+	public static double fps2rpm = 12.0 * (1.0/(WHEELDIAMETER*Math.PI)) * (48.0/30.0) * (54.0/17.0) * (60.0);//12/(3*Math.PI)*(48/30)*(54/17)*60;
+	public static double rev2ft = (17.0/54.0)*(30.0/48.0)*(WHEELDIAMETER*Math.PI)*(1.0/12.0);
 	public static final int DRIVE_ALLOWABLE_ERROR = 50;
 	
 	public static final double MAXSLOWPERCENTSPEED = .4;
