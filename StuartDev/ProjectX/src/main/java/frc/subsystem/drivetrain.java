@@ -6,6 +6,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.util.ArrayList;
 import frc.robot.constants;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -49,13 +51,18 @@ public class drivetrain extends subsystem {
 	
 	private double kMaxSpeed;
 	private double kMaxRotation;
+	private double kMaxAccel;
+	private double kMaxVel;
 	
 	private double cMaxSpeed;
 	private double cAngle;
+	private double cMaxAccel;
 	
 	private double cForwardCommand;
 	private double cStrafeCommand;
 	private double cSpinCommand;
+
+	private double lastVel[] = new double[4];
 	
 	public enum systemStates{
 		NEUTRAL,
@@ -116,6 +123,8 @@ public class drivetrain extends subsystem {
 		kRadius = Math.sqrt(Math.pow(kLength,2)+Math.pow(kWidth,2));
 		kMaxSpeed = constants.DRIVETRAINMAXWHEELSPEED;
 		kMaxRotation = constants.DRIVETRAINMAXROTATIONSPEED;
+		kMaxAccel = constants.NEO_MAX_ACCEL;
+		kMaxVel = constants.NEO_MAX_VEL;
 		
 		//Instantiating the mGyro
 		mGyro = new AHRS(SPI.Port.kMXP);
@@ -183,28 +192,49 @@ public class drivetrain extends subsystem {
 				podDrive[idx] /= cMaxSpeed/kMaxSpeed;
 			}
 		}
-		
+
+		cMaxAccel = Math.max(Math.max(podDrive[0] - lastVel[0], podDrive[1] - lastVel[1]), Math.max(podDrive[2] - lastVel[2], podDrive[3] - lastVel[3]));
+
+		if(cMaxAccel > kMaxAccel/50){
+			for(int idx = 0; idx < mNeoPods.size(); idx++) {
+				if(podDrive[idx] - lastVel[idx] == cMaxAccel){
+					for(int idx2 = 0; idx2 < mNeoPods.size(); idx2++){
+						podDrive[idx2] /= podDrive[idx]/(lastVel[idx] + kMaxAccel/50);
+					}
+				}
+			}
+		}
+			// if(podDrive[idx] > lastVel[idx]){
+				// podDrive[idx] = Math.min(podDrive[idx], lastVel[idx] + kMaxAccel/50);
+			// }
+			// else if(podDrive[idx] < lastVel[idx]){
+			// 	podDrive[idx] = Math.max(podDrive[idx], lastVel[idx] - kMaxAccel/50);
+			// }
+			// SmartDashboard.putNumber("Pod Drive " + idx, podDrive[idx]);
+			// SmartDashboard.putNumber("Last Velocity for Pod " + idx, lastVel[idx]);
+
 		//If enabled, sends each pod to a defensive lock when not moving 
-		// if(mController.defenseEnabled()) {
+		if(mController.defenseEnabled()) {
 		// 	// Sending each pod their respective commands
-		 	//mNeoPods.get(0).setPod(0.0,0);//podGear[0]+1.0*Math.PI/4.0);
-		 	//mNeoPods.get(1).setPod(0.0,0);// podGear[1]-1.0*Math.PI/4.0);
-		 	//mNeoPods.get(2).setPod(0.0,0);// podGear[2]-3.0*Math.PI/4.0);
-		 	//mNeoPods.get(3).setPod(0.0,0);// podGear[3]+3.0* Math.PI/4.0);
-		// } else { 			//Sending each pod their respective commands
+		 	mNeoPods.get(0).setPod(0.0,podGear[0]+1.0*Math.PI/4.0);
+		 	mNeoPods.get(1).setPod(0.0,podGear[1]-1.0*Math.PI/4.0);
+		 	mNeoPods.get(2).setPod(0.0,podGear[2]-3.0*Math.PI/4.0);
+		 	mNeoPods.get(3).setPod(0.0,podGear[3]+3.0*Math.PI/4.0);
+		} else { 			//Sending each pod their respective commands
 			for(int idx = 0; idx < mNeoPods.size(); idx++) {
 				// if(mPods.get(idx) != null){
 				// 	mPods.get(idx).setPod(podDrive[idx],podGear[idx]); 
 				// }
 				// else {
 					mNeoPods.get(idx).setPod(podDrive[idx], podGear[idx]);
+					lastVel[idx] = podDrive[idx];
 				// }
 				// mNeoPods.get(0).setPod(0.0, mController.getForward()*4096);
 				// mNeoPods.get(1).setPod(0.0, mController.getForward()*4096);
 				// mNeoPods.get(2).setPod(0.0, mController.getForward()*4096);
 				// mNeoPods.get(3).setPod(0.0, mController.getForward()*4096);
 			}
-		//}
+		}
 	}
 
 	public void autonVision(boolean state){ 
@@ -387,8 +417,5 @@ public class drivetrain extends subsystem {
 
 	@Override
 	public void outputToSmartDashboard() {
-		// for(neoSwervepod pod : mNeoPods) {
-		// 	pod.outputToSmartDashboard();
-		// }
 	}
 }
