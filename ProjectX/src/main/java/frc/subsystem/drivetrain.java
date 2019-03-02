@@ -318,14 +318,14 @@ public class drivetrain extends subsystem {
 					//System.out.println(Robot.getDistance());
 					double distance = mVision.getDistance();
 					if(distance != -1){
-						cForwardCommand = visionForward.returnOutput(distance, 12.7);
+						cForwardCommand = visionForward.returnOutput(distance, 13);
 					} else {
 						cForwardCommand = 0;
 					}
 					System.out.println(mVision.getAngle());
 					//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
 					if(mVision.getAngle() != -1){
-						cStrafeCommand = -visionStrafe.returnOutput(mVision.getAngle(), 90);
+						cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), 80);
 					} else {
 						cStrafeCommand = 0;
 					}
@@ -342,7 +342,7 @@ public class drivetrain extends subsystem {
 						}
 						//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
 						if(mVision.getAngle() != -1){
-							cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), 130);
+							cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), 73);
 							System.out.println(mVision.getAngle());
 						}
 						setCoordType(coordType.ROBOTCENTRIC); 
