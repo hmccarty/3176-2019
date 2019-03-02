@@ -12,7 +12,7 @@ import frc.robot.constants;
 public class cargointake {
     private static cargointake instance = new cargointake(); 
 
-    private pid cargoPID;
+    private pid cargoDeployPID;
     private pid cargoStowPID;
 
     private DigitalInput mStowedSwitch;
@@ -33,7 +33,7 @@ public class cargointake {
 
     public cargointake(){
         cargoStowPID = new pid(0.00009, 0,0,.25); //The PID values for Deploying the mechanism
-        cargoPID = new pid(0.00009,0,0, .8);      //The PID values for Retracting the mechanism
+        cargoDeployPID = new pid(0.00009,0,0, .8);      //The PID values for Retracting the mechanism
 
 
         //Declare Sensors
@@ -96,7 +96,7 @@ public class cargointake {
                     oCargoIntakeWinchPower = 0;
                 }else{
                     //In this scenario we are commanding the winch to come off of the limit switch
-                    oCargoIntakeWinchPower = -cargoPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
+                    oCargoIntakeWinchPower = cargoStowPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
                 }
 
             }else if(intakeIsAtDeployedLimt && !intakeIsAtStowedLimit){
@@ -105,17 +105,17 @@ public class cargointake {
                     oCargoIntakeWinchPower = 0;
                 }else{
                     //In this scenario we are commanding the winch to come off of the deployed limit switch
-                    oCargoIntakeWinchPower = -cargoStowPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
+                    oCargoIntakeWinchPower = cargoDeployPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
                 }
 
             }else{
                     //We are in the middle just responding to normal commands
                     if(wantedHeight < cargoIntakeWinchPosition){
                         //In this scenario we are commanding a winch position that is lower
-                        oCargoIntakeWinchPower = -cargoPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
+                        oCargoIntakeWinchPower = cargoStowPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
                     }else{
                         //In this scenario we are commanding the winch position that is higher
-                        oCargoIntakeWinchPower = -cargoStowPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
+                        oCargoIntakeWinchPower = cargoDeployPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
                     }
 
             }
@@ -124,6 +124,7 @@ public class cargointake {
             //Set the outputs
             SmartDashboard.putNumber("Cargo Winch Encoder: ", cargoIntakeWinchPosition);
             SmartDashboard.putNumber("Cargo Winch Power: ", oCargoIntakeWinchPower);
+            SmartDashboard.putNumber("Wanted Height: ", wantedHeight);
             cargoIntakeWinch.set(oCargoIntakeWinchPower);
 
 
@@ -147,11 +148,11 @@ public class cargointake {
 
     public void intake(){
         //TODO add ball detection
-        cargoIntakeBeaterBar.set(-.5);
+        cargoIntakeBeaterBar.set(.5);
     }
 
     public void spit(){
-        cargoIntakeBeaterBar.set(.9);
+        cargoIntakeBeaterBar.set(-.9);
     }
 
     public void hold(){

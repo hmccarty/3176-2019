@@ -85,13 +85,13 @@ public class drivetrain extends subsystem {
 
 		autonVision = false;
 
-		visionForward = new pid(0.007, 0, 0, .8); 
-		visionTurn = new pid(0.02, 0, 0, .8); 
-		visionStrafe = new pid(0.001, 0, 0, .8); 
+		visionForward = new pid(0.009, 0, 0, .8); 
+		visionTurn = new pid(0.026, 0, 0, .8); 
+		visionStrafe = new pid(0.015,0, 0, .8); 
 		
 		//Instantiate array list
 		mPods = new ArrayList<swervepod>();
-				
+			
 		//Add instantiated mPods to the array list
 		mPods.add(mUpperRight);
 		mPods.add(mUpperLeft);
@@ -296,7 +296,8 @@ public class drivetrain extends subsystem {
 				case DRIVE:
 					cForwardCommand = mController.getForward();
 					cStrafeCommand = mController.getStrafe();
-					cSpinCommand = mController.getSpin();
+						cSpinCommand = mController.getSpin();
+					
 
 					if (!mController.boost()){
 						cForwardCommand *= constants.MAXSLOWPERCENTSPEED;
@@ -317,20 +318,34 @@ public class drivetrain extends subsystem {
 				case VISION:
 					//System.out.println(Robot.getDistance());
 					double distance = mVision.getDistance();
-					if(distance != -1){
-						cForwardCommand = visionForward.returnOutput(distance, 13);
-					} else {
-						cForwardCommand = 0;
+					if(mController.clockOne()){
+						cSpinCommand = -visionTurn.returnOutput(getAngle(), 0);
 					}
-					System.out.println(mVision.getAngle());
-					//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
-					if(mVision.getAngle() != -1){
-						cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), 80);
-					} else {
-						cStrafeCommand = 0;
+					else if(mController.clockTwo()){
+						cSpinCommand = -visionTurn.returnOutput(getAngle(), (Math.PI/2.0));
 					}
+					else if(mController.clockThree()){
+						cSpinCommand = -visionTurn.returnOutput(getAngle(), (Math.PI/4.0)) ;
+					}
+					if(Math.abs(cSpinCommand) <= 0.06){
+						if(distance != -1){
+							cForwardCommand = visionForward.returnOutput(distance, 14);
+						} else {
+							cForwardCommand = 0;
+						}
+						//System.out.println("Angle:" + mVision.getAngle());
+						//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
+						if(mVision.getAngle() != -1){
+							cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), -8);
+						} else {
+							cStrafeCommand = 0;
+						}
+					}
+					System.out.println("Command: " + cSpinCommand);
+					System.out.println("Angle: " + getAngle());
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
+					updateAngle();
 					crabDrive();
 					checkState();
 					break;
@@ -356,6 +371,7 @@ public class drivetrain extends subsystem {
 				default:
 					break;			
 				}
+
 			outputToSmartDashboard();
 		}
 		@Override

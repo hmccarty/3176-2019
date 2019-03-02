@@ -129,6 +129,22 @@ public class controller {
         return thrustStick.getRawButton(5);
     }
 
+    public boolean clockOne(){
+        return thrustStick.getRawButton(10);
+    }
+
+    public boolean clockTwo(){
+        return thrustStick.getRawButton(12);
+    }
+
+    public boolean clockThree(){
+        return thrustStick.getRawButton(9);
+    }
+
+    public boolean clockFour(){
+        return thrustStick.getRawButton(10);
+    }
+
     public boolean frontRightRotation(){
         return thrustStick.getRawButton(6);
     }
