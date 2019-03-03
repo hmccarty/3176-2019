@@ -33,7 +33,9 @@ public class drivetrain extends subsystem {
 
 	private pid visionForward;
 	private pid visionTurn;  
-	private pid visionStrafe;  
+	private pid visionStrafe; 
+	
+	private double lastGyroClock; 
 	
 	public TalonSRX[] mDriveTalons = {new TalonSRX(constants.DRIVE_ONE), new TalonSRX(constants.DRIVE_TWO), new TalonSRX(constants.DRIVE_THREE), new TalonSRX(constants.DRIVE_FOUR)}; 
 	public TalonSRX[] mGearTalons = {new TalonSRX(constants.STEER_ONE), new TalonSRX(constants.STEER_TWO), new TalonSRX(constants.STEER_THREE), new TalonSRX(constants.STEER_FOUR)};
@@ -88,6 +90,8 @@ public class drivetrain extends subsystem {
 		visionForward = new pid(0.009, 0, 0, .8); 
 		visionTurn = new pid(0.026, 0, 0, .8); 
 		visionStrafe = new pid(0.015,0, 0, .8); 
+
+		lastGyroClock = 0;
 		
 		//Instantiate array list
 		mPods = new ArrayList<swervepod>();
@@ -257,6 +261,29 @@ public class drivetrain extends subsystem {
 		return 0; 
 	}
 
+	private void trackToTarget(){
+		double wantedGyroPosition = mController.gyroClockPosition();
+		if(wantedGyroPosition != -1){
+			lastGyroClock = wantedGyroPosition; 
+		} else {
+			wantedGyroPosition = lastGyroClock; 
+		}
+		cSpinCommand = -visionTurn.returnOutput(getAngle(), wantedGyroPosition);
+
+		if(Math.abs(cSpinCommand) <= 0.06){
+			if(mVision.getDistance() != -1){
+				cForwardCommand = visionForward.returnOutput(mVision.getDistance(), 14);
+			} else {
+				cForwardCommand = 0;
+			}
+			if(mVision.getAngle() != -1){
+				cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), -8);
+			} else {
+				cStrafeCommand = 0;
+			}
+		}
+	}
+
 	public boolean isAtTarget(){
 		if(Math.abs((visionTurn.returnOutput(mVision.getDistance(), 0))) < .5){
 			return true;
@@ -316,9 +343,8 @@ public class drivetrain extends subsystem {
 					checkState();
 					break;
 				case VISION:
-					//System.out.println(Robot.getDistance());
-					double distance = mVision.getDistance();
-					if(mController.clockOne()){
+					trackToTarget();
+					if(mController.gyroClockPosition()){
 						cSpinCommand = -visionTurn.returnOutput(getAngle(), 0);
 					}
 					else if(mController.clockTwo()){
@@ -327,38 +353,35 @@ public class drivetrain extends subsystem {
 					else if(mController.clockThree()){
 						cSpinCommand = -visionTurn.returnOutput(getAngle(), (Math.PI/4.0)) ;
 					}
-					if(Math.abs(cSpinCommand) <= 0.06){
-						if(distance != -1){
-							cForwardCommand = visionForward.returnOutput(distance, 14);
-						} else {
-							cForwardCommand = 0;
-						}
-						//System.out.println("Angle:" + mVision.getAngle());
-						//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
-						if(mVision.getAngle() != -1){
-							cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), -8);
-						} else {
-							cStrafeCommand = 0;
-						}
-					}
-					System.out.println("Command: " + cSpinCommand);
-					System.out.println("Angle: " + getAngle());
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
-					updateAngle();
+
 					crabDrive();
 					checkState();
 					break;
 				case AUTON:
 					System.out.println(isAtTarget());
 					if(autonVision){
-						if(mVision.getDistance() != -1){
-							cForwardCommand = visionForward.returnOutput(mVision.getDistance(), 12.7);
+						if(mController.clockOne()){
+							cSpinCommand = -visionTurn.returnOutput(getAngle(), 0);
 						}
-						//cSpinCommand = visionTurn.returnOutput(Robot.getAngle(), 0);
-						if(mVision.getAngle() != -1){
-							cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), 73);
-							System.out.println(mVision.getAngle());
+						else if(mController.clockTwo()){
+							cSpinCommand = -visionTurn.returnOutput(getAngle(), (Math.PI/2.0));
+						}
+						else if(mController.clockThree()){
+							cSpinCommand = -visionTurn.returnOutput(getAngle(), (Math.PI/4.0)) ;
+						}
+						if(Math.abs(cSpinCommand) <= 0.06){
+							if(mVision.getDistance() != -1){
+								cForwardCommand = visionForward.returnOutput(mVision.getDistance(), 14);
+							} else {
+								cForwardCommand = 0;
+							}
+							if(mVision.getAngle() != -1){
+								cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), -8);
+							} else {
+								cStrafeCommand = 0;
+							}
 						}
 						setCoordType(coordType.ROBOTCENTRIC); 
 						setInputType(inputType.PERCENTPOWER);

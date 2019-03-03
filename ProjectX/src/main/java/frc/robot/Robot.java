@@ -98,6 +98,9 @@ public class Robot extends TimedRobot {
 		else if(mController.visionBack()){
 			mVision.setWantedState(vision.state.STREAM_BACK);
 		}
+		else if(mController.trackTarget()){
+			mVision.setWantedState(vision.state.TRACK_TARGET);
+		}
 	}
 
 	@Override

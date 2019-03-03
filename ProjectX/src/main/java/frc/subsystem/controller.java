@@ -181,9 +181,39 @@ public class controller {
         return yawStick.getRawButton(6);
     }
 
+    public double gyroClockPosition(){
+        int position = yawStick.getPOV(0);
+        if(position < 22 && position < 338){
+            return 0; 
+        }
+        else if(position > 22 && position < 67){
+            return Math.PI / 4;
+        }
+        else if(position > 67 && position < 112){
+            return Math.PI / 2;
+        }
+        else if(position > 112 && position < 157){
+            return 3 * Math.PI / 4;
+        }
+        else if(position > 157 && position < 202){
+            return Math.PI;
+        }
+        else if(position > 202 && position < 247){
+            return 5 * Math.PI / 4;
+        }
+        else if(position > 247 && position < 292){
+            return 3 * Math.PI / 2;
+        }
+        else if(position > 247 && position < 292){
+            return 7 * Math.PI / 4;
+        } else {
+            return 0; 
+        }
+    }
+
     public double getSpin(){
         if(Math.abs(yawStick.getX()) > 0.07){
-            return -yawStick.getX()*0.19;
+            return -yawStick.getX() * 0.19;
         } else {
             return 0; 
         }
