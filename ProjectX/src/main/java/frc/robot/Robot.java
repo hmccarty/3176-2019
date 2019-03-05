@@ -70,6 +70,8 @@ public class Robot extends TimedRobot {
 		} 
 		else if (mController.neutral()){
 			mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
+		} else {
+			mSuperstructure.setWantedState(superstructure.state.C_ROLLER_MANUAL);
 		}
 
 		/*******************\
@@ -99,6 +101,8 @@ public class Robot extends TimedRobot {
 			mVision.setWantedState(vision.state.STREAM_BACK);
 		}
 		else if(mController.trackTarget()){
+			mVision.setWantedState(vision.state.TRACK_TARGET);
+		} else {
 			mVision.setWantedState(vision.state.TRACK_TARGET);
 		}
 	}

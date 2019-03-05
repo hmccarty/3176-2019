@@ -21,6 +21,8 @@ public class superstructure {
     //drivetrain mDrivetrain = drivetrain.getInstance(); 
     loopmanager mLoopMan = loopmanager.getInstance();
 
+    private int cCargoIntakeHeight = 0; 
+
     public superstructure (){}
 
     public static superstructure getInstance(){
@@ -53,12 +55,19 @@ public class superstructure {
                     // }
                     switch(mCurrentState){
                         case C_ROLLER_MANUAL:
-                            mCargoIntake.moveTo(mController.getWantedCargoIntakePosition());
+                            cCargoIntakeHeight += mController.getWantedCargoIntakePosition();
+                            if(cCargoIntakeHeight > 0){
+                                mCargoIntake.moveTo(cCargoIntakeHeight);
+                            }
                             checkState();
                             break;
                         case INTAKE_C_ROLLER:
-                            mCargoIntake.deploy();
+                        if(!mCargoIntake.hasBall()){
+                            //mCargoIntake.deploy();
                             mCargoIntake.intake();
+                        } else {
+                            mCargoIntake.hold();
+                        }
                             checkState();
                             break;
                         case STOW_C_ROLLER:

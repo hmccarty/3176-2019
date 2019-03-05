@@ -76,8 +76,8 @@ public class controller {
         if(cargoIntakeToRocketHeight()){
             return constants.ROCKET_HEIGHT;
         }
-        else if(Math.abs(buttonMonkey.getThrottle()) > 0.07){
-            return (int)(buttonMonkey.getThrottle()*25000);
+        else if(Math.abs(buttonMonkey.getY()) > 0.07){
+            return (int)(buttonMonkey.getY()*2500);
         } else {
             return -1; 
         }

@@ -91,7 +91,7 @@ public class cargointake {
 
             if(intakeIsAtStowedLimit && !intakeIsAtDeployedLimt){
 
-                if(wantedHeight > cargoIntakeWinchPosition){
+                if(false) {//wantedHeight > cargoIntakeWinchPosition){
                     //In this scenario we are commanding a winch position that is beyond the stowed limit
                     oCargoIntakeWinchPower = 0;
                 }else{
@@ -99,7 +99,7 @@ public class cargointake {
                     oCargoIntakeWinchPower = cargoStowPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
                 }
 
-            }else if(intakeIsAtDeployedLimt && !intakeIsAtStowedLimit){
+            }else if(false) { //intakeIsAtDeployedLimt && !intakeIsAtStowedLimit){
                 if(wantedHeight < cargoIntakeWinchPosition){
                     //In this scenario we are commanding a winch position that is beyond the stowed deployed limit
                     oCargoIntakeWinchPower = 0;
@@ -142,17 +142,21 @@ public class cargointake {
         closedLoopControl(height);
     }
 
+    public boolean hasBall(){
+        return mBallCapturedSwitch.get();
+    }
+
     public double getHeight(){
         return cargoWinchEncoder.getRaw();
     }
 
     public void intake(){
         //TODO add ball detection
-        cargoIntakeBeaterBar.set(.5);
+        cargoIntakeBeaterBar.set(-.6);
     }
 
     public void spit(){
-        cargoIntakeBeaterBar.set(-.9);
+        cargoIntakeBeaterBar.set(.8);
     }
 
     public void hold(){
