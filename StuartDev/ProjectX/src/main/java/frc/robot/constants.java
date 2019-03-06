@@ -58,7 +58,7 @@ public class constants {
 	public static final double SWERVE_kI = 0.0023;
 	public static final double SWERVE_kD = 210.0;
 	public static final double SWERVE_kF = 0.0;
-	public static final double NEO_MAX_ACCEL = 2;
+	public static final double NEO_MAX_ACCEL = 5;
 	public static final double NEO_MAX_VEL = 6000;
 	public static final int SWERVE_ALLOWABLE_ERROR = 5;
 

@@ -23,6 +23,8 @@ public class drivetrain extends subsystem {
 	private controller mController = controller.getInstance(); 
 	private PowerDistributionPanel mPDP = new PowerDistributionPanel(0);
 	private AHRS mGyro;
+
+	private int counts = 0;
 	
 	private ArrayList<swervepod> mPods;
 	private ArrayList<neoSwervepod> mNeoPods;
@@ -193,16 +195,30 @@ public class drivetrain extends subsystem {
 			}
 		}
 
-		cMaxAccel = Math.max(Math.max(podDrive[0] - lastVel[0], podDrive[1] - lastVel[1]), Math.max(podDrive[2] - lastVel[2], podDrive[3] - lastVel[3]));
+		// cMaxAccel = Math.max(Math.max(podDrive[0] - lastVel[0], podDrive[1] - lastVel[1]), Math.max(podDrive[2] - lastVel[2], podDrive[3] - lastVel[3]));
 
-		if(cMaxAccel > kMaxAccel/50){
-			for(int idx = 0; idx < mNeoPods.size(); idx++) {
-				if(podDrive[idx] - lastVel[idx] == cMaxAccel){
-					for(int idx2 = 0; idx2 < mNeoPods.size(); idx2++){
-						podDrive[idx2] /= podDrive[idx]/(lastVel[idx] + kMaxAccel/50);
-					}
-				}
+		// if(cMaxAccel > kMaxAccel/50){
+		// 	for(int idx = 0; idx < mNeoPods.size(); idx++) {
+		// 		if(podDrive[idx] - lastVel[idx] == cMaxAccel){
+		// 			counts = 0;
+		// 			for(int idx2 = 0; idx2 < mNeoPods.size(); idx2++){
+		// 				podDrive[idx2] /= podDrive[idx]/(lastVel[idx] + kMaxAccel/50);
+		// 				counts++;
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+		double kAccel = 1.0;
+		double aMax = kMaxAccel/50.0;
+		for(int idx = 0; idx < mNeoPods.size(); idx++) {
+			double accel = podDrive[idx] - lastVel[idx];
+			if(accel > aMax) {
+				kAccel = Math.min((lastVel[idx] + aMax)/podDrive[idx], kAccel);
 			}
+		}
+		for(int idx = 0; idx < mNeoPods.size(); idx++) {
+			podDrive[idx] = kAccel*podDrive[idx];
 		}
 			// if(podDrive[idx] > lastVel[idx]){
 				// podDrive[idx] = Math.min(podDrive[idx], lastVel[idx] + kMaxAccel/50);
@@ -417,5 +433,8 @@ public class drivetrain extends subsystem {
 
 	@Override
 	public void outputToSmartDashboard() {
+		// SmartDashboard.putNumber("Counts", counts);
+		double minVoltage = Math.min(mPDP.getVoltage(), lastVoltage)
+		System.out.println(minVoltage);
 	}
 }
