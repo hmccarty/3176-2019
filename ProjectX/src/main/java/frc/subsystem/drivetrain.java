@@ -277,7 +277,7 @@ public class drivetrain extends subsystem {
 				cForwardCommand = 0;
 			}
 			if(mVision.getAngle() != -1){
-				cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), -8);
+				cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), -4);
 			} else {
 				cStrafeCommand = 0;
 			}
@@ -344,15 +344,7 @@ public class drivetrain extends subsystem {
 					break;
 				case VISION:
 					trackToTarget();
-					if(mController.gyroClockPosition()){
-						cSpinCommand = -visionTurn.returnOutput(getAngle(), 0);
-					}
-					else if(mController.clockTwo()){
-						cSpinCommand = -visionTurn.returnOutput(getAngle(), (Math.PI/2.0));
-					}
-					else if(mController.clockThree()){
-						cSpinCommand = -visionTurn.returnOutput(getAngle(), (Math.PI/4.0)) ;
-					}
+					
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
 
@@ -362,27 +354,8 @@ public class drivetrain extends subsystem {
 				case AUTON:
 					System.out.println(isAtTarget());
 					if(autonVision){
-						if(mController.clockOne()){
-							cSpinCommand = -visionTurn.returnOutput(getAngle(), 0);
-						}
-						else if(mController.clockTwo()){
-							cSpinCommand = -visionTurn.returnOutput(getAngle(), (Math.PI/2.0));
-						}
-						else if(mController.clockThree()){
-							cSpinCommand = -visionTurn.returnOutput(getAngle(), (Math.PI/4.0)) ;
-						}
-						if(Math.abs(cSpinCommand) <= 0.06){
-							if(mVision.getDistance() != -1){
-								cForwardCommand = visionForward.returnOutput(mVision.getDistance(), 14);
-							} else {
-								cForwardCommand = 0;
-							}
-							if(mVision.getAngle() != -1){
-								cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), -8);
-							} else {
-								cStrafeCommand = 0;
-							}
-						}
+						
+						
 						setCoordType(coordType.ROBOTCENTRIC); 
 						setInputType(inputType.PERCENTPOWER);
 					} else {
