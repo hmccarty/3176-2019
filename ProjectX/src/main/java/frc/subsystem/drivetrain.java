@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import java.util.ArrayList;
 import frc.robot.constants;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import frc.util.*;
 
@@ -263,6 +264,7 @@ public class drivetrain extends subsystem {
 
 	private void trackToTarget(){
 		double wantedGyroPosition = mController.gyroClockPosition();
+
 		if(wantedGyroPosition != -1){
 			lastGyroClock = wantedGyroPosition; 
 		} else {
@@ -344,7 +346,6 @@ public class drivetrain extends subsystem {
 					break;
 				case VISION:
 					trackToTarget();
-					
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
 
@@ -354,8 +355,7 @@ public class drivetrain extends subsystem {
 				case AUTON:
 					System.out.println(isAtTarget());
 					if(autonVision){
-						
-						
+						trackToTarget(); 
 						setCoordType(coordType.ROBOTCENTRIC); 
 						setInputType(inputType.PERCENTPOWER);
 					} else {
@@ -364,10 +364,10 @@ public class drivetrain extends subsystem {
 					}
 					crabDrive();
 					checkState();
+					break;
 				default:
 					break;			
 				}
-
 			outputToSmartDashboard();
 		}
 		@Override
@@ -376,5 +376,7 @@ public class drivetrain extends subsystem {
 	}
 
 	@Override
-	public void outputToSmartDashboard() {}
+	public void outputToSmartDashboard() {
+		SmartDashboard.putNumber("Vision Gyro", mController.gyroClockPosition()); 
+	}
 }

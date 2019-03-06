@@ -140,7 +140,7 @@ public class superstructure {
                             break;
                 }
                 checkState();
-                //mCargoIntake.outputToSmartDashboard();
+                mCargoIntake.outputToSmartDashboard();
                 mLastState = mCurrentState;
             }
 
