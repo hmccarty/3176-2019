@@ -73,17 +73,14 @@ public class controller {
     }*/
 
     public int getWantedCargoIntakePosition(){
-        if(cargoIntakeToRocketHeight()){
-            return constants.ROCKET_HEIGHT;
-        }
-        else if(Math.abs(buttonMonkey.getY()) > 0.07){
+        if(Math.abs(buttonMonkey.getY()) > 0.07){
             return (int)(buttonMonkey.getY()*2500);
         } else {
             return -1; 
         }
     }
 
-    public double getElevatorVelocity(){
+    public double getWantedElevatorVelocity(){
         if(Math.abs(buttonMonkey.getY()) > 0.07){
             return buttonMonkey.getY();
         } else {

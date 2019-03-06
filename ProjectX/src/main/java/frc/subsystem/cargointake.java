@@ -15,8 +15,8 @@ public class cargointake {
     private pid cargoDeployPID;
     private pid cargoStowPID;
 
-    private DigitalInput mStowedSwitch;
-    private DigitalInput mCargoIntakeDownLimitSwitch;
+    private DigitalInput mCargoIntakeStowedSwitch;
+    private DigitalInput mCargoIntakeDeployedSwitch;
     private DigitalInput mBallCapturedSwitch;
 
     private Encoder cargoWinchEncoder; 
@@ -26,10 +26,14 @@ public class cargointake {
 
     private Timer randomGodDamnTimer; 
 
+    Boolean cIntakeIsAtStowedLimit;
+    Boolean cIntakeIsAtDeployedLimt;
+    int cCargoIntakeWinchPosition;
+    double cCargoIntakeWinchPower;
+
     private int kStowedHeight = constants.STOWED_HEIGHT;   //The position of the winch when stowed
     private int kIntakeHeight = constants.DEPLOYED_HEIGHT; //The position of the winch when Deployed
     private int kRocketHeight = constants.ROCKET_HEIGHT;   //The position of the winch when shooting for the Rocket
-    private Boolean cargoIntakeWinchIsHomed;
 
     public cargointake(){
         cargoStowPID = new pid(0.00009, 0,0,.25); //The PID values for Deploying the mechanism
@@ -37,8 +41,8 @@ public class cargointake {
 
 
         //Declare Sensors
-        mStowedSwitch = new DigitalInput(constants.PORTSW_CARGO_INTAKE_STOWED);
-        mCargoIntakeDownLimitSwitch = new DigitalInput(constants.PORTSW_CARGO_INTAKE_DOWN);
+        mCargoIntakeStowedSwitch = new DigitalInput(constants.PORTSW_CARGO_INTAKE_STOWED);
+        mCargoIntakeDeployedSwitch = new DigitalInput(constants.PORTSW_CARGO_INTAKE_DOWN);
         mBallCapturedSwitch = new DigitalInput(constants.PORTSW_CARGO_IN_INTAKE);
 
         cargoWinchEncoder = new Encoder(constants.CARGO_INTAKE_ENCODER[0],
@@ -54,9 +58,7 @@ public class cargointake {
 
         //Initialize members
         cargoWinchEncoder.reset();
-        cargoIntakeWinchIsHomed = false;
         
-
         randomGodDamnTimer = new Timer();
         randomGodDamnTimer.start();
     }
@@ -72,10 +74,6 @@ public class cargointake {
             //
             // And sets the winch motor 
 
-            Boolean intakeIsAtStowedLimit;
-            Boolean intakeIsAtDeployedLimt;
-            int cargoIntakeWinchPosition;
-            double oCargoIntakeWinchPower;
 
             //if(intakeIsAtStowedLimit && !cargoIntakeWinchIsHomed){
             //    cargoIntakeWinchIsHomed = true;
@@ -83,51 +81,40 @@ public class cargointake {
             //}
 
             //Inputs
-            intakeIsAtDeployedLimt = mCargoIntakeDownLimitSwitch.get();
-            intakeIsAtStowedLimit = mStowedSwitch.get();
-            cargoIntakeWinchPosition = cargoWinchEncoder.getRaw();
+            cIntakeIsAtDeployedLimt = mCargoIntakeDeployedSwitch.get();
+            cIntakeIsAtStowedLimit = mCargoIntakeStowedSwitch.get();
+            cCargoIntakeWinchPosition = cargoWinchEncoder.getRaw();
 
             //Processing
 
-            if(intakeIsAtStowedLimit && !intakeIsAtDeployedLimt){
-
-                if(false) {//wantedHeight > cargoIntakeWinchPosition){
+            if(cIntakeIsAtStowedLimit && !cIntakeIsAtDeployedLimt){
+                if(wantedHeight > cCargoIntakeWinchPosition){
                     //In this scenario we are commanding a winch position that is beyond the stowed limit
-                    oCargoIntakeWinchPower = 0;
+                    cCargoIntakeWinchPower = 0;
                 }else{
                     //In this scenario we are commanding the winch to come off of the limit switch
-                    oCargoIntakeWinchPower = cargoStowPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
+                    cCargoIntakeWinchPower = cargoDeployPID.returnOutput(cCargoIntakeWinchPosition, wantedHeight);
                 }
 
-            }else if(false) { //intakeIsAtDeployedLimt && !intakeIsAtStowedLimit){
-                if(wantedHeight < cargoIntakeWinchPosition){
+            } else if (cIntakeIsAtDeployedLimt && !cIntakeIsAtStowedLimit){
+                if(wantedHeight < cCargoIntakeWinchPosition){
                     //In this scenario we are commanding a winch position that is beyond the stowed deployed limit
-                    oCargoIntakeWinchPower = 0;
+                    cCargoIntakeWinchPower = 0;
                 }else{
                     //In this scenario we are commanding the winch to come off of the deployed limit switch
-                    oCargoIntakeWinchPower = cargoDeployPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
+                    cCargoIntakeWinchPower = cargoStowPID.returnOutput(cCargoIntakeWinchPosition, wantedHeight);
                 }
-
-            }else{
+            } else {
                     //We are in the middle just responding to normal commands
-                    if(wantedHeight < cargoIntakeWinchPosition){
+                    if(wantedHeight < cCargoIntakeWinchPosition){
                         //In this scenario we are commanding a winch position that is lower
-                        oCargoIntakeWinchPower = cargoStowPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
+                        cCargoIntakeWinchPower = cargoStowPID.returnOutput(cCargoIntakeWinchPosition, wantedHeight);
                     }else{
                         //In this scenario we are commanding the winch position that is higher
-                        oCargoIntakeWinchPower = cargoDeployPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
+                        cCargoIntakeWinchPower = cargoDeployPID.returnOutput(cCargoIntakeWinchPosition, wantedHeight);
                     }
-
             }
-
-
-            //Set the outputs
-            SmartDashboard.putNumber("Cargo Winch Encoder: ", cargoIntakeWinchPosition);
-            SmartDashboard.putNumber("Cargo Winch Power: ", oCargoIntakeWinchPower);
-            SmartDashboard.putNumber("Wanted Height: ", wantedHeight);
-            cargoIntakeWinch.set(oCargoIntakeWinchPower);
-
-
+            cargoIntakeWinch.set(cCargoIntakeWinchPower);
     }
 
     public void deploy(){
@@ -151,7 +138,6 @@ public class cargointake {
     }
 
     public void intake(){
-        //TODO add ball detection
         cargoIntakeBeaterBar.set(-.6);
     }
 
@@ -161,6 +147,14 @@ public class cargointake {
 
     public void hold(){
         cargoIntakeBeaterBar.set(0);
+    }
+
+    public void outputToSmartDashboard(){
+        //Set the outputs
+        SmartDashboard.putBoolean("Up Limit Switch", mCargoIntakeDeployedSwitch.get());
+        SmartDashboard.putBoolean("Down Limit Switch", mCargoIntakeStowedSwitch.get());
+        SmartDashboard.putNumber("Cargo Winch Encoder: ", cCargoIntakeWinchPosition);
+        SmartDashboard.putNumber("Cargo Winch Power: ", cCargoIntakeWinchPower);
     }
 
     public void zeroAllSensors() {

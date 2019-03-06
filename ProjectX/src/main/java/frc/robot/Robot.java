@@ -84,7 +84,7 @@ public class Robot extends TimedRobot {
 		if (mController.getElevatorHeight() != -1){
 			mElevator.setWantedState(elevator.state.POSITION_CONTROL);
 		}
-		else if (mController.getElevatorVelocity() != 0){
+		else if (mController.getWantedElevatorVelocity() != 0){
 			mElevator.setWantedState(elevator.state.VELOCITY_CONTROL);
 		}
 		else if (mElevator.inPosition()){
