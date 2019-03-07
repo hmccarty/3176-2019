@@ -176,11 +176,11 @@ public class controller {
         return yawStick.getRawButton(1);
     }
 
-    public boolean visionFront(){
+    public boolean switchVisionCamera(){
         return yawStick.getRawButton(4);
     }
 
-    public boolean visionBack(){
+    public boolean switchVisionMode(){
         return yawStick.getRawButton(6);
     }
 

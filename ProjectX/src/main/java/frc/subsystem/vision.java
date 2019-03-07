@@ -56,19 +56,22 @@ public class vision extends subsystem{
             new loop(){
                 public void onStart(){
                     CameraServer.getInstance().startAutomaticCapture();
-                    mWantedState = state.STREAM_FRONT; 
-                    mCurrentState = state.STREAM_FRONT; 
+                    mWantedState = state.NEUTRAL; 
+                    mCurrentState = state.NEUTRAL; 
                 }
                 public void onLoop(){
                     switch(mCurrentState){
-                        case TRACK_TARGET:
-                            cIsTracking = true; 
-                        case STREAM_FRONT:
-                            cIsTracking = false;
-                            cVisionSide = 0; 
-                        case STREAM_BACK: 
-                            cIsTracking = false;
-                            cVisionSide = 1; 
+                        case SWITCH_MODE:
+                            cIsTracking = !cIsTracking; 
+                            mWantedState = state.NEUTRAL; 
+                            break;
+                        case SWITCH_CAMERA:
+                            if(cVisionSide == 0) {cVisionSide = 1;}
+                            else { cVisionSide = 0;}
+                            mWantedState = state.NEUTRAL; 
+                            break;
+                        case NEUTRAL: 
+                            break; 
                     }
                     postToNetwork(cVisionSide, cIsTracking);
                     checkState(); 
@@ -84,9 +87,8 @@ public class vision extends subsystem{
     public void outputToSmartDashboard(){}
 
     public enum state {
-        TRACK_TARGET, 
-        TRACK_AND_STREAM, 
-        STREAM_FRONT,
-        STREAM_BACK
+        SWITCH_MODE,
+        SWITCH_CAMERA,
+        NEUTRAL
     }
 }   

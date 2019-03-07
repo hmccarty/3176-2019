@@ -94,16 +94,11 @@ public class Robot extends TimedRobot {
 		/*****************\
 		|* Vision States *|
 		\*****************/
-		if(mController.visionFront()){
-			mVision.setWantedState(vision.state.STREAM_FRONT);
+		if(mController.switchVisionCamera()){
+			mVision.setWantedState(vision.state.SWITCH_CAMERA);
 		}
-		else if(mController.visionBack()){
-			mVision.setWantedState(vision.state.STREAM_BACK);
-		}
-		else if(mController.trackTarget()){
-			mVision.setWantedState(vision.state.TRACK_TARGET);
-		} else {
-			mVision.setWantedState(vision.state.TRACK_TARGET);
+		else if(mController.switchVisionMode()){
+			mVision.setWantedState(vision.state.SWITCH_MODE);
 		}
 	}
 

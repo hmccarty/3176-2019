@@ -70,6 +70,17 @@ public class constants {
 	public static final int DRIVE_IZONE = 200;
 	public static double fps2ups = 12.0 /(constants.WHEELDIAMETER * Math.PI) * 4096.0/10.0 *48.0/30.0;
 	public static final int DRIVE_ALLOWABLE_ERROR = 50;
+
+	public static final double NEO_kP = 0.000095;
+	public static final double NEO_kI = 0.0000009325;
+	public static final double NEO_kD = 0;
+	public static final double NEO_FF = 0;
+	public static final double NEO_IZ = 0;
+	public static final double NEO_MAX_ACCEL = 5;
+	public static final double DRIVE_GEAR_RATI0 = 17/54;
+	public static double fps2rpm = 12.0 * (1.0/(WHEELDIAMETER*Math.PI)) * (48.0/30.0) * (54.0/17.0) * (60.0);//12/(3*Math.PI)*(48/30)*(54/17)*60;
+	public static double rev2ft = (17.0/54.0)*(30.0/48.0)*(WHEELDIAMETER*Math.PI)*(1.0/12.0);
+	public static final double NEO_MAX_VEL = 6000;
 	
 	public static final double MAXSLOWPERCENTSPEED = .4;
 	public static final double DRIVE_RAMPRATE = .3;

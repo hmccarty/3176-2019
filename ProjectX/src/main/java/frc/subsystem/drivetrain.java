@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import frc.robot.constants;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANSparkMax;
+
 import frc.util.*;
 
 /** 
@@ -21,11 +23,17 @@ public class drivetrain extends subsystem {
 	private AHRS mGyro;
 	
 	private ArrayList<swervepod> mPods;
+	//private ArrayList<neopod> mNeoPods;
 	
 	private swervepod mUpperRight;
 	private swervepod mUpperLeft;
 	private swervepod mLowerLeft;
 	private swervepod mLowerRight;
+
+	// private neopod mUpperRight;
+	// private neopod mUpperLeft;
+	// private neopod mLowerLeft;
+	// private neopod mLowerRight;
 	
 	private coordType mCoordType;
 	private inputType mInputType;
@@ -39,6 +47,7 @@ public class drivetrain extends subsystem {
 	private double lastGyroClock; 
 	
 	public TalonSRX[] mDriveTalons = {new TalonSRX(constants.DRIVE_ONE), new TalonSRX(constants.DRIVE_TWO), new TalonSRX(constants.DRIVE_THREE), new TalonSRX(constants.DRIVE_FOUR)}; 
+	//public CANSparkMax[] mDriveSparks = {new CANSparkMax(constants.DRIVE_ONE, MotorType.kBrushless), new CANSparkMax(constants.DRIVE_TWO, MotorType.kBrushless), new CANSparkMax(constants.DRIVE_THREE, MotorType.kBrushless), new CANSparkMax(constants.DRIVE_FOUR, MotorType.kBrushless)}; 
 	public TalonSRX[] mGearTalons = {new TalonSRX(constants.STEER_ONE), new TalonSRX(constants.STEER_TWO), new TalonSRX(constants.STEER_THREE), new TalonSRX(constants.STEER_FOUR)};
 	
 	private double kLength;
@@ -46,6 +55,8 @@ public class drivetrain extends subsystem {
 	
 	private double kMaxSpeed;
 	private double kMaxRotation;
+	private double kMaxAccel;
+	private double kMaxVel;
 	
 	private double cMaxSpeed;
 	private double cAngle;
@@ -82,6 +93,11 @@ public class drivetrain extends subsystem {
 		mLowerLeft = new swervepod(2, mDriveTalons[2], mGearTalons[2]);
 		mLowerRight = new swervepod(3, mDriveTalons[3], mGearTalons[3]);
 
+		// mUpperRight = new neopod(0, mDriveSparks[0], mGearTalons[0]);
+		// mUpperLeft = new neopod(1, mDriveSparks[1], mGearTalons[1]);
+		// mLowerLeft = new neopod(2, mDriveSparks[2], mGearTalons[2]);
+		// mLowerRight = new neopod(3, mDriveSparks[3], mGearTalons[3]);
+
 		//set drive type
 		mCoordType = coordType.FIELDCENTRIC;
 		mInputType = inputType.PERCENTPOWER;
@@ -96,12 +112,18 @@ public class drivetrain extends subsystem {
 		
 		//Instantiate array list
 		mPods = new ArrayList<swervepod>();
+		//mNeoPods = new ArrayList<neopod>();
 			
 		//Add instantiated mPods to the array list
 		mPods.add(mUpperRight);
 		mPods.add(mUpperLeft);
 		mPods.add(mLowerLeft);
 		mPods.add(mLowerRight);
+
+		// mNeoPods.add(mUpperRight);
+		// mNeoPods.add(mUpperLeft);
+		// mNeoPods.add(mLowerLeft);
+		// mNeoPods.add(mLowerRight);
 		
 		//Setting constants
 		kLength = constants.DRIVETRAINLENGTH;
@@ -109,6 +131,9 @@ public class drivetrain extends subsystem {
 
 		kMaxSpeed = constants.DRIVETRAINMAXWHEELSPEED;
 		kMaxRotation = constants.DRIVETRAINMAXROTATIONSPEED;
+
+		kMaxAccel = constants.NEO_MAX_ACCEL;
+		kMaxVel = constants.NEO_MAX_VEL;
 		
 		//Instantiating the Gyro
 		mGyro = new AHRS(SPI.Port.kMXP);
