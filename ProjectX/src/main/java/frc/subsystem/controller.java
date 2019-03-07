@@ -74,7 +74,7 @@ public class controller {
 
     public int getWantedCargoIntakePosition(){
         if(Math.abs(buttonMonkey.getY()) > 0.07){
-            return (int)(buttonMonkey.getY()*2500);
+            return (int)(buttonMonkey.getY()*2000);
         } else {
             return -1; 
         }

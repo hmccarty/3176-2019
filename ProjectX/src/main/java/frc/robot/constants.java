@@ -92,7 +92,7 @@ public class constants {
 	|* Cargo Intake Constants *|
 	\**************************/
 	
-	public static final int DEPLOYED_HEIGHT = 39356;
+	public static final int DEPLOYED_HEIGHT = 44000;
     public static final int STOWED_HEIGHT = 0;
-	public static final int ROCKET_HEIGHT = 12000;
+	public static final int ROCKET_HEIGHT = 14500;
 }

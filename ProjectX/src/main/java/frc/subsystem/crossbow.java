@@ -16,6 +16,8 @@ public class crossbow {
        outerBow = new DoubleSolenoid(1, 3, 4);
        innerBow = new DoubleSolenoid(1, 2, 5);
 
+       shotTimer = new Timer();
+
        shotTimer.start(); 
     }
 

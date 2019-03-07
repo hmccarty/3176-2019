@@ -18,14 +18,14 @@ public class Robot extends TimedRobot {
 	private vision mVision = vision.getInstance();
 	private controller mController = controller.getInstance();
 	private superstructure mSuperstructure = superstructure.getInstance();
-	private elevator mElevator = elevator.getInstance();
+	//private elevator mElevator = elevator.getInstance();
 
 	@Override
 	public void robotInit() {
 		mDriveTrain.registerLoop(); 
 		mVision.registerLoop();
 		mSuperstructure.registerLoop();
-		mElevator.registerLoop();
+		//mElevator.registerLoop();
 		myLoops.startLoops();
 	}
 	
@@ -70,7 +70,7 @@ public class Robot extends TimedRobot {
 		} 
 		else if (mController.neutral()){
 			mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
-		} else {
+		} else if (mController.getWantedCargoIntakePosition() != -1) {
 			mSuperstructure.setWantedState(superstructure.state.C_ROLLER_MANUAL);
 		}
 
@@ -81,15 +81,15 @@ public class Robot extends TimedRobot {
 		// if(mController.openLoopEnabled()){
 		// 	mElevator.setWantedState(elevator.state.OPEN_LOOP);
 		// }
-		if (mController.getElevatorHeight() != -1){
-			mElevator.setWantedState(elevator.state.POSITION_CONTROL);
-		}
-		else if (mController.getWantedElevatorVelocity() != 0){
-			mElevator.setWantedState(elevator.state.VELOCITY_CONTROL);
-		}
-		else if (mElevator.inPosition()){
-			mElevator.setWantedState(elevator.state.HOLDING);
-		}
+		// if (mController.getElevatorHeight() != -1){
+		// 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
+		// }
+		// else if (mController.getWantedElevatorVelocity() != 0){
+		// 	mElevator.setWantedState(elevator.state.VELOCITY_CONTROL);
+		// }
+		// else if (mElevator.inPosition()){
+		// 	mElevator.setWantedState(elevator.state.HOLDING);
+		// }
 
 		/*****************\
 		|* Vision States *|
