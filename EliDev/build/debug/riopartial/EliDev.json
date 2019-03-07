@@ -1,0 +1,9 @@
+[
+  {
+    "artifact": "frcJava (in project EliDev)",
+    "target": "roborio",
+    "debugfile": "frcJava_roborio.debugconfig",
+    "project": "EliDev",
+    "language": "java"
+  }
+]
