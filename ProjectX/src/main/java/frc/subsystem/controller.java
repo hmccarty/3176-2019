@@ -2,6 +2,7 @@ package frc.subsystem;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import frc.robot.constants;
 
 public class controller {
@@ -13,6 +14,7 @@ public class controller {
     private boolean openLoop = false; 
     private Timer openLoopTimer = new Timer();
     private boolean firstTime = true;
+
 
     public controller(){
         openLoopTimer.start();
@@ -58,6 +60,10 @@ public class controller {
         return buttonMonkey.getRawButton(9);
     }
 
+    public void alertOperator(){ 
+        buttonMonkey.setRumble(RumbleType.kRightRumble, 1);
+    }
+
     /*public boolean openLoopEnabled(){
         if(buttonMonkey.getRawButton(11) && buttonMonkey.getRawButton(12)) {
             if(firstTime == true){
@@ -66,7 +72,7 @@ public class controller {
             }
             if(openLoopTimer.get() > 2.0){
                 firstTime = true;
-                openLoop = !openLoop;
+                openLoop = !openLoop;s
             }
         }
         return openLoop;
@@ -74,7 +80,7 @@ public class controller {
 
     public int getWantedCargoIntakePosition(){
         if(Math.abs(buttonMonkey.getY()) > 0.07){
-            return (int)(buttonMonkey.getY()*2000);
+            return (int)(buttonMonkey.getY()*1700);
         } else {
             return -1; 
         }

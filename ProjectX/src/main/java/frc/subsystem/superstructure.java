@@ -56,21 +56,23 @@ public class superstructure {
                     switch(mCurrentState){
                         case C_ROLLER_MANUAL:
                             if(mLastState != state.C_ROLLER_MANUAL){ 
+                                System.out.print(mLastState.toString()); 
                                 cCargoIntakeHeight = mCargoIntake.getHeight();
                             }
                             cCargoIntakeHeight += mController.getWantedCargoIntakePosition();
                             if(cCargoIntakeHeight > 0){
-                                mCargoIntake.moveTo(cCargoIntakeHeight);
+                                mCargoIntake.manualControl(cCargoIntakeHeight, false);
                             }
                             checkState();
                             break;
                         case INTAKE_C_ROLLER:
-                        if(!mCargoIntake.hasBall()){
-                            mCargoIntake.deploy();
-                            mCargoIntake.intake();
-                        } else {
-                            mWantedState = state.STOW_C_ROLLER;
-                        }
+                            if(!mCargoIntake.hasBall()){
+                                mCargoIntake.deploy();
+                                mCargoIntake.intake();
+                            } else {
+                                mController.alertOperator();
+                                mWantedState = state.STOW_C_ROLLER;
+                            }
                             checkState();
                             break;
                         case STOW_C_ROLLER:
@@ -79,14 +81,13 @@ public class superstructure {
                             checkState();
                             break;
                         case INTAKE_H_CB:
-                        // mHatchIntake.stow();
-                        /*   mClaw.stow();
-                        */  mCompressor.stop(); 
+                            mCargoIntake.stow();
                             mCrossbow.set();
                             mLastState = mCurrentState;
                             checkState();
                             break;
                         case HOLD_H_CB:
+                            mCargoIntake.stow(); 
                             mCrossbow.draw();
                             mLastState = mCurrentState;
                             checkState();
@@ -121,6 +122,7 @@ public class superstructure {
                             checkState();
                             break;
                         case DELIVER_HATCH:
+                            mCargoIntake.stow();
                             mCrossbow.shoot();
                             mLastState = mCurrentState;
                             checkState();

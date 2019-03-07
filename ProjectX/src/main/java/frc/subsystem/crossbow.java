@@ -42,6 +42,7 @@ public class crossbow {
             innerBow.set(DoubleSolenoid.Value.kReverse);
         }
         if(shotTimer.get() > 0.15){
+            shotStarted = false; 
             shotTimer.stop(); 
             shotTimer.reset(); 
             outerBow.set(DoubleSolenoid.Value.kReverse);

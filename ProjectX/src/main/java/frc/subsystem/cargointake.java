@@ -131,6 +131,12 @@ public class cargointake {
         closedLoopControl(height);
     }
 
+    public void manualControl(int height, boolean override){
+        if(override = false){
+            cargoIntakeWinch.set(cargoStowPID.returnOutput(cargoWinchEncoder.getRaw()));
+        }
+    }
+
     public boolean hasBall(){
         return !mBallCapturedSwitch.get();
     }
