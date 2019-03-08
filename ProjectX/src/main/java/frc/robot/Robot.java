@@ -70,8 +70,12 @@ public class Robot extends TimedRobot {
 		} 
 		else if (mController.neutral()){
 			mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
-		} else if (mController.getWantedCargoIntakePosition() != -1) {
+		} 
+		else if (mController.getWantedCargoIntakePosition() != -1) {
 			mSuperstructure.setWantedState(superstructure.state.C_ROLLER_MANUAL);
+		}
+		else if (mController.cargoIntakeOpenLoopEnabled()) {
+			mSuperstructure.setWantedState(superstructure.state.OPENLOOP_CARGO);
 		}
 
 		/*******************\

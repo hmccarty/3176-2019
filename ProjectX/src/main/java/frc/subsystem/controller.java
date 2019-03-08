@@ -64,7 +64,7 @@ public class controller {
         buttonMonkey.setRumble(RumbleType.kRightRumble, 1);
     }
 
-    /*public boolean openLoopEnabled(){
+    public boolean cargoIntakeOpenLoopEnabled(){
         if(buttonMonkey.getRawButton(11) && buttonMonkey.getRawButton(12)) {
             if(firstTime == true){
                 firstTime = false; 
@@ -72,15 +72,19 @@ public class controller {
             }
             if(openLoopTimer.get() > 2.0){
                 firstTime = true;
-                openLoop = !openLoop;s
+                openLoop = !openLoop;
             }
         }
         return openLoop;
-    }*/
+    }
+
+    public double getCargoIntakeOpenLoopCommand() {
+        return buttonMonkey.getY() * .5;
+    }
 
     public int getWantedCargoIntakePosition(){
         if(Math.abs(buttonMonkey.getY()) > 0.07){
-            return (int)(buttonMonkey.getY()*1700);
+            return (int)(buttonMonkey.getY()*400);
         } else {
             return -1; 
         }
@@ -122,6 +126,10 @@ public class controller {
 
     public boolean robotCentric(){
         return thrustStick.getRawButton(3);
+    }
+
+    public boolean backRobotCentric(){
+        return yawStick.getRawButton(3);
     }
 
     public boolean defenseEnabled(){
@@ -177,11 +185,11 @@ public class controller {
     }
 
     public boolean switchVisionCamera(){
-        return yawStick.getRawButton(4);
+        return yawStick.getRawButtonPressed(4);
     }
 
     public boolean switchVisionMode(){
-        return yawStick.getRawButton(6);
+        return yawStick.getRawButtonPressed(6);
     }
 
     public double gyroClockPosition(){
@@ -216,7 +224,7 @@ public class controller {
 
     public double getSpin(){
         if(Math.abs(yawStick.getX()) > 0.07){
-            return -yawStick.getX() * 0.19;
+            return -yawStick.getX() * 0.14;
         } else {
             return 0; 
         }

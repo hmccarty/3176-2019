@@ -75,7 +75,8 @@ public class drivetrain extends subsystem {
 	
 	public enum coordType{
 		ROBOTCENTRIC,
-		FIELDCENTRIC
+		FIELDCENTRIC,
+		BACKROBOTCENTRIC
 	}
 	
 	public enum inputType{
@@ -161,6 +162,12 @@ public class drivetrain extends subsystem {
 			final double temp = cForwardCommand * Math.sin(cAngle) + cStrafeCommand * Math.cos(cAngle);
 		    cStrafeCommand = (-cForwardCommand * Math.cos(cAngle) + cStrafeCommand * Math.sin(cAngle));
 		    cForwardCommand = temp;
+		}
+
+		if(mCoordType == coordType.BACKROBOTCENTRIC){
+			cStrafeCommand *= -1;
+			cForwardCommand *= -1;
+			cSpinCommand *= -1;
 		}
 
 		if(mInputType == inputType.PERCENTPOWER){
@@ -361,6 +368,8 @@ public class drivetrain extends subsystem {
 
 					if(mController.robotCentric()){
 						setCoordType(coordType.ROBOTCENTRIC);
+					} else if(mController.backRobotCentric()){
+						setCoordType(coordType.BACKROBOTCENTRIC);
 					} else {
 						setCoordType(coordType.FIELDCENTRIC);
 					}

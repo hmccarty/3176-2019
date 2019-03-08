@@ -59,9 +59,13 @@ public class superstructure {
                                 System.out.print(mLastState.toString()); 
                                 cCargoIntakeHeight = mCargoIntake.getHeight();
                             }
-                            cCargoIntakeHeight += mController.getWantedCargoIntakePosition();
-                            if(cCargoIntakeHeight > 0){
+                            System.out.println(cCargoIntakeHeight);
+                            if(cCargoIntakeHeight+mController.getWantedCargoIntakePosition() > 100){
+                                cCargoIntakeHeight += mController.getWantedCargoIntakePosition();
                                 mCargoIntake.manualControl(cCargoIntakeHeight, false);
+                            }
+                            if(mCargoIntake.hasBall()){
+                                mCargoIntake.hold();
                             }
                             checkState();
                             break;
@@ -131,13 +135,13 @@ public class superstructure {
                             
                             break;
                         case OPENLOOP_CARGO:
-                        // mCargoIntake.openLoop();
-                            //
+                             mCargoIntake.cargoIntakeOpenLoop(mController.getCargoIntakeOpenLoopCommand());                            
                             break;
                         case NEUTRAL:
                             mCompressor.start();
                             mCargoIntake.stow();
                             mCargoIntake.hold();
+                            mCargoIntake.zeroAllSensors();
                             //mClaw.stow();
                             //mHatchIntake.stow();
                             //mCrossbow.hold(); 

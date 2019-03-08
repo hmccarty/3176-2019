@@ -14,6 +14,7 @@ public class cargointake {
 
     private pid cargoDeployPID;
     private pid cargoStowPID;
+    private pid cargoManualPID;
 
     private DigitalInput mCargoIntakeStowedSwitch;
     private DigitalInput mCargoIntakeDeployedSwitch;
@@ -35,10 +36,13 @@ public class cargointake {
     private int kIntakeHeight = constants.DEPLOYED_HEIGHT; //The position of the winch when Deployed
     private int kRocketHeight = constants.ROCKET_HEIGHT;   //The position of the winch when shooting for the Rocket
 
+    private Boolean inOpenLoop = false;
+    private double openLoopPower = 0;
+
     public cargointake(){
         cargoStowPID = new pid(0.00009, 0,0,.25); //The PID values for Deploying the mechanism
         cargoDeployPID = new pid(0.00007,0,0, .9);      //The PID values for Retracting the mechanism
-
+        cargoManualPID = new pid(0.00007,0,0, .6);
 
         //Declare Sensors
         mCargoIntakeStowedSwitch = new DigitalInput(constants.PORTSW_CARGO_INTAKE_STOWED);
@@ -101,7 +105,7 @@ public class cargointake {
             } else if (cIntakeIsAtDeployedLimt && !cIntakeIsAtStowedLimit){
                 if(wantedHeight > cCargoIntakeWinchPosition){
                     //In this scenario we are commanding a winch position that is beyond the stowed deployed limit
-                    cargoDeployPID.returnOutput(cCargoIntakeWinchPosition, cCargoIntakeWinchPosition);
+                    cCargoIntakeWinchPower = cargoDeployPID.returnOutput(cCargoIntakeWinchPosition, cCargoIntakeWinchPosition);
                 }else{
                     //In this scenario we are commanding the winch to come off of the deployed limit switch
                     cCargoIntakeWinchPower = cargoStowPID.returnOutput(cCargoIntakeWinchPosition, wantedHeight);
@@ -132,8 +136,36 @@ public class cargointake {
     }
 
     public void manualControl(int height, boolean override){
-        if(override = false){
-            cargoIntakeWinch.set(cargoStowPID.returnOutput(cargoWinchEncoder.getRaw()));
+        if(override == false){
+            if(height < 0) {
+                height = 0;
+            }
+            if(cargoWinchEncoder.getRaw() < 0) {
+                cargoIntakeWinch.set(cargoManualPID.returnOutput(cargoWinchEncoder.getRaw(), 0));
+                cargoWinchEncoder.reset();
+            }
+            else if(!mCargoIntakeStowedSwitch.get() && mCargoIntakeDeployedSwitch.get()){
+                cargoWinchEncoder.reset();
+                if(height > cargoWinchEncoder.getRaw()) {
+                    cargoIntakeWinch.set(cargoManualPID.returnOutput(cargoWinchEncoder.getRaw(), height));
+                }
+                else {
+                    cargoIntakeWinch.set(cargoManualPID.returnOutput(cargoWinchEncoder.getRaw(), 0));
+                }
+            }
+            else if(mCargoIntakeStowedSwitch.get() && !mCargoIntakeDeployedSwitch.get()) {
+                if(height < cargoWinchEncoder.getRaw()) {
+                    cargoIntakeWinch.set(cargoManualPID.returnOutput(cargoWinchEncoder.getRaw(), height));
+                }
+                else {
+                    cargoIntakeWinch.set(cargoManualPID.returnOutput(cargoWinchEncoder.getRaw(), cargoWinchEncoder.getRaw()));
+                }
+            }
+            else {
+                cargoIntakeWinch.set(cargoManualPID.returnOutput(cargoWinchEncoder.getRaw(), height));
+            }
+            System.out.println("Manual Control: " + cargoIntakeWinch.getRaw());
+            System.out.println("Wanted height: " + height);
         }
     }
 
@@ -150,11 +182,32 @@ public class cargointake {
     }
 
     public void spit(){
-        cargoIntakeBeaterBar.set(-.7);
+        cargoIntakeBeaterBar.set(-.5);
     }
 
     public void hold(){
         cargoIntakeBeaterBar.set(0);
+    }
+
+    public void cargoIntakeOpenLoop(double openLoopCommand){
+        if(!mCargoIntakeStowedSwitch.get() && mCargoIntakeDeployedSwitch.get()){
+            cargoWinchEncoder.reset();
+           if(openLoopCommand < 0) {
+                cargoIntakeWinch.set(openLoopCommand);
+           }
+           else {
+               cargoIntakeWinch.set(0);
+           }
+       }
+       else if(mCargoIntakeStowedSwitch.get() && !mCargoIntakeDeployedSwitch.get()) {
+           if(openLoopCommand > 0) {
+               cargoIntakeWinch.set(openLoopCommand);
+           }
+           else {
+               cargoIntakeWinch.set(0);
+           }
+        }
+        System.out.println(true + " | " + openLoopCommand + " | " + cargoIntakeWinch.get());
     }
 
     public void outputToSmartDashboard(){
