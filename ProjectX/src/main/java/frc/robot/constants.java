@@ -19,16 +19,28 @@ public class constants {
 
 	public static int CARGO_INTAKE_ROLLER = 0;       /*PWM*/
 	public static int CARGO_INTAKE_ACTUATOR = 1;     /*PWM*/
+	public static int HATCH_INTAKE_ROLLER = 2;       /*PWM*/  
 
-	
+	/***************\
+	|* Piston Ports *|
+	\***************/	
+
+	public static int CROSSBOW_OUTER_FRONT = 3; 
+	public static int CROSSBOW_OUTER_BACK = 4; 
+	public static int CROSSBOW_INNER_FRONT = 2; 
+	public static int CROSSBOW_INNER_BACK = 5; 
+	public static int HATCH_INTAKE_ACTUATOR_FRONT = 5; 
+	public static int HATCH_INTAKE_ACTUATOR_BACK = 6; 
+
 	/****************\
 	|* Sensor Ports *|
 	\****************/
 
 	public static int CARGO_INTAKE_ENCODER[] = {0,1}; 
-	public static int PORTSW_CARGO_INTAKE_STOWED = 3;  // DIO port that detects when the cargo intake is 
-	public static int PORTSW_CARGO_INTAKE_DOWN = 4;
-	public static int PORTSW_CARGO_IN_INTAKE = 2;   // DIO port for switch that detects when cargo is in intake
+	public static int CARGO_IN_INTAKE = 2;   // DIO port for switch that detects when cargo is in intake
+	public static int CARGO_INTAKE_STOWED = 3;  // DIO port that detects when the cargo intake is 
+	public static int CARGO_INTAKE_DOWN = 4;
+	public static int HATCH_IN_INTAKE = 5; 
 
 	/****************************\
 	|* Driver Station Constants *|
@@ -43,7 +55,7 @@ public class constants {
 	\************************/
 
 	//Gear Facing Right
-	public static double OFFSETS[] = {1945,1058,878,2363};
+	public static double OFFSETS[] = {2601,1135,3468,1762};
 	public static double OFFSETS_P[] = {268.0,3228.0,1184.0,2160.0};
 	public static double DRIVETRAINLENGTH = 23.5;
 	public static double DRIVETRAINWIDTH = 24.0;
@@ -103,7 +115,7 @@ public class constants {
 	|* Cargo Intake Constants *|
 	\**************************/
 	
-	public static final int DEPLOYED_HEIGHT = 45000;
+	public static final int DEPLOYED_HEIGHT = 42000;
     public static final int STOWED_HEIGHT = 0;
 	public static final int ROCKET_HEIGHT = 14500;
 }

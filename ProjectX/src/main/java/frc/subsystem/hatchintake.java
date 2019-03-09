@@ -12,83 +12,67 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 public class hatchintake {
     
     private static hatchintake instance = new hatchintake();
-    private DigitalInput isDown;
-    private DigitalInput isUp;
-    private DigitalInput sensor;
+    private DigitalInput mHasHatch;
     private Talon mRoller;
-    private DoubleSolenoid dSol;
-    private Timer timer;
-    private controller c;
+    private DoubleSolenoid mActuator;
 
     public static hatchintake getInstance() {
         return instance;
     }
     
     public hatchintake() {
-        // isDown = new DigitalInput(constants.HATCH_INTAKE_DOWN);
-        // isUp = new DigitalInput(constants.HATCH_INTAKE_UP);
-        // sensor = new DigitalInput(constants.HATCH_IRSENSOR);
-        // mRoller = new Talon(constants.HATCH_INTAKE_ROLLER);
-        // dSol = new DoubleSolenoid(1, 2);
-        // timer = new Timer();
-        // timer.start();
+        mRoller = new Talon(constants.HATCH_INTAKE_ROLLER);
+        mActuator = new DoubleSolenoid(1, constants.HATCH_INTAKE_ACTUATOR_FRONT, constants.HATCH_INTAKE_ACTUATOR_BACK);
 
-        c = controller.getInstance();
+        mHasHatch = new DigitalInput(constants.HATCH_IN_INTAKE);
     }
 
-    public boolean getUp() {
-        return isUp.get();
-    }
+    // public boolean getUp() {
+    //     return isUp.get();
+    // }
 
-    public boolean getDown() {
-        return isDown.get();
-    }
+    // public boolean getDown() {
+    //     return isDown.get();
+    // }
     
-    public boolean getSensor() {
-        return sensor.get();
-    }
+    // public boolean getSensor() {
+    //     return sensor.get();
+    // }
 
-    public void deployIntake() {
-        if (getDown()) {
-            dSol.set(DoubleSolenoid.Value.kReverse);
-            getDown();
-        }
-        else {
-            dSol.set(DoubleSolenoid.Value.kOff);
-            getDown();
-        }
-    }
+    // public void deployIntake() {
+    //     mActuator.set(value.kForward);
+    // }
 
-    public void stowIntake() {
-        if (getUp()) {
-            dSol.set(DoubleSolenoid.Value.kForward);
-            getUp();
-        }
-        else {
-            dSol.set(DoubleSolenoid.Value.kOff);
-            getUp();
-        }
-    }
+    // public void stowIntake() {
+    //     if (getUp()) {
+    //         dSol.set(DoubleSolenoid.Value.kForward);
+    //         getUp();
+    //     }
+    //     else {
+    //         dSol.set(DoubleSolenoid.Value.kOff);
+    //         getUp();
+    //     }
+    // }
 
-    public void runIntake(double speed) {
-        if (sensor.get()) {
-            mRoller.set(0);
-            getSensor();
-        }
-        else {
-            mRoller.set(speed);
-            getSensor();
-        }
-    }
+    // public void runIntake(double speed) {
+    //     if (sensor.get()) {
+    //         mRoller.set(0);
+    //         getSensor();
+    //     }
+    //     else {
+    //         mRoller.set(speed);
+    //         getSensor();
+    //     }
+    // }
 
-    public void zeroAll() {
-        dSol.set(DoubleSolenoid.Value.kOff);
-        mRoller.set(0);
-    }
+    // public void zeroAll() {
+    //     dSol.set(DoubleSolenoid.Value.kOff);
+    //     mRoller.set(0);
+    // }
 
-    public void outputToSmartDashboard() {
-        SmartDashboard.putBoolean("isDown value: ", getDown());
-        SmartDashboard.putBoolean("isUp value: ", getUp());
-        SmartDashboard.putBoolean("sensor value: ", getSensor());
-    }
+    // public void outputToSmartDashboard() {
+    //     SmartDashboard.putBoolean("isDown value: ", getDown());
+    //     SmartDashboard.putBoolean("isUp value: ", getUp());
+    //     SmartDashboard.putBoolean("sensor value: ", getSensor());
+    // }
 }

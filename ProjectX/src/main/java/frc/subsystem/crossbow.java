@@ -2,6 +2,7 @@ package frc.subsystem;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.*;
 
 public class crossbow {
     private static crossbow instance = new crossbow();
@@ -12,9 +13,11 @@ public class crossbow {
     private boolean shotStarted = false; 
     private Timer shotTimer; 
 
+    private static constants c = new constants();
+
     public crossbow() {
-       outerBow = new DoubleSolenoid(1, 3, 4);
-       innerBow = new DoubleSolenoid(1, 2, 5);
+       outerBow = new DoubleSolenoid(1, c.CROSSBOW_OUTER_FRONT, c.CROSSBOW_OUTER_BACK);
+       innerBow = new DoubleSolenoid(1, c.CROSSBOW_INNER_FRONT, c.CROSSBOW_INNER_BACK);
 
        shotTimer = new Timer();
 

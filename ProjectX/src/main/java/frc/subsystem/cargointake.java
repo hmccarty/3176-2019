@@ -41,13 +41,13 @@ public class cargointake {
 
     public cargointake(){
         cargoStowPID = new pid(0.00009, 0,0,.25); //The PID values for Deploying the mechanism
-        cargoDeployPID = new pid(0.00007,0,0, .9);      //The PID values for Retracting the mechanism
+        cargoDeployPID = new pid(0.00005,0,0, .9);      //The PID values for Retracting the mechanism
         cargoManualPID = new pid(0.00007,0,0, .6);
 
         //Declare Sensors
-        mCargoIntakeStowedSwitch = new DigitalInput(constants.PORTSW_CARGO_INTAKE_STOWED);
-        mCargoIntakeDeployedSwitch = new DigitalInput(constants.PORTSW_CARGO_INTAKE_DOWN);
-        mBallCapturedSwitch = new DigitalInput(constants.PORTSW_CARGO_IN_INTAKE);
+        mCargoIntakeStowedSwitch = new DigitalInput(constants.CARGO_INTAKE_STOWED);
+        mCargoIntakeDeployedSwitch = new DigitalInput(constants.CARGO_INTAKE_DOWN);
+        mBallCapturedSwitch = new DigitalInput(constants.CARGO_IN_INTAKE);
 
         cargoWinchEncoder = new Encoder(constants.CARGO_INTAKE_ENCODER[0],
                               constants.CARGO_INTAKE_ENCODER[1], 

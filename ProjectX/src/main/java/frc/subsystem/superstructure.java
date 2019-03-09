@@ -11,7 +11,7 @@ public class superstructure {
     private state mWantedState;
     private state mCurrentState;
 
-    Compressor mCompressor = new Compressor(1);
+    Compressor mCompressor = new Compressor(0);
     controller mController = controller.getInstance();
     crossbow mCrossbow = crossbow.getInstance();
     // hatchintake mHatchIntake = hatchintake.getInstance();
