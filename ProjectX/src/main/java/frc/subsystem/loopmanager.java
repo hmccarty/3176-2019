@@ -3,6 +3,9 @@ package frc.subsystem;
 import frc.util.loop; 
 import java.util.ArrayList;
 
+/**
+ * Handles state of each subsystem, ensuring they are all either starting, looping, or stopping
+ */
 public class loopmanager {
     private static loopmanager instance = new loopmanager();
     private ArrayList<loop> subsystems = new ArrayList<loop>();

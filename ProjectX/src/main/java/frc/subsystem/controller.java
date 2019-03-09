@@ -7,17 +7,17 @@ import frc.robot.constants;
 
 public class controller {
     private static controller instance = new controller();
-    private Joystick thrustStick = new Joystick(0);
-    private Joystick yawStick = new Joystick(1);
-    private Joystick buttonMonkey = new Joystick(2); 
+    private Joystick mThrustStick = new Joystick(0);
+    private Joystick mYawStick = new Joystick(1);
+    private Joystick mButtonMonkey = new Joystick(2); 
 
-    private boolean openLoop = false; 
-    private Timer openLoopTimer = new Timer();
-    private boolean firstTime = true;
+    private boolean mOpenLoop = false; 
+    private Timer mOpenLoopTimer = new Timer();
+    private boolean  mFirstTime = true;
 
 
     public controller(){
-        openLoopTimer.start();
+        mOpenLoopTimer.start();
     }
     
     public static controller getInstance(){
@@ -29,83 +29,93 @@ public class controller {
     \*****************/
 
     public boolean neutral(){
-        return buttonMonkey.getRawButton(1);
+        return mButtonMonkey.getRawButton(1);
     }
 
     public  boolean crossbowIntake(){
-        return buttonMonkey.getRawButton(2);
+        return mButtonMonkey.getRawButton(2);
     }
 
     public  boolean crossbowHold(){
-        return buttonMonkey.getRawButton(3);
+        return mButtonMonkey.getRawButton(3);
     }
 
     public  boolean crossbowDeliver(){
-        return buttonMonkey.getRawButton(4);
+        return mButtonMonkey.getRawButton(4);
     }
 
     public boolean deployCargoIntake(){
-        return buttonMonkey.getRawButton(5);
+        return mButtonMonkey.getRawButton(5);
     }
 
     public boolean spitCargoIntake(){
-        return buttonMonkey.getRawButton(6);
+        return mButtonMonkey.getRawButton(6);
     }
 
     public boolean cargoIntakeToRocketHeight(){
-        return buttonMonkey.getRawButton(10);
+        return mButtonMonkey.getRawButton(10);
     }    
 
     public boolean stowCargoIntake(){
-        return buttonMonkey.getRawButton(9);
+        return mButtonMonkey.getRawButton(9);
     }
 
     public void alertOperator(){ 
-        buttonMonkey.setRumble(RumbleType.kRightRumble, 1);
+        mButtonMonkey.setRumble(RumbleType.kRightRumble, 1);
     }
 
     public boolean cargoIntakeOpenLoopEnabled(){
-        if(buttonMonkey.getRawButton(11) && buttonMonkey.getRawButton(12)) {
-            if(firstTime == true){
-                firstTime = false; 
-                openLoopTimer.reset();
+        if(mButtonMonkey.getRawButton(11) && mButtonMonkey.getRawButton(12)) {
+            if( mFirstTime == true){
+                 mFirstTime = false; 
+                mOpenLoopTimer.reset();
             }
-            if(openLoopTimer.get() > 2.0){
-                firstTime = true;
-                openLoop = !openLoop;
+            if(mOpenLoopTimer.get() > 2.0){
+                 mFirstTime = true;
+                mOpenLoop = !mOpenLoop;
             }
         }
-        return openLoop;
+        return mOpenLoop;
     }
 
     public double getCargoIntakeOpenLoopCommand() {
-        return buttonMonkey.getY() * .5;
+        return mButtonMonkey.getY() * .5;
     }
 
-    public int getWantedCargoIntakePosition(){
-        if(Math.abs(buttonMonkey.getY()) > 0.07){
-            return (int)(buttonMonkey.getY()*400);
+    /**
+     * @return driver set position of cargo intake in encoder units
+     *         (if no position is wanted, then returns -1)
+     */
+    public int wantedCargoIntakePosition(){
+        if(Math.abs(mButtonMonkey.getY()) > 0.07){
+            return (int)(mButtonMonkey.getY()*400);
         } else {
             return -1; 
         }
     }
 
-    public double getWantedElevatorVelocity(){
-        if(Math.abs(buttonMonkey.getY()) > 0.07){
-            return buttonMonkey.getY();
+    /**
+     * @return driver wanted velocity of elevator
+     */
+    public double wantedElevatorVelocity(){
+        if(Math.abs(mButtonMonkey.getY()) > 0.07){
+            return mButtonMonkey.getY();
         } else {
             return 0; 
         }
     }
 
-    public double getElevatorHeight(){
-        if(buttonMonkey.getPOV() == 0){
+    /** 
+     * @return driver wanted elevator height in inches
+     */
+    public double wantedElevatorHeight(){
+        if(mButtonMonkey.getPOV() == 0){
             return 74.3; 
         }
-        else if(buttonMonkey.getPOV() == 2){
+        else if(mButtonMonkey.getPOV() == 2){
             return 46.3; 
         }
-        else if(buttonMonkey.getPOV() == 4){
+        else if(mButtonMonkey.getPOV() == 4){
             return 0.0; 
         } else {
             return -1; 
@@ -116,61 +126,72 @@ public class controller {
 	|* Thrust Stick *|
     \****************/
 
+    /**
+     * @return if driver wants more speed
+     */
     public boolean boost(){
-        return thrustStick.getRawButton(1);
+        return mThrustStick.getRawButton(1);
     }
 
-    public boolean getGyroReset(){
-        return thrustStick.getRawButton(2);
+    /**
+     * @return if driver wants to reset gyro
+     */
+    public boolean gyroReset(){
+        return mThrustStick.getRawButton(2);
     }
 
+     /**
+     * @return if driver wants to control in robot centric
+     */
     public boolean robotCentric(){
-        return thrustStick.getRawButton(3);
+        return mThrustStick.getRawButton(3);
     }
 
+     /**
+     * @return if driver wants to control in reverse robot centric
+     */
     public boolean backRobotCentric(){
-        return yawStick.getRawButton(3);
+        return mYawStick.getRawButton(3);
     }
 
+     /**
+     * @return if driver wants to enable a locking position
+     */
     public boolean defenseEnabled(){
-        return thrustStick.getRawButton(4);
+        return mThrustStick.getRawButton(4);
     }
 
+     /**
+     * @return if driver wants to pivot around front left pod
+     */
     public boolean frontLeftRotation(){
-        return thrustStick.getRawButton(5);
+        return mThrustStick.getRawButton(5);
     }
 
-    public boolean clockOne(){
-        return thrustStick.getRawButton(10);
-    }
-
-    public boolean clockTwo(){
-        return thrustStick.getRawButton(12);
-    }
-
-    public boolean clockThree(){
-        return thrustStick.getRawButton(9);
-    }
-
-    public boolean clockFour(){
-        return thrustStick.getRawButton(10);
-    }
-
+    /**
+     * @return if driver wants to pivot around front right pod
+     */
     public boolean frontRightRotation(){
-        return thrustStick.getRawButton(6);
+        return mThrustStick.getRawButton(6);
     }
 
+    /**
+     * @return wanted motion in the y direction
+     */
     public double getForward(){
-        if(Math.abs(thrustStick.getY()) > 0.08){
-            return thrustStick.getY();
+        if(Math.abs(mThrustStick.getY()) > 0.08){
+            return mThrustStick.getY();
         } else {
             return 0; 
         }
     }
 
+    /**
+     * @return wanted motion in the x direction
+     */
     public double getStrafe(){
-        if(Math.abs(thrustStick.getX()) > 0.08){
-            return thrustStick.getX();
+        if(Math.abs(mThrustStick.getX()) > 0.08){
+            return mThrustStick.getX();
         } else {
             return 0; 
         }
@@ -180,20 +201,32 @@ public class controller {
 	|* Yaw Stick *|
     \*************/
 
+    /**
+     * @return if driver wants to enable tracking
+     */
     public boolean trackTarget(){
-        return yawStick.getRawButton(1);
+        return mYawStick.getRawButton(1);
     }
 
+    /**
+     * @return if driver wants to switch streaming camera
+     */
     public boolean switchVisionCamera(){
-        return yawStick.getRawButtonPressed(4);
+        return mYawStick.getRawButtonPressed(4);
     }
 
+    /**
+     * @return if driver wants to switch streaming mode (either dark and tracking or autoexposure)
+     */
     public boolean switchVisionMode(){
-        return yawStick.getRawButtonPressed(6);
+        return mYawStick.getRawButtonPressed(6);
     }
 
+    /**
+     * @return wanted direction when tracking
+     */
     public double gyroClockPosition(){
-        int position = yawStick.getPOV(0);
+        int position = mYawStick.getPOV(0);
         if(position < 22 && position < 338){
             return 0; 
         }
@@ -222,9 +255,12 @@ public class controller {
         }
     }
 
+    /**
+     * @return wanted motion in the omega axis
+     */
     public double getSpin(){
-        if(Math.abs(yawStick.getX()) > 0.07){
-            return -yawStick.getX() * 0.14;
+        if(Math.abs(mYawStick.getX()) > 0.07){
+            return -mYawStick.getX() * 0.14;
         } else {
             return 0; 
         }

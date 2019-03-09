@@ -48,20 +48,17 @@ public class superstructure {
                     mWantedState = state.NEUTRAL;
                 }
                 public void onLoop(){
-                    // if(mController.runCompressor()){
-                    //     mCompressor.start();
-                    // } else {
-                    //     mCompressor.stop();
-                    // }
                     switch(mCurrentState){
+                        /**
+                         * Allows driver to control cargo intake manually
+                         */
                         case C_ROLLER_MANUAL:
                             if(mLastState != state.C_ROLLER_MANUAL){ 
                                 System.out.print(mLastState.toString()); 
                                 cCargoIntakeHeight = mCargoIntake.getHeight();
                             }
-                            System.out.println(cCargoIntakeHeight);
-                            if(cCargoIntakeHeight+mController.getWantedCargoIntakePosition() > 100){
-                                cCargoIntakeHeight += mController.getWantedCargoIntakePosition();
+                            if(cCargoIntakeHeight+mController.wantedCargoIntakePosition() > 100){
+                                cCargoIntakeHeight += mController.wantedCargoIntakePosition();
                                 mCargoIntake.manualControl(cCargoIntakeHeight, false);
                             }
                             if(mCargoIntake.hasBall()){
@@ -69,6 +66,9 @@ public class superstructure {
                             }
                             checkState();
                             break;
+                        /**
+                         * Deploys cargo intake, starts roller, then waits for cargo before stowing
+                         */
                         case INTAKE_C_ROLLER:
                             if(!mCargoIntake.hasBall()){
                                 mCargoIntake.deploy();
@@ -79,17 +79,26 @@ public class superstructure {
                             }
                             checkState();
                             break;
+                        /**
+                         * Stows cargo intake and stops roller
+                         */
                         case STOW_C_ROLLER:
                             mCargoIntake.stow();
                             mCargoIntake.hold();
                             checkState();
                             break;
+                        /**
+                         *Returns cargo intake back to stowed position and prepares to intake hatch
+                         */
                         case INTAKE_H_CB:
                             mCargoIntake.stow();
                             mCrossbow.set();
                             mLastState = mCurrentState;
                             checkState();
                             break;
+                        /**
+                         * Latches onto hatch
+                         */
                         case HOLD_H_CB:
                             mCargoIntake.stow(); 
                             mCrossbow.draw();
@@ -121,10 +130,16 @@ public class superstructure {
                             *
                             */ 
                             break;
+                        /**
+                         * Spits cargo out of cargo intake
+                         */
                         case DELIVER_CARGO:
                             mCargoIntake.spit();
                             checkState();
                             break;
+                        /**
+                         * Fires hatch from crossbow
+                         */
                         case DELIVER_HATCH:
                             mCargoIntake.stow();
                             mCrossbow.shoot();
@@ -132,11 +147,16 @@ public class superstructure {
                             checkState();
                             break;
                         case OPENLOOP_HATCH:
-                            
                             break;
+                        /**
+                         * Allows driver to control cargo intake without closed loop control
+                         */
                         case OPENLOOP_CARGO:
                              mCargoIntake.cargoIntakeOpenLoop(mController.getCargoIntakeOpenLoopCommand());                            
                             break;
+                        /**
+                         * Returns all mechanism to their starting configuration
+                         */
                         case NEUTRAL:
                             mCompressor.start();
                             mCargoIntake.stow();
@@ -144,7 +164,7 @@ public class superstructure {
                             mCargoIntake.zeroAllSensors();
                             //mClaw.stow();
                             //mHatchIntake.stow();
-                            //mCrossbow.hold(); 
+                            mCrossbow.draw(); 
                             checkState();
                             break;
                 }

@@ -21,9 +21,9 @@ public class constants {
 	public static int CARGO_INTAKE_ACTUATOR = 1;     /*PWM*/
 	public static int HATCH_INTAKE_ROLLER = 2;       /*PWM*/  
 
-	/***************\
+	/****************\
 	|* Piston Ports *|
-	\***************/	
+	\****************/	
 
 	public static int CROSSBOW_OUTER_FRONT = 3; 
 	public static int CROSSBOW_OUTER_BACK = 4; 
@@ -55,42 +55,40 @@ public class constants {
 	\************************/
 
 	//Gear Facing Right
-	public static double OFFSETS[] = {2601,1135,3468,1762};
-	public static double OFFSETS_P[] = {268.0,3228.0,1184.0,2160.0};
-	public static double DRIVETRAINLENGTH = 23.5;
-	public static double DRIVETRAINWIDTH = 24.0;
-	public static double DRIVETRAINWIDTH_2 = 26.0;
-	public static final double WHEELDIAMETER = 3.0;
+	public static double OFFSETS[] = {2601,1135,3468,1762}; // Pod Absolute Offsets (Pod 1-4)
+	public static double DRIVETRAINLENGTH = 30.5; // inches
+	public static double DRIVETRAINWIDTH = 29.5; // inches
+	public static final double WHEELDIAMETER = 3.5;
 	public static double DRIVETRAINMAXWHEELSPEED = 13.5; // ft/s
 	public static double DRIVETRAINMAXROTATIONSPEED = 5.0; // radians/s
-	public static double ENCODER_UNITS = 4096.0;
+	public static double ENCODER_UNITS = 4096.0; // encoder units
 	
 	/***********************\
 	|* Swervepod Constants *|
 	\***********************/
 
-	public static final double SWERVE_KP = 4.0;
-	public static final double SWERVE_KI = 0.0023;
-	public static final double SWERVE_KD = 210.0;
+	public static final double SWERVE_KP[] = {4.0, 4.0, 4.0, 4.0}; // proportional gain for turning each pod
+	public static final double SWERVE_KI[] = {0.0023, 0.0023, 0.0023, 0.0023}; // integral gain for turning each pod
+	public static final double SWERVE_KD[] = {210.0, 210.0, 210.0, 210.0}; // derivative gain for turning each pod
 	public static final double SWERVE_KF = 0.0;
-	public static final int SWERVE_ALLOWABLE_ERROR = 5;
+	public static final int SWERVE_ALLOWABLE_ERROR = 5; 
 
-	public static final double DRIVE_KP = .4;
-	public static final double DRIVE_KI = 0.0001;
-	public static final double DRIVE_KD = 9.33;
-	public static final double DRIVE_KF = 0.130654611;
-	public static final int DRIVE_IZONE = 200;
-	public static double fps2ups = 12.0 /(constants.WHEELDIAMETER * Math.PI) * 4096.0/10.0 *48.0/30.0;
+	public static final double DRIVE_KP = .4; // proportional gain for driving each pod
+	public static final double DRIVE_KI = 0.0001; // integral gain for driving each pod
+	public static final double DRIVE_KD = 9.33; // derivative gain for driving each pod
+	public static final double DRIVE_KF = 0.130654611; // feed forward gain for driving each pod
+	public static final int DRIVE_IZONE = 200; // integral zone for driving each pod
+	public static double fps2ups = 12.0 /(constants.WHEELDIAMETER * Math.PI) * 4096.0/10.0 *48.0/30.0; // converts fps to ups
 	public static final int DRIVE_ALLOWABLE_ERROR = 50;
 
-	public static final double NEO_kP = 0.000095;
-	public static final double NEO_kI = 0.0000009325;
-	public static final double NEO_kD = 0;
+	public static final double NEO_KP = 0.000095;
+	public static final double NEO_KI = 0.0000009325;
+	public static final double NEO_KD = 0;
 	public static final double NEO_FF = 0;
 	public static final double NEO_IZ = 0;
 	public static final double NEO_MAX_ACCEL = 5;
 	public static final double DRIVE_GEAR_RATI0 = 17/54;
-	public static double fps2rpm = 12.0 * (1.0/(WHEELDIAMETER*Math.PI)) * (48.0/30.0) * (54.0/17.0) * (60.0);//12/(3*Math.PI)*(48/30)*(54/17)*60;
+	public static double fps2rpm = 12.0 * (1.0/(WHEELDIAMETER*Math.PI)) * (48.0/30.0) * (54.0/17.0) * (60.0);
 	public static double rev2ft = (17.0/54.0)*(30.0/48.0)*(WHEELDIAMETER*Math.PI)*(1.0/12.0);
 	public static final double NEO_MAX_VEL = 6000;
 	
@@ -115,7 +113,7 @@ public class constants {
 	|* Cargo Intake Constants *|
 	\**************************/
 	
-	public static final int DEPLOYED_HEIGHT = 42000;
+	public static final int DEPLOYED_HEIGHT = 40000; //encoder ticks
     public static final int STOWED_HEIGHT = 0;
 	public static final int ROCKET_HEIGHT = 14500;
 }

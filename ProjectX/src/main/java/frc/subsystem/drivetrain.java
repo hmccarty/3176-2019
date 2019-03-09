@@ -39,13 +39,13 @@ public class drivetrain extends subsystem {
 	private coordType mCoordType;
 	private inputType mInputType;
 
-	private boolean autonVision; 
+	private boolean cAutonVision; 
 
-	private pid visionForward;
-	private pid visionTurn;  
-	private pid visionStrafe; 
+	private pid mVisionForward;
+	private pid mVisionTurn;  
+	private pid mVisionStrafe; 
 	
-	private double lastGyroClock; 
+	private double cLastGyroClock; 
 	
 	//public TalonSRX[] mDriveTalons = {new TalonSRX(constants.DRIVE_ONE), new TalonSRX(constants.DRIVE_TWO), new TalonSRX(constants.DRIVE_THREE), new TalonSRX(constants.DRIVE_FOUR)}; 
 	public CANSparkMax[] mDriveSparks = {new CANSparkMax(constants.DRIVE_ONE, MotorType.kBrushless), new CANSparkMax(constants.DRIVE_TWO, MotorType.kBrushless), new CANSparkMax(constants.DRIVE_THREE, MotorType.kBrushless), new CANSparkMax(constants.DRIVE_FOUR, MotorType.kBrushless)}; 
@@ -104,13 +104,13 @@ public class drivetrain extends subsystem {
 		mCoordType = coordType.FIELDCENTRIC;
 		mInputType = inputType.PERCENTPOWER;
 
-		autonVision = false;
+		cAutonVision = false;
 
-		visionForward = new pid(0.009, 0, 0, .8); 
-		visionTurn = new pid(0.026, 0, 0, .8); 
-		visionStrafe = new pid(0.015,0, 0, .8); 
+		mVisionForward = new pid(0.009, 0, 0, .8); 
+		mVisionTurn = new pid(0.026, 0, 0, .8); 
+		mVisionStrafe = new pid(0.015,0, 0, .8); 
 
-		lastGyroClock = 0;
+		cLastGyroClock = 0;
 		
 		//Instantiate array list
 		//mPods = new ArrayList<swervepod>();
@@ -224,8 +224,8 @@ public class drivetrain extends subsystem {
 		}
 	}
 
-	public void autonVision(boolean state){ 
-		autonVision = state; 
+	public void cAutonVision(boolean state){ 
+		cAutonVision = state; 
 	}
 
 	public void setForwardCommand(double wantedForwardCommand){
@@ -252,13 +252,16 @@ public class drivetrain extends subsystem {
 		mWantedState = wanted;
 	}
 	
+	/**
+	 * Checks to ensure drivetrain is in the correct state
+	 */
 	private void checkState() {
 		if(mWantedState!=mCurrentState) {
 			mCurrentState = mWantedState;
 		}
 	}
 	
-	public PowerDistributionPanel getmPDP() {return mPDP;}
+	public PowerDistributionPanel getPDP() {return mPDP;}
 	
 	public neopod getPod(int idx) {return mNeoPods.get(idx);}
 	
@@ -277,6 +280,9 @@ public class drivetrain extends subsystem {
 		cAngle = ((((mGyro.getAngle()+90)* Math.PI/180.0)) % (2*Math.PI));
 	}
 
+	/**
+	 * Adjust radius to pivot around different positions
+	 */
 	private double getRadius(String component){
 		if(mController.frontRightRotation() || mController.frontLeftRotation()){
 			if(component.equals("A")) {return(kLength);}
@@ -295,32 +301,38 @@ public class drivetrain extends subsystem {
 		return 0; 
 	}
 
+	/**
+	 * Uses PID to home in on vision targets
+	 */
 	private void trackToTarget(){
 		double wantedGyroPosition = mController.gyroClockPosition();
 
 		if(wantedGyroPosition != -1){
-			lastGyroClock = wantedGyroPosition; 
+			cLastGyroClock = wantedGyroPosition; 
 		} else {
-			wantedGyroPosition = lastGyroClock; 
+			wantedGyroPosition = cLastGyroClock; 
 		}
-		cSpinCommand = -visionTurn.returnOutput(getAngle(), wantedGyroPosition);
+		cSpinCommand = -mVisionTurn.returnOutput(getAngle(), wantedGyroPosition);
 
 		if(Math.abs(cSpinCommand) <= 0.06){
 			if(mVision.getDistance() != -1){
-				cForwardCommand = visionForward.returnOutput(mVision.getDistance(), 14);
+				cForwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 14);
 			} else {
 				cForwardCommand = 0;
 			}
 			if(mVision.getAngle() != -1){
-				cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), -4);
+				cStrafeCommand = mVisionStrafe.returnOutput(mVision.getAngle(), -4);
 			} else {
 				cStrafeCommand = 0;
 			}
 		}
 	}
 
+	/**
+	 * Determines when robot has reached the position it was tracking to
+	 */
 	public boolean isAtTarget(){
-		if(Math.abs((visionTurn.returnOutput(mVision.getDistance(), 0))) < .5){
+		if(Math.abs((mVisionTurn.returnOutput(mVision.getDistance(), 0))) < .5){
 			return true;
 		} else {
 			return false;
@@ -347,7 +359,7 @@ public class drivetrain extends subsystem {
 		}
 		@Override
 		public void onLoop() {
-			if(mController.getGyroReset()) {
+			if(mController.gyroReset()) {
 				resetGyro();
 			}
 			updateAngle();
@@ -358,8 +370,7 @@ public class drivetrain extends subsystem {
 				case DRIVE:
 					cForwardCommand = mController.getForward();
 					cStrafeCommand = mController.getStrafe();
-						cSpinCommand = mController.getSpin();
-					
+					cSpinCommand = mController.getSpin();
 
 					if (!mController.boost()){
 						cForwardCommand *= constants.MAXSLOWPERCENTSPEED;
@@ -389,7 +400,7 @@ public class drivetrain extends subsystem {
 					break;
 				case AUTON:
 					System.out.println(isAtTarget());
-					if(autonVision){
+					if(cAutonVision){
 						trackToTarget(); 
 						setCoordType(coordType.ROBOTCENTRIC); 
 						setInputType(inputType.PERCENTPOWER);

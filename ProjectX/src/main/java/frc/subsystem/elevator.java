@@ -10,6 +10,8 @@
 // import frc.util.*;
 // import frc.util.trajectory;
 
+// CURRENTLY NOT IN USE
+
 // public class elevator {
 //     private static elevator instance = new elevator();
 //     private controller mController = controller.getInstance();

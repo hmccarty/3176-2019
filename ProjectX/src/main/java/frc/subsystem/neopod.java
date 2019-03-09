@@ -61,14 +61,14 @@ public class neopod extends subsystem {
         driveEncoder = this.driveMotor.getEncoder();
         //this.steerMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,0,0);
 		//this.steerMotor.setSelectedSensorPosition(0,0,0);
-		this.steerMotor.config_kP(0, constants.SWERVE_KP, 0);
-		this.steerMotor.config_kI(0, constants.SWERVE_KI, 0);
-        this.steerMotor.config_kD(0, constants.SWERVE_KD, 0);
+		this.steerMotor.config_kP(0, constants.SWERVE_KP[id], 0);
+		this.steerMotor.config_kI(0, constants.SWERVE_KI[id], 0);
+        this.steerMotor.config_kD(0, constants.SWERVE_KD[id], 0);
         
         m_pidController = driveMotor.getPIDController();
-        m_pidController.setP(constants.NEO_kP);
-        m_pidController.setI(constants.NEO_kI);
-        m_pidController.setD(constants.NEO_kD);
+        m_pidController.setP(constants.NEO_KP);
+        m_pidController.setI(constants.NEO_KI);
+        m_pidController.setD(constants.NEO_KD);
         m_pidController.setFF(constants.NEO_FF);
 		m_pidController.setIZone(constants.NEO_IZ);
 		driveMotor.setSmartCurrentLimit(100);
