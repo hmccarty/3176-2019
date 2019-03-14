@@ -168,7 +168,12 @@ public class drivetrain extends subsystem {
 		if(mCoordType == coordType.BACKROBOTCENTRIC){
 			cStrafeCommand *= -1;
 			cForwardCommand *= -1;
-			cSpinCommand *= -1;
+		}
+
+		if(mCoordType == coordType.ROBOTCENTRIC) {
+			cStrafeCommand *= .75;
+			cForwardCommand *= .75;
+			cSpinCommand *= .75;
 		}
 
 		if(mInputType == inputType.PERCENTPOWER){
@@ -211,17 +216,17 @@ public class drivetrain extends subsystem {
 		}
 		
 		//If enabled, sends each pod to a defensive lock when not moving 
-		if(mController.defenseEnabled()) {
-			// Sending each pod their respective commands
-			mNeoPods.get(0).setPod(0.0,-1.0*Math.PI/4.0);
-			mNeoPods.get(1).setPod(0.0, 1.0*Math.PI/4.0);
-			mNeoPods.get(2).setPod(0.0, 3.0*Math.PI/4.0);
-			mNeoPods.get(3).setPod(0.0, -3.0* Math.PI/4.0);
-		} else { 			//Sending each pod their respective commands
+		// if(mController.defenseEnabled()) {
+		// 	// Sending each pod their respective commands
+		// 	mNeoPods.get(0).setPod(0.0,-1.0*Math.PI/4.0);
+		// 	mNeoPods.get(1).setPod(0.0, 1.0*Math.PI/4.0);
+		// 	mNeoPods.get(2).setPod(0.0, 3.0*Math.PI/4.0);
+		// 	mNeoPods.get(3).setPod(0.0, -3.0* Math.PI/4.0);
+		// } else { 			//Sending each pod their respective commands
 			for(int idx = 0; idx < mNeoPods.size(); idx++) {
 				mNeoPods.get(idx).setPod(podDrive[idx],podGear[idx]); 
 			}
-		}
+		//}
 	}
 
 	public void cAutonVision(boolean state){ 
@@ -312,16 +317,16 @@ public class drivetrain extends subsystem {
 		} else {
 			wantedGyroPosition = cLastGyroClock; 
 		}
-		cSpinCommand = -mVisionTurn.returnOutput(getAngle(), wantedGyroPosition);
+		cSpinCommand = mVisionTurn.returnOutput(getAngle(), wantedGyroPosition);
 
 		if(Math.abs(cSpinCommand) <= 0.06){
 			if(mVision.getDistance() != -1){
-				cForwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 14);
+				cForwardCommand = -mVisionForward.returnOutput(mVision.getDistance(), 18);
 			} else {
 				cForwardCommand = 0;
 			}
 			if(mVision.getAngle() != -1){
-				cStrafeCommand = mVisionStrafe.returnOutput(mVision.getAngle(), -4);
+				cStrafeCommand = mVisionStrafe.returnOutput(mVision.getAngle(), 5);
 			} else {
 				cStrafeCommand = 0;
 			}
@@ -423,6 +428,6 @@ public class drivetrain extends subsystem {
 
 	@Override
 	public void outputToSmartDashboard() {
-		SmartDashboard.putNumber("Vision Gyro", mController.gyroClockPosition()); 
+		//SmartDashboard.putNumber("Vision Gyro", mController.gyroClockPosition()); 
 	}
 }

@@ -18,7 +18,7 @@ public class crossbow {
     public crossbow() {
         mOuterBow = new DoubleSolenoid(1, c.CROSSBOW_OUTER_FRONT, c.CROSSBOW_OUTER_BACK);
         mInnerBow = new DoubleSolenoid(1, c.CROSSBOW_INNER_FRONT, c.CROSSBOW_INNER_BACK);
-
+        draw();
        mShotTimer = new Timer();
 
        mShotTimer.start(); 
@@ -32,16 +32,16 @@ public class crossbow {
      * Sets crossbow in position to intake hatch
      */
     public void set(){
-         mOuterBow.set(DoubleSolenoid.Value.kForward);
-         mInnerBow.set(DoubleSolenoid.Value.kReverse);
+         mOuterBow.set(DoubleSolenoid.Value.kReverse);
+         mInnerBow.set(DoubleSolenoid.Value.kForward);
     }
 
     /**
      * Sets crossbow in position to hold hatch
      */
     public void draw(){
-         mOuterBow.set(DoubleSolenoid.Value.kForward);
-         mInnerBow.set(DoubleSolenoid.Value.kForward);
+        mOuterBow.set(DoubleSolenoid.Value.kReverse);
+        mInnerBow.set(DoubleSolenoid.Value.kReverse);
     }
 
     /**
@@ -50,14 +50,15 @@ public class crossbow {
     public void shoot(){
         if(!cShotStarted){
             cShotStarted = true;
-            mShotTimer.start();
-             mInnerBow.set(DoubleSolenoid.Value.kReverse);
+            mShotTimer.reset();
+            mOuterBow.set(DoubleSolenoid.Value.kForward);
         }
-        if(mShotTimer.get() > 1.0){
+        if(mShotTimer.get() > .3){
             cShotStarted = false; 
-            mShotTimer.stop(); 
-            mShotTimer.reset(); 
-             mOuterBow.set(DoubleSolenoid.Value.kReverse);
+            //mShotTimer.stop(); 
+            //mShotTimer.reset(); 
+            mInnerBow.set(DoubleSolenoid.Value.kForward);
         }
+        System.out.println(mShotTimer.get());
     }
 }

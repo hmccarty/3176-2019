@@ -1,131 +1,136 @@
-// package frc.subsystem;
+package frc.subsystem;
 
-// import com.revrobotics.CANEncoder;
-// import com.revrobotics.CANPIDController;
-// import com.revrobotics.CANSparkMax;
-// import com.revrobotics.ControlType;
-// import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-// import frc.subsystem.controller;
-// import frc.robot.constants;
-// import frc.util.*;
-// import frc.util.trajectory;
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANPIDController;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-// CURRENTLY NOT IN USE
+import edu.wpi.first.wpilibj.smartdashboard.*;
+import frc.subsystem.controller;
+import frc.robot.constants;
+import frc.util.*;
+import frc.util.trajectory;
 
-// public class elevator {
-//     private static elevator instance = new elevator();
-//     private controller mController = controller.getInstance();
+//CURRENTLY NOT IN USE
 
-//     private CANSparkMax mWinch;
-//     private CANPIDController mPIDController;
-//     private CANEncoder mEncoder; 
-//     private sparkconfig mSparkConfig; 
+public class elevator {
+    private static elevator instance = new elevator();
+    private controller mController = controller.getInstance();
 
-//     private trajectory mTrajectory;
+    private CANSparkMax mWinch;
+    private CANPIDController mPIDController;
+    private CANEncoder mEncoder; 
+    private sparkconfig mSparkConfig; 
 
-//     private double cWantedHeight;
-//     private double cWantedSpeed; 
-//     private double cSpeed;
-//     private double cTrajectoryStartTime;
+    private trajectory mTrajectory;
 
-//     public enum state {
-//         HOLDING,
-//         OPEN_LOOP,
-//         VELOCITY_CONTROL,
-//         POSITION_CONTROL
-//     }
+    private double cWantedHeight;
+    private double cWantedSpeed; 
+    private double cSpeed;
+    private double cTrajectoryStartTime;
 
-//     private state mCurrentState;
-//     private state mWantedState;
+    public enum state {
+        HOLDING,
+        OPEN_LOOP,
+        VELOCITY_CONTROL,
+        POSITION_CONTROL
+    }
 
-//     public elevator() {
-//         mWinch = new CANSparkMax(constants.ELEVATOR, MotorType.kBrushless);
-//         mEncoder = mWinch.getEncoder();
-//         mPIDController = mWinch.getPIDController();
+    private state mCurrentState;
+    private state mWantedState;
 
-//         mSparkConfig = new sparkconfig(mPIDController, constants.ELEVATOR);
-//         mSparkConfig.configPID(constants.ELEVATOR_PID_CONFIG);
-//         mSparkConfig.configSmartMotion(constants.ELEVATOR_MOTION_CONFIG); 
-//     }
+    public elevator() {
+        mWinch = new CANSparkMax(constants.ELEVATOR, MotorType.kBrushless);
+        mEncoder = mWinch.getEncoder();
+        mPIDController = mWinch.getPIDController();
 
-//     public static elevator getInstance() {
-//         return instance;
-//     }
+        mSparkConfig = new sparkconfig(mPIDController, mWinch, constants.ELEVATOR);
+        mSparkConfig.configPID(constants.ELEVATOR_PID_CONFIG);
+        mSparkConfig.configSmartMotion(constants.ELEVATOR_MOTION_CONFIG); 
+        mSparkConfig.configCurrentLimit(constants.SMART_CURRENT_LIMIT);
+    }
 
-//     private void setHeight(double wantedHeight) {
-//         mPIDController.setReference(wantedHeight, ControlType.kSmartMotion); 
-//     }
+    public static elevator getInstance() {
+        return instance;
+    }
 
-//     private void setSpeed(double wantedSpeed) {
-//         mPIDController.setReference(wantedSpeed, ControlType.kVelocity);
-//     }
+    private void setHeight(double wantedHeight) {
+        mPIDController.setReference(2, ControlType.kSmartMotion); 
+    }
 
-//     public boolean inPosition() {
-//         if(Math.abs(mEncoder.getVelocity())  < .1){
-//             return true; 
-//         } else {
-//             return false; 
-//         }
-//     }
+    private void setSpeed(double wantedSpeed) {
+        mPIDController.setReference(wantedSpeed/6, ControlType.kVelocity);
+    }
 
-//     public double getHeight() {
-//         return mEncoder.getPosition();
-//     }
+    public boolean inPosition() {
+        if(Math.abs(mEncoder.getVelocity())  < .1){
+            return true; 
+        } else {
+            return false; 
+        }
+    }
 
-//     public void setWantedState(state wantedState) {
-//         this.mWantedState = wantedState;
-//     }
+    public double getHeight() {
+        return mEncoder.getPosition();
+    }
 
-//     public state getState() {
-//         return mCurrentState;
-//     }
+    public void setWantedState(state wantedState) {
+        this.mWantedState = wantedState;
+    }
 
-//     public void checkState() {
-//         if (mCurrentState != mWantedState) {
-//             mCurrentState = mWantedState;
-//         }
-//     }
+    public state getState() {
+        return mCurrentState;
+    }
 
-//     public void registerLoop() {
-//         loopmanager.getInstance().addLoop(new loop()
-//         {
-//             @Override
-//             public void onStart() {
-//                 mCurrentState = state.HOLDING;
-//                 mWantedState = state.HOLDING;
-//             }
+    public void checkState() {
+        if (mCurrentState != mWantedState) {
+            mCurrentState = mWantedState;
+        }
+    }
 
-//             @Override
-//             public void onLoop() {
-//                 switch(mCurrentState) {
-//                     case OPEN_LOOP:
-//                         cWantedSpeed = mController.getElevatorVelocity()/2.0;
-//                         mWinch.set(cWantedSpeed); 
-//                         break;
-//                     case HOLDING:
-//                         setHeight(getHeight());
-//                         break; 
-//                     case VELOCITY_CONTROL:
-//                         cWantedSpeed = mController.getElevatorVelocity()*3; 
-//                         setSpeed(cWantedSpeed);
-//                         break;
-//                     case POSITION_CONTROL:
-//                         cWantedHeight = mController.getElevatorHeight()/(2*Math.PI);
-//                         setHeight(cWantedHeight);
-// 						break;     
-//                 }
-//             checkState();
-//             }
-//             public void onStop(){}
-//         });
-//     }
-// }
-// /* 
-// switch case between setPosition/openLoop/PIDLoop
-//         setLevel
-//             gets level from controller and PID controls to that level
-//         openLoop
-//             gets velocity from joystick
-//         PIDLoop get ticks from controller than adjusts speed to match joystick through PIDLoop
-//             Similar to openLoop but more gradual
-//@*/
+    public void registerLoop() {
+        loopmanager.getInstance().addLoop(new loop()
+        {
+            @Override
+            public void onStart() {
+                mCurrentState = state.HOLDING;
+                mWantedState = state.HOLDING;
+            }
+
+            @Override
+            public void onLoop() {
+                switch(mCurrentState) {
+                    case OPEN_LOOP:
+                        System.out.println("In Open Loop State");
+                        cWantedSpeed = mController.openLoopElevator();
+                        SmartDashboard.putNumber("Speed", cWantedSpeed);
+                        mWinch.set(cWantedSpeed); 
+                        break;
+                    case HOLDING:
+                        setHeight(getHeight());
+                        break; 
+                    case VELOCITY_CONTROL:
+                        cWantedSpeed = mController.wantedElevatorVelocity()*3; 
+                        setSpeed(cWantedSpeed);
+                        break;
+                    case POSITION_CONTROL:
+                        cWantedHeight = mController.wantedElevatorHeight()/(2*Math.PI);
+                        setHeight(cWantedHeight);
+						break;     
+                }
+            checkState();
+            }
+            public void onStop(){}
+        });
+    }
+}
+/* 
+switch case between setPosition/openLoop/PIDLoop
+        setLevel
+            gets level from controller and PID controls to that level
+        openLoop
+            gets velocity from joystick
+        PIDLoop get ticks from controller than adjusts speed to match joystick through PIDLoop
+            Similar to openLoop but more gradual
+@*/

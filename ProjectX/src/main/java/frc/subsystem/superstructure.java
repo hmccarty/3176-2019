@@ -3,6 +3,7 @@ package frc.subsystem;
 //import frc.subsystem.cargointake;
 import frc.util.loop;
 import edu.wpi.first.wpilibj.Compressor;
+import frc.robot.constants;
 
 public class superstructure {
     private static superstructure instance = new superstructure();
@@ -23,7 +24,12 @@ public class superstructure {
 
     private int cCargoIntakeHeight = 0; 
 
-    public superstructure (){}
+    private boolean firstTime = true;
+
+    public superstructure (){
+        mWantedState = state.HOLD_H_CB; 
+        mCurrentState = state.HOLD_H_CB;
+    }
 
     public static superstructure getInstance(){
         return instance; 
@@ -44,21 +50,26 @@ public class superstructure {
         mLoopMan.addLoop(
             new loop() {
                 public void onStart(){
-                    mCurrentState = state.NEUTRAL;
-                    mWantedState = state.NEUTRAL;
+                    mCurrentState = state.HOLD_H_CB;
+                    mWantedState = state.HOLD_H_CB;
                 }
                 public void onLoop(){
+                    if(firstTime){
+                        //mCrossbo
+                    }
                     switch(mCurrentState){
                         /**
                          * Allows driver to control cargo intake manually
                          */
                         case C_ROLLER_MANUAL:
                             if(mLastState != state.C_ROLLER_MANUAL){ 
-                                System.out.print(mLastState.toString()); 
                                 cCargoIntakeHeight = mCargoIntake.getHeight();
                             }
-                            if(cCargoIntakeHeight+mController.wantedCargoIntakePosition() > 100){
-                                cCargoIntakeHeight += mController.wantedCargoIntakePosition();
+                            int wantedHeight = cCargoIntakeHeight + mController.wantedCargoIntakePosition(); 
+                            if(wantedHeight > 0 && wantedHeight < constants.DEPLOYED_HEIGHT){
+                                cCargoIntakeHeight = wantedHeight;
+                                mCargoIntake.manualControl(cCargoIntakeHeight, false);
+                            } else {
                                 mCargoIntake.manualControl(cCargoIntakeHeight, false);
                             }
                             if(mCargoIntake.hasBall()){
@@ -170,6 +181,7 @@ public class superstructure {
                 }
                 checkState();
                 mCargoIntake.outputToSmartDashboard();
+                //System.out.println("Current Height: " + mCargoIntake.getHeight());
                 mLastState = mCurrentState;
             }
 

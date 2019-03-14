@@ -41,6 +41,8 @@ public class neopod extends subsystem {
 	private double encoderPosition; //Current position in encoder units
 	//private double encoderSetpoint; //Position wanted in encoder units
 	private double driveCommand;
+
+	private double encoderSetpoint;
 	
 	private double radianError; //Error in radians
 	private double radianPosition; //Current position in radian units
@@ -63,7 +65,8 @@ public class neopod extends subsystem {
 		//this.steerMotor.setSelectedSensorPosition(0,0,0);
 		this.steerMotor.config_kP(0, constants.SWERVE_KP[id], 0);
 		this.steerMotor.config_kI(0, constants.SWERVE_KI[id], 0);
-        this.steerMotor.config_kD(0, constants.SWERVE_KD[id], 0);
+		this.steerMotor.config_kD(0, constants.SWERVE_KD[id], 0);
+		this.steerMotor.config_kF(0, constants.SWERVE_KF, 0);
         
         m_pidController = driveMotor.getPIDController();
         m_pidController.setP(constants.NEO_KP);
@@ -71,7 +74,7 @@ public class neopod extends subsystem {
         m_pidController.setD(constants.NEO_KD);
         m_pidController.setFF(constants.NEO_FF);
 		m_pidController.setIZone(constants.NEO_IZ);
-		driveMotor.setSmartCurrentLimit(100);
+		driveMotor.setSmartCurrentLimit(40);
 		m_pidController.setSmartMotionMaxAccel(constants.NEO_MAX_ACCEL,0);
 		m_pidController.setSmartMotionMaxVelocity(constants.NEO_MAX_VEL,0);
 		driveEncoder.setPosition(0);
@@ -93,9 +96,8 @@ public class neopod extends subsystem {
 	 * @param Angle Position value from 0 - 2pi
 	 */
 	public void setPod(double Speed, double Angle) {
-		System.out.println("Angle: " + Angle);
 		velocitySetpoint  = Speed * fps2rpm;
-		double encoderSetpoint = findSteerPosition(Angle);
+		encoderSetpoint = findSteerPosition(Angle);
 		
 		if(Speed != 0.0) {
             steerMotor.set(ControlMode.Position, encoderSetpoint);
@@ -217,12 +219,13 @@ public class neopod extends subsystem {
 	@Override public void registerLoop() {/*NA*/} //Not being used
 
 	@Override public void outputToSmartDashboard() {
-		// SmartDashboard.putNumber("Pod " + id + "'s Encoder Position", driveEncoder.getPosition());
-		SmartDashboard.putNumber("Pod " + id + "'s motor velocity", driveEncoder.getVelocity());
+		SmartDashboard.putNumber("Pod " + id + "'s Encoder Position", steerMotor.getSelectedSensorPosition());
+		SmartDashboard.putNumber("Pod " + id + "'s Wanted Position", encoderSetpoint );
+		//SmartDashboard.putNumber("Pod " + id + "'s motor velocity", driveEncoder.getVelocity());
 		// SmartDashboard.putNumber("Pod " + id + "'s linear feet", driveEncoder.getPosition()*rev2ft);
 		// SmartDashboa
-		SmartDashboard.putNumber("Pod " + id + "'s linear velocity", driveEncoder.getVelocity() * (1/fps2rpm));
-		SmartDashboard.putNumber("Pod " + id + "'s velocity setpoint", velocitySetpoint);
+		//SmartDashboard.putNumber("Pod " + id + "'s linear velocity", driveEncoder.getVelocity() * (1/fps2rpm));
+		//SmartDashboard.putNumber("Pod " + id + "'s velocity setpoint", velocitySetpoint);
 		// // SmartDashboard.putNumber("Pod " + id + "'s kP", m_pidController.getP());
 		// SmartDashboard.putNumber("Pod " + id + "'s kI", m_pidController.getI());
 		// SmartDashboard.putNumber("Pod " + id + "'s kD", m_pidController.getD());

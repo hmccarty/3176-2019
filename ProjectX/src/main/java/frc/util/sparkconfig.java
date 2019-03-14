@@ -8,10 +8,12 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class sparkconfig {
     private CANPIDController mPIDController; 
+    private CANSparkMax mSparkMax;
     private int CANID; 
 
-    public sparkconfig(CANPIDController PIDController, int CANID){
+    public sparkconfig(CANPIDController PIDController, CANSparkMax SparkMax, int CANID){
         this.mPIDController = PIDController; 
+        this.mSparkMax = SparkMax;
         this.CANID = CANID; 
     }
 
@@ -38,6 +40,15 @@ public class sparkconfig {
         }
         catch (Exception e){
             System.out.println("Spark Controller " + CANID + " could not be configured. Please check Smart Motion values.");
+        }
+    }
+
+    public void configCurrentLimit(int CurrentLimit) {
+        try {
+            mSparkMax.setSmartCurrentLimit(CurrentLimit);
+        }
+        catch (Exception e) {
+            System.out.println("Spark Controller " + CANID + " could not be configured. Please check Smart Current Limit value.");
         }
     }
 }

@@ -37,11 +37,11 @@ public class controller {
     }
 
     public  boolean crossbowHold(){
-        return mButtonMonkey.getRawButton(3);
+        return mButtonMonkey.getRawButton(4);
     }
 
     public  boolean crossbowDeliver(){
-        return mButtonMonkey.getRawButton(4);
+        return mButtonMonkey.getRawButton(3);
     }
 
     public boolean deployCargoIntake(){
@@ -64,9 +64,17 @@ public class controller {
         mButtonMonkey.setRumble(RumbleType.kRightRumble, 1);
     }
 
-    public boolean cargoIntakeOpenLoopEnabled(){
+    public double openLoopElevator(){
+        if(Math.abs(mThrustStick.getY()) > 0.02){
+            return (mThrustStick.getY()*.7);
+        } else {
+            return 0;
+        }
+    }
+
+    public boolean elevatorFailSafeMode(){
         if(mButtonMonkey.getRawButton(11) && mButtonMonkey.getRawButton(12)) {
-            if( mFirstTime == true){
+            if(mFirstTime == true){
                  mFirstTime = false; 
                 mOpenLoopTimer.reset();
             }
@@ -79,7 +87,11 @@ public class controller {
     }
 
     public double getCargoIntakeOpenLoopCommand() {
-        return mButtonMonkey.getY() * .5;
+        if(Math.abs(mButtonMonkey.getY()) > 0.02){
+            return (int)(mButtonMonkey.getY()*800);
+        } else {
+            return -1; 
+        }
     }
 
     /**
@@ -88,7 +100,7 @@ public class controller {
      */
     public int wantedCargoIntakePosition(){
         if(Math.abs(mButtonMonkey.getY()) > 0.07){
-            return (int)(mButtonMonkey.getY()*400);
+            return (int)(mButtonMonkey.getY()*800);
         } else {
             return -1; 
         }
@@ -179,8 +191,8 @@ public class controller {
      * @return wanted motion in the y direction
      */
     public double getForward(){
-        if(Math.abs(mThrustStick.getY()) > 0.08){
-            return mThrustStick.getY();
+        if(Math.abs(mThrustStick.getY()) > 0.03){
+            return 0;//-mThrustStick.getY();
         } else {
             return 0; 
         }
@@ -190,8 +202,8 @@ public class controller {
      * @return wanted motion in the x direction
      */
     public double getStrafe(){
-        if(Math.abs(mThrustStick.getX()) > 0.08){
-            return mThrustStick.getX();
+        if(Math.abs(mThrustStick.getX()) > 0.03){
+            return -mThrustStick.getX();
         } else {
             return 0; 
         }
@@ -259,8 +271,8 @@ public class controller {
      * @return wanted motion in the omega axis
      */
     public double getSpin(){
-        if(Math.abs(mYawStick.getX()) > 0.07){
-            return -mYawStick.getX() * 0.14;
+        if(Math.abs(mYawStick.getX()) > 0.03){
+            return mYawStick.getX() * 0.14;
         } else {
             return 0; 
         }

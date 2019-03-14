@@ -20,7 +20,7 @@ public class vision extends subsystem{
     private state mCurrentState;
 
     private int cVisionSide = 0; 
-    private boolean cIsTracking = false; 
+    private boolean cIsTracking = true; 
 
     public vision(){}
 

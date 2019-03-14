@@ -25,10 +25,10 @@ public class constants {
 	|* Piston Ports *|
 	\****************/	
 
-	public static int CROSSBOW_OUTER_FRONT = 3; 
-	public static int CROSSBOW_OUTER_BACK = 4; 
-	public static int CROSSBOW_INNER_FRONT = 2; 
-	public static int CROSSBOW_INNER_BACK = 5; 
+	public static int CROSSBOW_OUTER_FRONT = 2; 
+	public static int CROSSBOW_OUTER_BACK = 5; 
+	public static int CROSSBOW_INNER_FRONT = 3; 
+	public static int CROSSBOW_INNER_BACK = 4; 
 	public static int HATCH_INTAKE_ACTUATOR_FRONT = 5; 
 	public static int HATCH_INTAKE_ACTUATOR_BACK = 6; 
 
@@ -54,11 +54,12 @@ public class constants {
 	|* Drivetrain Constants *|
 	\************************/
 
+
 	//Gear Facing Right
-	public static double OFFSETS[] = {2601,1135,3468,1762}; // Pod Absolute Offsets (Pod 1-4)
+	public static double OFFSETS[] = {2606,1283,3541,1774}; // Pod Absolute Offsets (Pod 1-4)
 	public static double DRIVETRAINLENGTH = 30.5; // inches
 	public static double DRIVETRAINWIDTH = 29.5; // inches
-	public static final double WHEELDIAMETER = 3.5;
+	public static final double WHEELDIAMETER = 3.25;
 	public static double DRIVETRAINMAXWHEELSPEED = 13.5; // ft/s
 	public static double DRIVETRAINMAXROTATIONSPEED = 5.0; // radians/s
 	public static double ENCODER_UNITS = 4096.0; // encoder units
@@ -67,9 +68,9 @@ public class constants {
 	|* Swervepod Constants *|
 	\***********************/
 
-	public static final double SWERVE_KP[] = {4.0, 4.0, 4.0, 4.0}; // proportional gain for turning each pod
-	public static final double SWERVE_KI[] = {0.0023, 0.0023, 0.0023, 0.0023}; // integral gain for turning each pod
-	public static final double SWERVE_KD[] = {210.0, 210.0, 210.0, 210.0}; // derivative gain for turning each pod
+	public static final double SWERVE_KP[] = {4.0, 1.5, 1.5, 4.0}; // proportional gain for turning each pod
+	public static final double SWERVE_KI[] = {0.0023, 0, 0, 0.0023}; // integral gain for turning each pod
+	public static final double SWERVE_KD[] = {210.0, 100, 100, 210.0}; // derivative gain for turning each pod
 	public static final double SWERVE_KF = 0.0;
 	public static final int SWERVE_ALLOWABLE_ERROR = 5; 
 
@@ -101,19 +102,20 @@ public class constants {
 	|* Elevator Constants *|
 	\**********************/
 
-	public static final double[] ELEVATOR_PID_CONFIG = { /*kP*/ 0.0, /*kI*/ 0.0, /*kD*/ 0.0, 
+	public static final double[] ELEVATOR_PID_CONFIG = { /*kP*/ 0.0001, /*kI*/ 0.0, /*kD*/ 0.0, 
 														 /*I-Zone*/ 0.0, 
 														 /*Output Range Min*/ 0.0, /*Output Range Max*/ 0.0, 
 														 /*kF*/ 0.0};
 	public static final double[] ELEVATOR_MOTION_CONFIG = { /*Max Velocity*/ 0.0, /*Min Velocity*/ 0.0, 
 															/*Max Acceleration*/ 0.0, 
 															/*Allowed Error*/ 0.0 };
+	public static final int SMART_CURRENT_LIMIT = 40;
 
 	/**************************\
 	|* Cargo Intake Constants *|
 	\**************************/
 	
-	public static final int DEPLOYED_HEIGHT = 40000; //encoder ticks
+	public static final int DEPLOYED_HEIGHT = 48000; //encoder ticks
     public static final int STOWED_HEIGHT = 0;
 	public static final int ROCKET_HEIGHT = 14500;
 }
