@@ -15,6 +15,9 @@ public class controller {
     private Timer mOpenLoopTimer = new Timer();
     private boolean  mFirstTime = true;
 
+    private double kThrustStickDeadband = constants.TRANSLATIONAL_DEADBAND; 
+    private double kThrustStickScale = constants.TRANSLATIONAL_SCALE; 
+    private double kThrustStickOffset = constants.TRANSLATIONAL_SCALE; 
 
     public controller(){
         mOpenLoopTimer.start();
@@ -188,16 +191,15 @@ public class controller {
     }
 
     /**
-     * @return wanted motion in the y direction
+     * @return wanted motion in the y direction on an exponential scale
      */
     public double getForward(){
         double input = mThrustStick.getY();
-        double deadband = 0.03; 
         double output; 
-        if(Math.abs(input) > deadband){
-            if(input > 0){ output = input - deadband;}
-            else { output = input + deadband;}
-            return 0.5 * Math.pow(output, 3) + (1 - 0.5) * output;//-mThrustStick.getY();
+        if(Math.abs(input) > kThrustStickDeadband){
+            if(input > 0){ output = input - kThrustStickDeadband;}
+            else { output = input + kThrustStickDeadband;}
+            return -(0.5 * Math.pow(output, 3) + (1 - 0.5) * output) * kThrustStickOffset;
         } else {
             return 0; 
         }

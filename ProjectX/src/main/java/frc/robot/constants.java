@@ -1,4 +1,6 @@
-package frc.robot; 
+package frc.robot;
+
+import java.lang.Math;
 
 public class constants {
 	/***************\
@@ -49,11 +51,14 @@ public class constants {
 	public static int DRIVE_JOYSTICK = 0; 
 	public static int GEAR_JOYSTICK = 1;
 	public static int BUTTON_MONKEY = 2;
+
+	public static double TRANSLATIONAL_DEADBAND = 0.03; 
+	public static double TRANSLATIONAL_SCALE = 0.5; 
+	public static double TRANSLATIONAL_OFFSET = 1.0 / (TRANSLATIONAL_SCALE * Math.pow((1.0 - TRANSLATIONAL_DEADBAND), 3) + (1.0 - TRANSLATIONAL_SCALE) * (1.0 - TRANSLATIONAL_SCALE)); 
 	
 	/************************\
 	|* Drivetrain Constants *|
 	\************************/
-
 
 	//Gear Facing Right
 	public static double OFFSETS[] = {2606,1283,3541,1774}; // Pod Absolute Offsets (Pod 1-4)
