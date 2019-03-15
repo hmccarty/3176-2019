@@ -52,7 +52,7 @@ public class controller {
         return mButtonMonkey.getRawButton(6);
     }
 
-    public boolean cargoIntakeToRocketHeight(){
+    public boolean rocketCargoIntake(){
         return mButtonMonkey.getRawButton(10);
     }    
 
@@ -65,7 +65,7 @@ public class controller {
     }
 
     public double openLoopElevator(){
-        if(Math.abs(mThrustStick.getY()) > 0.02){
+        if(Math.abs(mThrustStick.getY()) > 0.01){
             return (mThrustStick.getY()*.7);
         } else {
             return 0;
@@ -141,7 +141,7 @@ public class controller {
     /**
      * @return if driver wants more speed
      */
-    public boolean boost(){
+    public boolean sickoMode(){
         return mThrustStick.getRawButton(1);
     }
 
@@ -191,8 +191,13 @@ public class controller {
      * @return wanted motion in the y direction
      */
     public double getForward(){
-        if(Math.abs(mThrustStick.getY()) > 0.03){
-            return 0;//-mThrustStick.getY();
+        double input = mThrustStick.getY();
+        double deadband = 0.03; 
+        double output; 
+        if(Math.abs(input) > deadband){
+            if(input > 0){ output = input - deadband;}
+            else { output = input + deadband;}
+            return 0.5 * Math.pow(output, 3) + (1 - 0.5) * output;//-mThrustStick.getY();
         } else {
             return 0; 
         }

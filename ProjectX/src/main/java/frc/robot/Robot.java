@@ -129,6 +129,9 @@ public class Robot extends TimedRobot {
 		else if(mController.deployCargoIntake()){
 		 	mSuperstructure.setWantedState(superstructure.state.INTAKE_C_ROLLER);
 		} 
+		else if(mController.rocketCargoIntake()){
+			mSuperstructure.setWantedState(superstructure.state.ROCKET_C_ROLLER);
+		}
 		else if (mController.spitCargoIntake()){
 		 	mSuperstructure.setWantedState(superstructure.state.DELIVER_CARGO);
 		} 

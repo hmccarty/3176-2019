@@ -50,8 +50,8 @@ public class superstructure {
         mLoopMan.addLoop(
             new loop() {
                 public void onStart(){
-                    mCurrentState = state.HOLD_H_CB;
-                    mWantedState = state.HOLD_H_CB;
+                    mCurrentState = state.HOME_C_ROLLER;
+                    mWantedState = state.HOME_C_ROLLER;
                 }
                 public void onLoop(){
                     if(firstTime){
@@ -101,6 +101,11 @@ public class superstructure {
                         /**
                          *Returns cargo intake back to stowed position and prepares to intake hatch
                          */
+                        case ROCKET_C_ROLLER:
+                            mCargoIntake.rocket();
+                            mCargoIntake.hold();
+                            checkState(); 
+                            break;
                         case INTAKE_H_CB:
                             mCargoIntake.stow();
                             mCrossbow.set();
@@ -114,6 +119,15 @@ public class superstructure {
                             mCargoIntake.stow(); 
                             mCrossbow.draw();
                             mLastState = mCurrentState;
+                            checkState();
+                            break;
+                        case HOME_C_ROLLER:
+                            if(mCargoIntake.isHomed()){
+                                mWantedState = state.NEUTRAL;    
+                            } else {
+                                mCrossbow.draw();
+                                mCargoIntake.home();
+                            }
                             checkState();
                             break;
                         case INTAKE_C_CLAW:
@@ -196,7 +210,9 @@ public class superstructure {
         INTAKE_C_CLAW,
         INTAKE_H_CB,
         HOLD_H_CB,
+        HOME_C_ROLLER,
         INTAKE_H_G,
+        ROCKET_C_ROLLER,
         TRANSFER_CARGO,
         TRANSFER_HATCH,
         DELIVER_CARGO,

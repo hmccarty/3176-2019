@@ -27,6 +27,7 @@ public class cargointake {
 
     Boolean cIntakeIsAtStowedLimit;
     Boolean cIntakeIsAtDeployedLimt;
+    Boolean cIsHomed;
     int cCargoIntakeWinchPosition;
     double cCargoIntakeWinchPower;
 
@@ -38,8 +39,8 @@ public class cargointake {
     private double cOpenLoopPower = 0;
 
     public cargointake(){
-        mCargoStowPID = new pid(0.0004, 0,0,.3); //The PID values for Deploying the mechanism
-        mCargoDeployPID = new pid(0.00005,0,0, .7);      //The PID values for Retracting the mechanism
+        mCargoStowPID = new pid(0.0004, 0,0, .4); //The PID values for Deploying the mechanism
+        mCargoDeployPID = new pid(0.00003,0,0, .7);      //The PID values for Retracting the mechanism
         mCargoManualPID = new pid(0.00007,0,0, .6);      //Thr PID values for manual control
 
         /**
@@ -63,6 +64,7 @@ public class cargointake {
         mCargoIntakeWinch = new Talon(constants.CARGO_INTAKE_ACTUATOR);
         mCargoIntakeBeaterBar = new Talon(constants.CARGO_INTAKE_ROLLER); 
         
+        cIsHomed = false; 
 
         //Initialize members
         mCargoWinchEncoder.reset();
@@ -118,11 +120,6 @@ public class cargointake {
                         cCargoIntakeWinchPower = mCargoDeployPID.returnOutput(cCargoIntakeWinchPosition, wantedHeight);
                     }
             }
-            
-        SmartDashboard.putNumber("Cargo Winch Encoder Desired: ", wantedHeight);
-        SmartDashboard.putNumber("Cargo Winch Encoder Position: ", cCargoIntakeWinchPosition);
-        SmartDashboard.putBoolean("Stowed Limit Swtich", !mCargoIntakeStowedSwitch.get());
-        SmartDashboard.putBoolean("Deployed Limit Switch", !mCargoIntakeDeployedSwitch.get());
         mCargoIntakeWinch.set(-cCargoIntakeWinchPower);
     }
 
@@ -132,6 +129,25 @@ public class cargointake {
 
     public void stow(){
         closedLoopControl(kStowedHeight);
+    }
+
+    public void rocket(){
+        closedLoopControl(kRocketHeight);
+    }
+
+    public boolean isHomed(){
+        return cIsHomed; 
+    }
+
+    public void home(){
+        if(!mCargoIntakeStowedSwitch.get()){
+            cIsHomed = true;
+            mCargoIntakeWinch.set(0);
+            mCargoWinchEncoder.reset();
+        } else {
+            cIsHomed = false; 
+            mCargoIntakeWinch.set(-.3);
+        }
     }
 
     /**
@@ -151,10 +167,6 @@ public class cargointake {
         if(!mCargoIntakeStowedSwitch.get()) {
             mCargoWinchEncoder.reset();
         }
-        SmartDashboard.putNumber("Cargo Winch Encoder Desired: ", height);
-        SmartDashboard.putNumber("Cargo Wicnh Encoder Position: ", mCargoWinchEncoder.getRaw());
-        SmartDashboard.putBoolean("Stowed Limit Swtich", !mCargoIntakeStowedSwitch.get());
-        SmartDashboard.putBoolean("Deployed Limit Switch", !mCargoIntakeDeployedSwitch.get());
         mCargoIntakeWinch.set(-mCargoManualPID.returnOutput(mCargoWinchEncoder.getRaw(), height));
     }
 
@@ -216,11 +228,13 @@ public class cargointake {
 
     public void outputToSmartDashboard(){
         //Set the outputs
-        // SmartDashboard.putBoolean("Up Limit Switch", !mCargoIntakeStowedSwitch.get());
-        // SmartDashboard.putBoolean("Down Limit Switch", !mCargoIntakeDeployedSwitch.get());
+        SmartDashboard.putBoolean("DEPLOYED", !mCargoIntakeStowedSwitch.get());
+        SmartDashboard.putBoolean("STOWED", !mCargoIntakeDeployedSwitch.get());
+        SmartDashboard.putBoolean("HAVE CARGO", !mBallCapturedSwitch.get());
+        SmartDashboard.putBoolean("HOMED", isHomed());
+
         // SmartDashboard.putNumber("Cargo Winch Encoder Real: ", mCargoWinchEncoder.getRaw());
         // SmartDashboard.putNumber("Cargo Winch Power: ", cCargoIntakeWinchPower);
-        // SmartDashboard.putBoolean("Cargo Has Ball: ", !mBallCapturedSwitch.get());
     }
 
     public void zeroAllSensors() {

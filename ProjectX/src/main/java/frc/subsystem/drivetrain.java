@@ -44,6 +44,8 @@ public class drivetrain extends subsystem {
 	private pid mVisionForward;
 	private pid mVisionTurn;  
 	private pid mVisionStrafe; 
+
+	private pid mSpinMaster; 
 	
 	private double cLastGyroClock; 
 	
@@ -61,6 +63,7 @@ public class drivetrain extends subsystem {
 	
 	private double cMaxSpeed;
 	private double cAngle;
+	private double cLastAngle; 
 	
 	private double cForwardCommand;
 	private double cStrafeCommand;
@@ -109,6 +112,10 @@ public class drivetrain extends subsystem {
 		mVisionForward = new pid(0.009, 0, 0, .8); 
 		mVisionTurn = new pid(0.026, 0, 0, .8); 
 		mVisionStrafe = new pid(0.015,0, 0, .8); 
+
+		mSpinMaster = new pid(0.0009, 0, 0, 0.5);
+
+		cLastAngle = 0; 
 
 		cLastGyroClock = 0;
 		
@@ -377,7 +384,7 @@ public class drivetrain extends subsystem {
 					cStrafeCommand = mController.getStrafe();
 					cSpinCommand = mController.getSpin();
 
-					if (!mController.boost()){
+					if (!mController.sickoMode()){
 						cForwardCommand *= constants.MAXSLOWPERCENTSPEED;
 						cStrafeCommand *= constants.MAXSLOWPERCENTSPEED;
 						cSpinCommand *= constants.MAXSLOWPERCENTSPEED;
@@ -392,6 +399,12 @@ public class drivetrain extends subsystem {
 					}
 					setInputType(inputType.PERCENTPOWER);
 
+					if(cSpinCommand == 0){
+						cSpinCommand = mSpinMaster.returnOutput(getAngle(), cLastAngle);
+					} else {
+						cLastAngle = getAngle();
+					}
+					
 					crabDrive();
 					checkState();
 					break;
