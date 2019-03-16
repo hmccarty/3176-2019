@@ -28,6 +28,7 @@ public class superstructure {
     private boolean firstTime = true;
 
     private Timer transferTimer = new Timer();
+    private boolean transferStarted = false; 
     double startTime = 0;
     double currentTime = 0;
 
@@ -155,10 +156,12 @@ public class superstructure {
                             if(mCargoIntake.isStowed()){
                                 mCargoIntake.transfer(); 
                                 currentTime = transferTimer.getFPGATimestamp();
-                                if(currentTime - startTime == 0){
+                                if(!transferStarted){
+                                    transferStarted = true; 
                                     startTime = transferTimer.getFPGATimestamp();
                                 }
                                 else if(currentTime - startTime == 0.2){
+                                    transferStarted = false;
                                     startTime = 0; 
                                     mClaw.clamp(); 
                                     mWantedState = state.NEUTRAL;

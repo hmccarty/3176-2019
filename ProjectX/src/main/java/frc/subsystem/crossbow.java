@@ -51,6 +51,7 @@ public class crossbow {
         if(!cShotStarted){
             cShotStarted = true;
             mShotTimer.reset();
+            mShotTimer.start();
             mOuterBow.set(DoubleSolenoid.Value.kForward);
         }
         if(mShotTimer.get() > .3){
