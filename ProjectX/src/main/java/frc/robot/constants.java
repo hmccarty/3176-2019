@@ -27,12 +27,22 @@ public class constants {
 	|* Piston Ports *|
 	\****************/	
 
-	public static int CROSSBOW_OUTER_FRONT = 2; 
-	public static int CROSSBOW_OUTER_BACK = 5; 
-	public static int CROSSBOW_INNER_FRONT = 3; 
-	public static int CROSSBOW_INNER_BACK = 4; 
-	public static int HATCH_INTAKE_ACTUATOR_FRONT = 5; 
-	public static int HATCH_INTAKE_ACTUATOR_BACK = 6; 
+	public static int CROSSBOW_OUTER_FRONT = 1; 
+	public static int CROSSBOW_OUTER_BACK = 6; 
+	public static int CROSSBOW_INNER_FRONT = 2; 
+	public static int CROSSBOW_INNER_BACK = 5; 
+	public static int CLAW_EXTENDER_FRONT = 4; 
+	public static int CLAW_EXTENDER_BACK = 3; 
+	public static int CLAW_PINCHER_FRONT = 7; 
+	public static int CLAW_PINCHER_BACK = 0;
+	// public static int CROSSBOW_OUTER_FRONT = 2; 
+	// public static int CROSSBOW_OUTER_BACK = 5; 
+	// public static int CROSSBOW_INNER_FRONT = 3; 
+	// public static int CROSSBOW_INNER_BACK = 4; 
+	// public static int CLAW_EXTENDER_FRONT = 6; 
+	// public static int CLAW_EXTENDER_BACK = 1; 
+	// public static int CLAW_PINCHER_FRONT = 7; 
+	// public static int CLAW_PINCHER_BACK = 0;
 
 	/****************\
 	|* Sensor Ports *|
@@ -61,7 +71,8 @@ public class constants {
 	\************************/
 
 	//Gear Facing Right
-	public static double OFFSETS[] = {2606,1283,3541,1774}; // Pod Absolute Offsets (Pod 1-4)
+	public static double OFFSETS[] = {1813,3776,1186,1178};
+	//public static double OFFSETS[] = {2606,1283,3541,1774}; // Pod Absolute Offsets (Pod 1-4)
 	public static double DRIVETRAINLENGTH = 30.5; // inches
 	public static double DRIVETRAINWIDTH = 29.5; // inches
 	public static final double WHEELDIAMETER = 3.25;

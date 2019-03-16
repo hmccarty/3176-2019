@@ -135,6 +135,10 @@ public class cargointake {
         closedLoopControl(kRocketHeight);
     }
 
+    public boolean  isStowed(){
+        return !mCargoIntakeStowedSwitch.get();
+    }
+
     public boolean isHomed(){
         return cIsHomed; 
     }
@@ -200,6 +204,10 @@ public class cargointake {
 
     public void spit(){
         mCargoIntakeBeaterBar.set(-.7);
+    }
+
+    public void transfer(){
+        mCargoIntakeBeaterBar.set(.3);
     }
 
     public void hold(){

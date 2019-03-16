@@ -190,12 +190,16 @@ public class controller {
         return mThrustStick.getRawButton(6);
     }
 
+    public boolean transferCargo(){
+        return mThrustStick.getRawButton(7);
+    }
+
     /**
      * @return wanted motion in the y direction on an exponential scale
      */
     public double getForward(){
         double input = mThrustStick.getY();
-        double output; 
+        double output;
         if(Math.abs(input) > kThrustStickDeadband){
             if(input > 0){ output = input - kThrustStickDeadband;}
             else { output = input + kThrustStickDeadband;}

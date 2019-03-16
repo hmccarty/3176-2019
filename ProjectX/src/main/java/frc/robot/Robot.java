@@ -138,6 +138,9 @@ public class Robot extends TimedRobot {
 		else if (mController.neutral()){
 		 	mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
 		} 
+		else if (mController.transferCargo()){
+			mSuperstructure.setWantedState(superstructure.state.TRANSFER_CARGO);
+		}
 		else if (mController.wantedCargoIntakePosition() != -1) {
 		 	mSuperstructure.setWantedState(superstructure.state.C_ROLLER_MANUAL);
 		}

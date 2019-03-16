@@ -3,6 +3,7 @@ package frc.subsystem;
 //import frc.subsystem.cargointake;
 import frc.util.loop;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.constants;
 
 public class superstructure {
@@ -16,7 +17,7 @@ public class superstructure {
     controller mController = controller.getInstance();
     crossbow mCrossbow = crossbow.getInstance();
     // hatchintake mHatchIntake = hatchintake.getInstance();
-    // claw mClaw = claw.getInstance();
+    claw mClaw = claw.getInstance();
     cargointake mCargoIntake = cargointake.getInstance();
     // elevator mElevator = elevator.getInstance(); 
     //drivetrain mDrivetrain = drivetrain.getInstance(); 
@@ -26,9 +27,14 @@ public class superstructure {
 
     private boolean firstTime = true;
 
+    private Timer transferTimer = new Timer();
+    double startTime = 0;
+    double currentTime = 0;
+
     public superstructure (){
         mWantedState = state.HOLD_H_CB; 
         mCurrentState = state.HOLD_H_CB;
+        transferTimer.start();
     }
 
     public static superstructure getInstance(){
@@ -143,9 +149,22 @@ public class superstructure {
                         *   mHatchIntake.intake();
                         */
                             break;
-                        case TRANSFER_CARGO:
-                        /*  mCargoIntake.stow();
-                        */
+                        case TRANSFER_CARGO: 
+                            mCargoIntake.stow();
+                            mClaw.stow(); 
+                            if(mCargoIntake.isStowed()){
+                                mCargoIntake.transfer(); 
+                                currentTime = transferTimer.getFPGATimestamp();
+                                if(currentTime - startTime == 0){
+                                    startTime = transferTimer.getFPGATimestamp();
+                                }
+                                else if(currentTime - startTime == 0.2){
+                                    startTime = 0; 
+                                    mClaw.clamp(); 
+                                    mWantedState = state.NEUTRAL;
+                                }
+                            }
+
                             break;
                         case TRANSFER_HATCH:
                             //mCrossbow.set();
@@ -159,7 +178,12 @@ public class superstructure {
                          * Spits cargo out of cargo intake
                          */
                         case DELIVER_CARGO:
-                            mCargoIntake.spit();
+                            if(mCargoIntake.hasBall()){
+                                mCargoIntake.spit();
+                            } else { 
+                                mClaw.deploy();
+                                mClaw.release();
+                            }
                             checkState();
                             break;
                         /**
@@ -187,7 +211,8 @@ public class superstructure {
                             mCargoIntake.stow();
                             mCargoIntake.hold();
                             mCargoIntake.zeroAllSensors();
-                            //mClaw.stow();
+                            mClaw.stow();
+                            mClaw.clamp();
                             //mHatchIntake.stow();
                             mCrossbow.draw(); 
                             checkState();
