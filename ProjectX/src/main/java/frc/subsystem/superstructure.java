@@ -204,7 +204,6 @@ public class superstructure {
                          * Allows driver to control cargo intake without closed loop control
                          */
                         case OPENLOOP_CARGO:
-                             mCargoIntake.cargoIntakeOpenLoop(mController.getCargoIntakeOpenLoopCommand());                            
                             break;
                         /**
                          * Returns all mechanism to their starting configuration
