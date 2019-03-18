@@ -135,11 +135,11 @@ public class drivetrain extends subsystem {
 		mNeoPods.add(mLowerRight);
 		
 		//Setting constants
-		kLength = constants.DRIVETRAINLENGTH;
-		kWidth = constants.DRIVETRAINWIDTH;
+		kLength = constants.DRIVETRAIN_LENGTH;
+		kWidth = constants.DRIVETRAIN_WIDTH;
 
-		kMaxSpeed = constants.DRIVETRAINMAXWHEELSPEED;
-		kMaxRotation = constants.DRIVETRAINMAXROTATIONSPEED;
+		kMaxSpeed = constants.DRIVETRAIN_MAX_WHEEL_SPEED;
+		kMaxRotation = constants.DRIVETRAIN_MAX_ROTATION_SPEED;
 
 		kMaxAccel = constants.NEO_MAX_ACCEL;
 		kMaxVel = constants.NEO_MAX_VEL;
@@ -384,15 +384,15 @@ public class drivetrain extends subsystem {
 					cStrafeCommand = mController.getStrafe();
 					cSpinCommand = mController.getSpin();
 
-					if (!mController.sickoMode()){
-						cForwardCommand *= constants.MAXSLOWPERCENTSPEED;
-						cStrafeCommand *= constants.MAXSLOWPERCENTSPEED;
-						cSpinCommand *= constants.MAXSLOWPERCENTSPEED;
+					if (!mController.sickoMode()) {
+						cForwardCommand *= constants.MAX_SLOW_PERCENT_SPEED;
+						cStrafeCommand *= constants.MAX_SLOW_PERCENT_SPEED;
+						cSpinCommand *= constants.MAX_SLOW_PERCENT_SPEED;
 					}
 
-					if(mController.robotCentric()){
+					if(mController.robotCentric()) {
 						setCoordType(coordType.ROBOTCENTRIC);
-					} else if(mController.backRobotCentric()){
+					} else if (mController.backRobotCentric()){
 						setCoordType(coordType.BACKROBOTCENTRIC);
 					} else {
 						setCoordType(coordType.FIELDCENTRIC);

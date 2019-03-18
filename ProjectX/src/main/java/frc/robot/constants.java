@@ -27,12 +27,22 @@ public class constants {
 	|* Piston Ports *|
 	\****************/	
 
-	public static int CROSSBOW_OUTER_FRONT = 2; 
-	public static int CROSSBOW_OUTER_BACK = 5; 
-	public static int CROSSBOW_INNER_FRONT = 3; 
-	public static int CROSSBOW_INNER_BACK = 4; 
-	public static int HATCH_INTAKE_ACTUATOR_FRONT = 5; 
-	public static int HATCH_INTAKE_ACTUATOR_BACK = 6; 
+	public static int CROSSBOW_OUTER_FRONT = 1; 
+	public static int CROSSBOW_OUTER_BACK = 6; 
+	public static int CROSSBOW_INNER_FRONT = 2; 
+	public static int CROSSBOW_INNER_BACK = 5; 
+	public static int CLAW_EXTENDER_FRONT = 4; 
+	public static int CLAW_EXTENDER_BACK = 3; 
+	public static int CLAW_PINCHER_FRONT = 7; 
+	public static int CLAW_PINCHER_BACK = 0;
+	// public static int CROSSBOW_OUTER_FRONT = 2; 
+	// public static int CROSSBOW_OUTER_BACK = 5; 
+	// public static int CROSSBOW_INNER_FRONT = 3; 
+	// public static int CROSSBOW_INNER_BACK = 4; 
+	// public static int CLAW_EXTENDER_FRONT = 6; 
+	// public static int CLAW_EXTENDER_BACK = 1; 
+	// public static int CLAW_PINCHER_FRONT = 7; 
+	// public static int CLAW_PINCHER_BACK = 0;
 
 	/****************\
 	|* Sensor Ports *|
@@ -54,19 +64,24 @@ public class constants {
 
 	public static double TRANSLATIONAL_DEADBAND = 0.03; 
 	public static double TRANSLATIONAL_SCALE = 0.5; 
-	public static double TRANSLATIONAL_OFFSET = 1.0 / (TRANSLATIONAL_SCALE * Math.pow((1.0 - TRANSLATIONAL_DEADBAND), 3) + (1.0 - TRANSLATIONAL_SCALE) * (1.0 - TRANSLATIONAL_SCALE)); 
+	public static double TRANSLATIONAL_OFFSET = 1.0 / (TRANSLATIONAL_SCALE * Math.pow((1.0 - TRANSLATIONAL_DEADBAND), 3) + (1.0 - TRANSLATIONAL_SCALE) * (1.0 - TRANSLATIONAL_SCALE));
+	
+	public static double ROTATIONAL_DEADBAND = 0.03; 
+	public static double ROTATIONAL_SCALE = 0.5; 
+	public static double ROTATIONAL_OFFSET = 1.0 / (TRANSLATIONAL_SCALE * Math.pow((1.0 - TRANSLATIONAL_DEADBAND), 3) + (1.0 - TRANSLATIONAL_SCALE) * (1.0 - TRANSLATIONAL_SCALE)); 
 	
 	/************************\
 	|* Drivetrain Constants *|
 	\************************/
 
 	//Gear Facing Right
-	public static double OFFSETS[] = {2606,1283,3541,1774}; // Pod Absolute Offsets (Pod 1-4)
-	public static double DRIVETRAINLENGTH = 30.5; // inches
-	public static double DRIVETRAINWIDTH = 29.5; // inches
-	public static final double WHEELDIAMETER = 3.25;
-	public static double DRIVETRAINMAXWHEELSPEED = 13.5; // ft/s
-	public static double DRIVETRAINMAXROTATIONSPEED = 5.0; // radians/s
+	public static double OFFSETS[] = {1813,3776,1186,1178};
+	//public static double OFFSETS[] = {2606,1283,3541,1774}; // Pod Absolute Offsets (Pod 1-4)
+	public static double DRIVETRAIN_LENGTH = 30.5; // inches
+	public static double DRIVETRAIN_WIDTH = 29.5; // inches
+	public static final double WHEEL_DIAMETER = 3.25;
+	public static double DRIVETRAIN_MAX_WHEEL_SPEED = 13.5; // ft/s
+	public static double DRIVETRAIN_MAX_ROTATION_SPEED = 5.0; // radians/s
 	public static double ENCODER_UNITS = 4096.0; // encoder units
 	
 	/***********************\
@@ -84,7 +99,7 @@ public class constants {
 	public static final double DRIVE_KD = 9.33; // derivative gain for driving each pod
 	public static final double DRIVE_KF = 0.130654611; // feed forward gain for driving each pod
 	public static final int DRIVE_IZONE = 200; // integral zone for driving each pod
-	public static double fps2ups = 12.0 /(constants.WHEELDIAMETER * Math.PI) * 4096.0/10.0 *48.0/30.0; // converts fps to ups
+	public static double FPS_TO_UPS = 12.0 /(constants.WHEEL_DIAMETER * Math.PI) * 4096.0/10.0 *48.0/30.0; // converts fps to ups
 	public static final int DRIVE_ALLOWABLE_ERROR = 50;
 
 	public static final double NEO_KP = 0.000095;
@@ -94,14 +109,14 @@ public class constants {
 	public static final double NEO_IZ = 0;
 	public static final double NEO_MAX_ACCEL = 5;
 	public static final double DRIVE_GEAR_RATI0 = 17/54;
-	public static double fps2rpm = 12.0 * (1.0/(WHEELDIAMETER*Math.PI)) * (48.0/30.0) * (54.0/17.0) * (60.0);
-	public static double rev2ft = (17.0/54.0)*(30.0/48.0)*(WHEELDIAMETER*Math.PI)*(1.0/12.0);
+	public static double FPS_TO_RPM= 12.0 * (1.0/(WHEEL_DIAMETER*Math.PI)) * (48.0/30.0) * (54.0/17.0) * (60.0);
+	public static double REV_TO_FT = (17.0/54.0)*(30.0/48.0)*(WHEEL_DIAMETER*Math.PI)*(1.0/12.0);
 	public static final double NEO_MAX_VEL = 6000;
 	
-	public static final double MAXSLOWPERCENTSPEED = .4;
-	public static final double DRIVE_RAMPRATE = .3;
-	public static final double DRIVEGEARREDUCTION = 30.0/48.0;
-	public static final double DRIVEMAXENCODERSPEED = 10000.0;
+	public static final double MAX_SLOW_PERCENT_SPEED = .4;
+	public static final double DRIVE_RAMP_RATE = .3;
+	public static final double DRIVE_GEAR_REDUCTION = 30.0/48.0;
+	public static final double DRIVE_MAX_ENCODER_SPEED = 10000.0;
 
 	/**********************\
 	|* Elevator Constants *|
@@ -121,6 +136,7 @@ public class constants {
 	\**************************/
 	
 	public static final int DEPLOYED_HEIGHT = 48000; //encoder ticks
-    public static final int STOWED_HEIGHT = 0;
+    public static final int STOWED_HEIGHT = 3000;
 	public static final int ROCKET_HEIGHT = 14500;
+	public static final int TRANSFER_HEIGHT = 0;
 }
