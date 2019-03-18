@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
+/* Copyright (c) 2018-2019 FIRST. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -26,88 +26,25 @@ public class Robot extends TimedRobot {
 		mVision.registerLoop();
 		mSuperstructure.registerLoop();
 		mElevator.registerLoop();
-		mSuperstructure.setWantedState(superstructure.state.HOLD_H_CB);
 		myLoops.startLoops();
 	}
 	
 	public void autonomousPeriodic() {
-		myLoops.runLoops();
-		
-		/*********************\
-		|* Drivetrain States *|
-		\*********************/
-		if(mController.trackTarget()){
-			mDriveTrain.setWantedState(drivetrain.state.VISION);
-		} else {
-			mDriveTrain.setWantedState(drivetrain.state.DRIVE);
-		}		
-
-		/*************************\
-		|* Superstructure States *|
-		\*************************/
-
-		if(mController.crossbowIntake()){
-			mSuperstructure.setWantedState(superstructure.state.INTAKE_H_CB);
-		}
-		else if(mController.crossbowHold()){
-			mSuperstructure.setWantedState(superstructure.state.HOLD_H_CB);
-		}
-		else if(mController.crossbowDeliver()){
-			mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
-		}
-		else if(mController.deployCargoIntake()){
-			mSuperstructure.setWantedState(superstructure.state.INTAKE_C_ROLLER);
-		} 
-		else if (mController.spitCargoIntake()){
-			mSuperstructure.setWantedState(superstructure.state.DELIVER_CARGO);
-		} 
-		else if (mController.neutral()){
-			mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
-		} 
-		else if (mController.wantedCargoIntakePosition() != -1) {
-			mSuperstructure.setWantedState(superstructure.state.C_ROLLER_MANUAL);
-		}
-		// else if (mController.cargoIntakeOpenLoopEnabled()) {
-		// 	mSuperstructure.setWantedState(superstructure.state.OPENLOOP_CARGO);
-		// }
-
-		/*******************\
-		|* Elevator States *|
-		\*******************/
-
-		//if(mController.elevatorFailSafeMode()){
-		 	mElevator.setWantedState(elevator.state.OPEN_LOOP);
-		//}
-		// else if (mController.wantedElevatorHeight() != -1){
-		// 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
-		// }
-		// else if (mController.wantedElevatorVelocity() != 0){
-		// 	mElevator.setWantedState(elevator.state.VELOCITY_CONTROL);
-		// }
-		// else if (mElevator.inPosition()){
-		// 	mElevator.setWantedState(elevator.state.HOLDING);
-		// }
-
-		/*****************\
-		|* Vision States *|
-		\*****************/
-		if(mController.switchVisionCamera()){
-			mVision.setWantedState(vision.state.SWITCH_CAMERA);
-		}
-		else if(mController.switchVisionMode()){
-			mVision.setWantedState(vision.state.SWITCH_MODE);
-			System.out.println("Work");
-		}
+		driverControl();
 	}
 
 	@Override
 	public void teleopPeriodic() {
+		driverControl();
+	}
+
+	public void driverControl() {
 		myLoops.runLoops();
 		
 		/*********************\
 		|* Drivetrain States *|
 		\*********************/
-		if(mController.trackTarget()){
+		if(mController.trackTarget()) {
 			mDriveTrain.setWantedState(drivetrain.state.VISION);
 		} else {
 			mDriveTrain.setWantedState(drivetrain.state.DRIVE);
@@ -117,64 +54,53 @@ public class Robot extends TimedRobot {
 		|* Superstructure States *|
 		\*************************/
 
-		if(mController.crossbowIntake()){
+		if(mController.crossbowIntake()) {
 		 	mSuperstructure.setWantedState(superstructure.state.INTAKE_H_CB);
-		}
-		else if(mController.crossbowHold()){
+		} else if(mController.crossbowHold()) {
 		 	mSuperstructure.setWantedState(superstructure.state.HOLD_H_CB);
-		}
-		else if(mController.crossbowDeliver()){
+		} else if(mController.crossbowDeliver()) {
 		 	mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
-		}
-		else if(mController.deployCargoIntake()){
+		} else if(mController.deployCargoIntake()) {
 		 	mSuperstructure.setWantedState(superstructure.state.INTAKE_C_ROLLER);
-		} 
-		else if(mController.rocketCargoIntake()){
+		} else if(mController.rocketCargoIntake()) {
 			mSuperstructure.setWantedState(superstructure.state.ROCKET_C_ROLLER);
-		}
-		else if (mController.spitCargoIntake()){
+		} else if (mController.spitCargoIntake()) {
 		 	mSuperstructure.setWantedState(superstructure.state.DELIVER_CARGO);
-		} 
-		else if (mController.neutral()){
+		} else if (mController.neutral()) {
 		 	mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
-		} 
-		else if (mController.transferCargo()){
+		} else if (mController.transferCargo()) {
 			mSuperstructure.setWantedState(superstructure.state.TRANSFER_CARGO);
-		}
-		else if (mController.wantedCargoIntakePosition() != -1) {
+		} else if (mController.wantedCargoIntakePosition() != -1) {
 		 	mSuperstructure.setWantedState(superstructure.state.C_ROLLER_MANUAL);
 		}
 
-		mElevator.setWantedState(elevator.state.OPEN_LOOP);
 		/*******************\
 		|* Elevator States *|
 		\*******************/
 
-		// if(mController.openLoopEnabled()){
-		// 	mElevator.setWantedState(elevator.state.OPEN_LOOP);
-		// }
-		// if (mController.getElevatorHeight() != -1){
-		// 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
-		// }
-		// else if (mController.getWantedElevatorVelocity() != 0){
-		// 	mElevator.setWantedState(elevator.state.VELOCITY_CONTROL);
-		// }
-		// else if (mElevator.inPosition()){
-		// 	mElevator.setWantedState(elevator.state.HOLDING);
-		// }
+		if (mController.wantedElevatorHeight() != -1) {
+			mElevator.setWantedState(elevator.state.POSITION_CONTROL);
+		} else if (mController.wantedElevatorVelocity() != 0) {
+			mElevator.setWantedState(elevator.state.VELOCITY_CONTROL);
+		} else if (mElevator.inPosition()) {
+			mElevator.setWantedState(elevator.state.HOLDING);
+		}
 
 		/*****************\
 		|* Vision States *|
 		\*****************/
-		if(mController.switchVisionCamera()){
+ 
+		if(mController.switchVisionCamera()) {
 			mVision.setWantedState(vision.state.SWITCH_CAMERA);
-		}
-		else if(mController.switchVisionMode()){
+		} else if(mController.switchVisionMode()) {
 			mVision.setWantedState(vision.state.SWITCH_MODE);
 		}
 	}
 
 	@Override
 	public void testPeriodic() { 
+		/**
+		 * NEED TEST METHOD TO AUTO-CHECKLIST 
+		 */
 	}
 }
