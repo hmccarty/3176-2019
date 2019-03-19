@@ -95,6 +95,18 @@ public class Robot extends TimedRobot {
 		} else if(mController.switchVisionMode()) {
 			mVision.setWantedState(vision.state.SWITCH_MODE);
 		}
+
+		if(mController.deployCargo()){
+			mClaw.deploy();
+		} else if(mController.stowCargo()){
+			mClaw.stow();
+		}
+
+		if(mController.release()){
+			mClaw.release();
+		} else if(mController.clamp()){
+			mClaw.clamp();
+		}
 	}
 
 	@Override

@@ -202,6 +202,22 @@ public class controller {
     public boolean transferCargo() {
         return mThrustStick.getRawButton(7);
     }
+    
+    public boolean deployCargo(){
+        return mThrustStick.getRawButton(8); 
+    }
+
+    public boolean stowCargo(){
+        return mThrustStick.getRawButton(9); 
+    }
+
+    public boolean release(){
+        return mThrustStick.getRawButton(10); 
+    }
+
+    public boolean clamp(){
+        return mThrustStick.getRawButton(11); 
+    }
 
     /**
      * @return wanted motion in the y direction on an exponential scale
