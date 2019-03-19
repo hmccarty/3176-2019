@@ -4,19 +4,13 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import frc.robot.constants;
 
 public class claw {
-    private static claw instance = new claw(constants.CLAW_EXTENDER_FRONT, 
-                                            constants.CLAW_EXTENDER_BACK,
-                                            constants.CLAW_PINCHER_FRONT, 
-                                            constants.CLAW_PINCHER_BACK);
-    static DoubleSolenoid pincher;
-    static DoubleSolenoid extender; 
-    
-    public claw(int pincherFront, int pincherBack, int extenderFront, int extenderBack){
-        pincher = new DoubleSolenoid(1, pincherFront, pincherBack);
-        extender = new DoubleSolenoid(extenderFront, extenderBack); 
-    }
+    private static claw instance = new claw();
+    DoubleSolenoid extender = new DoubleSolenoid(0, constants.CLAW_PINCHER_FRONT,  //On PCM 0
+                                                    constants.CLAW_PINCHER_BACK); 
+    DoubleSolenoid pincher = new DoubleSolenoid(1,  constants.CLAW_EXTENDER_FRONT, //On PCM 1
+                                                    constants.CLAW_EXTENDER_BACK);
 
-    public static claw getInstance(){
+    public static claw getInstance() {
         return instance; 
     }
 

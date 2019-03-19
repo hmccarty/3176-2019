@@ -19,20 +19,20 @@ public class pid {
 	private double iLastTime = Timer.getFPGATimestamp();
 	private double iDeltaTime;
 
-	public pid (double kP, double kI, double kD){
+	public pid (double kP, double kI, double kD) {
 		this.kP = kP;
 		this.kI = kI;
 		this.kD = kD;
 	}
 
-	public pid (double kP, double kI, double kD, double kMaxSpeed){
+	public pid (double kP, double kI, double kD, double kMaxSpeed) {
 		this.kP = kP;
 		this.kI = kI;
 		this.kD = kD;
 		this.kMaxSpeed = kMaxSpeed;
 	}
 
-	public pid (double kP, double kI, double kD, double kMaxSpeed, double kF){
+	public pid (double kP, double kI, double kD, double kMaxSpeed, double kF) {
 		this.kP = kP;
 		this.kI = kI;
 		this.kD = kD;
@@ -40,7 +40,7 @@ public class pid {
 		this.kF = kF;
 	}
 
-	public pid (double kP, double kI, double kD, double kMaxSpeed, double kF, double kIntegralMax){
+	public pid (double kP, double kI, double kD, double kMaxSpeed, double kF, double kIntegralMax) {
 		this.kP = kP;
 		this.kI = kI;
 		this.kD = kD;

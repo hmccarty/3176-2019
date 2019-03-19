@@ -11,13 +11,13 @@ public class sparkconfig {
     private CANSparkMax mSparkMax;
     private int CANID; 
 
-    public sparkconfig(CANPIDController PIDController, CANSparkMax SparkMax, int CANID){
+    public sparkconfig(CANPIDController PIDController, CANSparkMax SparkMax, int CANID) {
         this.mPIDController = PIDController; 
         this.mSparkMax = SparkMax;
         this.CANID = CANID; 
     }
 
-    public void configPID(double[] PIDValues){
+    public void configPID(double[] PIDValues) {
         try {
             mPIDController.setP(PIDValues[0]);
             mPIDController.setI(PIDValues[1]);
@@ -26,19 +26,19 @@ public class sparkconfig {
             mPIDController.setIZone(PIDValues[5]);
             mPIDController.setFF(PIDValues[6]);
         }
-        catch (Exception e){
+        catch (Exception e) {
             System.out.println("Spark Controller " + CANID + " could not be configured. Please check PID values.");
         }
     }
 
-    public void configSmartMotion(double[] SmartMotionValues){
+    public void configSmartMotion(double[] SmartMotionValues) {
         try {
             mPIDController.setSmartMotionMaxVelocity(SmartMotionValues[0], 0);
             mPIDController.setSmartMotionMinOutputVelocity(SmartMotionValues[1], 0);
             mPIDController.setSmartMotionMaxAccel(SmartMotionValues[2], 0);
             mPIDController.setSmartMotionAllowedClosedLoopError(SmartMotionValues[3], 0);
         }
-        catch (Exception e){
+        catch (Exception e) {
             System.out.println("Spark Controller " + CANID + " could not be configured. Please check Smart Motion values.");
         }
     }

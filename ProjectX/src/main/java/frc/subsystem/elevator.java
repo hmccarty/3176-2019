@@ -42,12 +42,12 @@ public class elevator {
     private state mWantedState;
 
     public elevator() {
-        mWinchLeft = new CANSparkMax(constants.ELEVATOR, MotorType.kBrushless);
-        mWinchRight = new CANSparkMax(constants.ELEVATOR+1, MotorType.kBrushless);
+        mWinchLeft = new CANSparkMax(constants.ELEVATOR_LEFT, MotorType.kBrushless);
+        mWinchRight = new CANSparkMax(constants.ELEVATOR_RIGHT, MotorType.kBrushless);
         mEncoder = mWinchLeft.getEncoder();
         mPIDController = mWinchLeft.getPIDController();
 
-        mSparkConfig = new sparkconfig(mPIDController, mWinchLeft, constants.ELEVATOR);
+        mSparkConfig = new sparkconfig(mPIDController, mWinchLeft, constants.ELEVATOR_LEFT);
         mSparkConfig.configPID(constants.ELEVATOR_PID_CONFIG);
         mSparkConfig.configSmartMotion(constants.ELEVATOR_MOTION_CONFIG); 
         mSparkConfig.configCurrentLimit(constants.SMART_CURRENT_LIMIT);

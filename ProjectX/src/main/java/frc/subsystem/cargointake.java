@@ -37,7 +37,7 @@ public class cargointake {
     private Boolean inOpenLoop = false;
     private double openLoopPower = 0;
 
-    public cargointake(){
+    public cargointake() {
         mCargoStowPID = new pid(0.0004, 0,0, .4); //The PID values for Deploying the mechanism
         mCargoDeployPID = new pid(0.00003,0,0, .7);      //The PID values for Retracting the mechanism
         mCargoManualPID = new pid(0.00007,0,0, .6);      //Thr PID values for manual control
@@ -48,7 +48,7 @@ public class cargointake {
          */
         mCargoIntakeStowedSwitch = new DigitalInput(constants.CARGO_INTAKE_STOWED);
         mCargoIntakeDeployedSwitch = new DigitalInput(constants.CARGO_INTAKE_DOWN);
-        mBallCapturedSwitch = new DigitalInput(constants.CARGO_IN_INTAKE);
+        mBallCapturedSwitch = new DigitalInput(constants.CARGO_IN_ROLLER);
 
         mCargoWinchEncoder = new Encoder(constants.CARGO_INTAKE_ENCODER[0],
                               constants.CARGO_INTAKE_ENCODER[1], 
@@ -112,28 +112,28 @@ public class cargointake {
         mCargoIntakeWinch.set(-cargoIntakeWinchPower);
     }
 
-    public void deploy(){
+    public void deploy() {
         closedLoopControl(kIntakeHeight);
     }
 
-    public void stow(){
+    public void stow() {
         closedLoopControl(kStowedHeight);
     }
 
-    public void rocket(){
+    public void rocket() {
         closedLoopControl(kRocketHeight);
     }
 
-    public boolean  isStowed(){
+    public boolean  isStowed() {
         return !mCargoIntakeStowedSwitch.get();
     }
 
-    public boolean isHomed(){
+    public boolean isHomed() {
         return isHomed; 
     }
 
-    public void home(){
-        if(!mCargoIntakeStowedSwitch.get()){
+    public void home() {
+        if(!mCargoIntakeStowedSwitch.get()) {
             isHomed = true;
             mCargoIntakeWinch.set(0);
             mCargoWinchEncoder.reset();
@@ -147,7 +147,7 @@ public class cargointake {
      * Moves cargo intake to set height
      * @param height in encoder units
      */
-    public void moveTo(int height){
+    public void moveTo(int height) {
         closedLoopControl(height);
     }
 
@@ -156,7 +156,7 @@ public class cargointake {
      * @param height in encoder units
      * @param override determines whether or not the system is in open loop
      */
-    public void manualControl(int height, boolean override){
+    public void manualControl(int height, boolean override) {
         if(!mCargoIntakeStowedSwitch.get()) {
             mCargoWinchEncoder.reset();
         }
@@ -172,7 +172,7 @@ public class cargointake {
     }
 
     public void stowBoolean() {
-        if(mCargoIntakeStowedSwitch.get()){
+        if(mCargoIntakeStowedSwitch.get()) {
             mCargoIntakeWinch.set(.2);
         } else {
             mCargoIntakeWinch.set(0);
@@ -208,8 +208,7 @@ public class cargointake {
             mCargoWinchEncoder.reset();
             if(openLoopCommand < 0) {
                 mCargoIntakeWinch.set(openLoopCommand);
-           }
-           else {
+           } else {
                mCargoIntakeWinch.set(0);
            }
        }
@@ -222,7 +221,7 @@ public class cargointake {
         }
     }
 
-    public void outputToSmartDashboard(){
+    public void outputToSmartDashboard() {
         SmartDashboard.putBoolean("DEPLOYED", !mCargoIntakeStowedSwitch.get());
         SmartDashboard.putBoolean("STOWED", !mCargoIntakeDeployedSwitch.get());
         SmartDashboard.putBoolean("HAVE CARGO", !mBallCapturedSwitch.get());

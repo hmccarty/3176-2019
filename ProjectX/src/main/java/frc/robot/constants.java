@@ -3,64 +3,62 @@ package frc.robot;
 import java.lang.Math;
 
 public class constants {
-	/***************\
-	|* Motor Ports *|
-	\***************/	
-												/***PORT TYPE***/
-	public static int DRIVE_ONE = 1;			     /*CAN*/
-	public static int DRIVE_TWO = 2;    		     /*CAN*/
-	public static int DRIVE_THREE = 3;			     /*CAN*/
-	public static int DRIVE_FOUR = 4;			     /*CAN*/
 
-	public static int STEER_ONE = 11;			     /*CAN*/
-	public static int STEER_TWO = 22;			     /*CAN*/
-	public static int STEER_THREE = 33;			     /*CAN*/
-	public static int STEER_FOUR = 44;			     /*CAN*/
+	/***********\
+	|* CAN IDs *|
+	\***********/	
+												
+	public static int DRIVE_ONE = 1;			     
+	public static int DRIVE_TWO = 2;    		     
+	public static int DRIVE_THREE = 3;			     
+	public static int DRIVE_FOUR = 4;			     
 
-	public static int ELEVATOR = 5;				     /*CAN*/
+	public static int STEER_ONE = 11;			     
+	public static int STEER_TWO = 22;			     
+	public static int STEER_THREE = 33;			     
+	public static int STEER_FOUR = 44;			     
 
-	public static int CARGO_INTAKE_ROLLER = 0;       /*PWM*/
-	public static int CARGO_INTAKE_ACTUATOR = 1;     /*PWM*/
-	public static int HATCH_INTAKE_ROLLER = 2;       /*PWM*/  
+	public static int ELEVATOR_LEFT = 5;		     
+	public static int ELEVATOR_RIGHT = 6; 			 
 
-	/****************\
-	|* Piston Ports *|
-	\****************/	
+	/*************\
+	|* PWM Ports *|
+	\*************/	
 
+	public static int CARGO_INTAKE_ROLLER = 0;       
+	public static int CARGO_INTAKE_ACTUATOR = 1;     
+	public static int HATCH_INTAKE_ROLLER = 2;        
+
+	/*************\
+	|* PCM Ports *|
+	\*************/	
+	
+	public static int CLAW_PINCHER_FRONT = 7; 
+	public static int CLAW_PINCHER_BACK = 0;
 	public static int CROSSBOW_OUTER_FRONT = 1; 
 	public static int CROSSBOW_OUTER_BACK = 6; 
 	public static int CROSSBOW_INNER_FRONT = 2; 
 	public static int CROSSBOW_INNER_BACK = 5; 
 	public static int CLAW_EXTENDER_FRONT = 4; 
 	public static int CLAW_EXTENDER_BACK = 3; 
-	public static int CLAW_PINCHER_FRONT = 7; 
-	public static int CLAW_PINCHER_BACK = 0;
-	// public static int CROSSBOW_OUTER_FRONT = 2; 
-	// public static int CROSSBOW_OUTER_BACK = 5; 
-	// public static int CROSSBOW_INNER_FRONT = 3; 
-	// public static int CROSSBOW_INNER_BACK = 4; 
-	// public static int CLAW_EXTENDER_FRONT = 6; 
-	// public static int CLAW_EXTENDER_BACK = 1; 
-	// public static int CLAW_PINCHER_FRONT = 7; 
-	// public static int CLAW_PINCHER_BACK = 0;
 
-	/****************\
-	|* Sensor Ports *|
-	\****************/
+	/*************\
+	|* DIO Ports *|
+	\*************/
 
 	public static int CARGO_INTAKE_ENCODER[] = {0,1}; 
-	public static int CARGO_IN_INTAKE = 2;   // DIO port for switch that detects when cargo is in intake
-	public static int CARGO_INTAKE_STOWED = 3;  // DIO port that detects when the cargo intake is 
+	public static int CARGO_IN_ROLLER = 2;  
+	public static int CARGO_INTAKE_STOWED = 3;  
 	public static int CARGO_INTAKE_DOWN = 4;
 	public static int HATCH_IN_INTAKE = 5; 
 
-	/****************************\
-	|* Driver Station Constants *|
-	\****************************/
+	/************************\
+	|* Controller Constants *|
+	\************************/
 
 	public static int DRIVE_JOYSTICK = 0; 
-	public static int GEAR_JOYSTICK = 1;
-	public static int BUTTON_MONKEY = 2;
+	public static int SPIN_JOYSTICK = 1;
+	public static int OPERATOR = 2;
 
 	public static double TRANSLATIONAL_DEADBAND = 0.03; 
 	public static double TRANSLATIONAL_SCALE = 0.5; 
@@ -74,9 +72,7 @@ public class constants {
 	|* Drivetrain Constants *|
 	\************************/
 
-	//Gear Facing Right
-	public static double OFFSETS[] = {1813,3776,1186,1178};
-	//public static double OFFSETS[] = {2606,1283,3541,1774}; // Pod Absolute Offsets (Pod 1-4)
+	public static double OFFSETS[] = {1813,3776,1186,1178}; //Gears Facing Right
 	public static double DRIVETRAIN_LENGTH = 30.5; // inches
 	public static double DRIVETRAIN_WIDTH = 29.5; // inches
 	public static final double WHEEL_DIAMETER = 3.25;

@@ -11,17 +11,9 @@ public class controller {
     private Joystick mYawStick = new Joystick(1);
     private Joystick mButtonMonkey = new Joystick(2); 
 
-    private boolean mOpenLoop = false; 
-    private Timer mOpenLoopTimer = new Timer();
-    private boolean  mFirstTime = true;
-
     private double kThrustStickDeadband = constants.TRANSLATIONAL_DEADBAND; 
     private double kThrustStickScale = constants.TRANSLATIONAL_SCALE; 
     private double kThrustStickOffset = constants.TRANSLATIONAL_SCALE; 
-
-    public controller() {
-        mOpenLoopTimer.start();
-    }
     
     public static controller getInstance() {
         return instance; 
@@ -90,20 +82,6 @@ public class controller {
         } else {
             return 0;
         }
-    }
-
-    public boolean elevatorFailSafeMode() {
-        if(mButtonMonkey.getRawButton(11) && mButtonMonkey.getRawButton(12)) {
-            if(mFirstTime == true) {
-                 mFirstTime = false; 
-                mOpenLoopTimer.reset();
-            }
-            if(mOpenLoopTimer.get() > 2.0) {
-                 mFirstTime = true;
-                mOpenLoop = !mOpenLoop;
-            }
-        }
-        return mOpenLoop;
     }
 
     /**

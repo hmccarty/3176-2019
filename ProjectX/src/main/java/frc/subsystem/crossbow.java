@@ -7,20 +7,15 @@ import frc.robot.*;
 public class crossbow {
     private static crossbow instance = new crossbow();
 
-    private DoubleSolenoid  mOuterBow;
-    private DoubleSolenoid  mInnerBow;
+    private DoubleSolenoid  mOuterBow = new DoubleSolenoid(1, constants.CROSSBOW_OUTER_FRONT, 
+                                                              constants.CROSSBOW_OUTER_BACK);
+    private DoubleSolenoid  mInnerBow = new DoubleSolenoid(1, constants.CROSSBOW_INNER_FRONT, 
+                                                              constants.CROSSBOW_INNER_BACK);
 
-    private boolean cShotStarted = false; 
-    private Timer mShotTimer; 
-
-    private static constants c = new constants();
+    private boolean shotStarted = false; 
+    private Timer mShotTimer = new Timer(); 
 
     public crossbow() {
-        mOuterBow = new DoubleSolenoid(1, c.CROSSBOW_OUTER_FRONT, c.CROSSBOW_OUTER_BACK);
-        mInnerBow = new DoubleSolenoid(1, c.CROSSBOW_INNER_FRONT, c.CROSSBOW_INNER_BACK);
-        draw();
-       mShotTimer = new Timer();
-
        mShotTimer.start(); 
     }
 
@@ -31,7 +26,7 @@ public class crossbow {
     /**
      * Sets crossbow in position to intake hatch
      */
-    public void set(){
+    public void set() {
          mOuterBow.set(DoubleSolenoid.Value.kReverse);
          mInnerBow.set(DoubleSolenoid.Value.kForward);
     }
@@ -39,7 +34,7 @@ public class crossbow {
     /**
      * Sets crossbow in position to hold hatch
      */
-    public void draw(){
+    public void draw() {
         mOuterBow.set(DoubleSolenoid.Value.kReverse);
         mInnerBow.set(DoubleSolenoid.Value.kReverse);
     }
@@ -47,15 +42,15 @@ public class crossbow {
     /**
      * Fires hatch by releasing the back fins before the front fins
      */
-    public void shoot(){
-        if(!cShotStarted){
-            cShotStarted = true;
+    public void shoot() {
+        if(!shotStarted) {
+            shotStarted = true;
             mShotTimer.reset();
             mShotTimer.start();
             mOuterBow.set(DoubleSolenoid.Value.kForward);
         }
-        if(mShotTimer.get() > .3){
-            cShotStarted = false; 
+        if(mShotTimer.get() > .3) {
+            shotStarted = false; 
             //mShotTimer.stop(); 
             //mShotTimer.reset(); 
             mInnerBow.set(DoubleSolenoid.Value.kForward);
