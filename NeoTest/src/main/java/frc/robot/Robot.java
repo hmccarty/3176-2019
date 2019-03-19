@@ -41,7 +41,7 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void teleopPeriodic() {
-    motor.set(stick.getY());
+    motor.set(stick.getY()*.7);
     motor1.follow(motor, true);
     System.out.println(motor.getOutputCurrent());
   }
