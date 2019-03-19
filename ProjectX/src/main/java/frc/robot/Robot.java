@@ -18,6 +18,7 @@ public class Robot extends TimedRobot {
 	private vision mVision = vision.getInstance();
 	private controller mController = controller.getInstance();
 	private superstructure mSuperstructure = superstructure.getInstance();
+	private claw mClaw = claw.getInstance();
 	private elevator mElevator = elevator.getInstance();
 
 	@Override

@@ -108,7 +108,7 @@ public class constants {
 	public static final double NEO_FF = 0;
 	public static final double NEO_IZ = 0;
 	public static final double NEO_MAX_ACCEL = 5;
-	public static final double DRIVE_GEAR_RATI0 = 17/54;
+	public static final double DRIVE_GEAR_RATI0 = 17.0/54.0;
 	public static double FPS_TO_RPM= 12.0 * (1.0/(WHEEL_DIAMETER*Math.PI)) * (48.0/30.0) * (54.0/17.0) * (60.0);
 	public static double REV_TO_FT = (17.0/54.0)*(30.0/48.0)*(WHEEL_DIAMETER*Math.PI)*(1.0/12.0);
 	public static final double NEO_MAX_VEL = 6000;

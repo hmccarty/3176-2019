@@ -24,6 +24,7 @@ public class Robot extends IterativeRobot {
     motor1 = new CANSparkMax(4, MotorType.kBrushless);
     stick = new Joystick(0);
     motor.setSmartCurrentLimit(40);
+    motor1.setSmartCurrentLimit(40);
   }
 
   @Override

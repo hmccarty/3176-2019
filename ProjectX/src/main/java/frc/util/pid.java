@@ -56,11 +56,8 @@ public class pid {
 
 	public double returnOutput(double error) {
 		iDeltaTime = .02;
-		if(iIntegral < kIntegralMax || kIntegralMax == 0) {
-			iIntegral += (error*iDeltaTime);
-		}
-		else
-		{
+		iIntegral += (error* iDeltaTime);
+		if(kIntegralMax != 0.0) { 
 			if(iIntegral>kIntegralMax)
 			{
 				iIntegral = kIntegralMax;
@@ -70,6 +67,7 @@ public class pid {
 				iIntegral = -kIntegralMax;
 			}
 		}
+
 		iDerivative = (error - iPrevError)/iDeltaTime;
 		iPrevError = error;
 

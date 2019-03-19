@@ -32,9 +32,9 @@ public class neopod extends subsystem {
 	private double kEncoderUnits = constants.ENCODER_UNITS; //# of ticks on Mag Encoder
 	private double kConstants[] = constants.OFFSETS;
 	private double gearRatio = constants.DRIVE_GEAR_RATI0;
-	private double fps2ups = constants.fps2ups; //Converts Feet/s to Encoder Units (770.24)
-	private double fps2rpm = constants.fps2rpm;
-	private double rev2ft = constants.rev2ft;
+	private double fps2ups = constants.FPS_TO_UPS; //Converts Feet/s to Encoder Units (770.24)
+	private double fps2rpm = constants.FPS_TO_RPM;
+	private double rev2ft = constants.REV_TO_FT;
 	
 	private double lastEncoderPosition; //Previous position in encoder units	
 	private double encoderError; //Error in encoder units

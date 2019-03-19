@@ -18,7 +18,8 @@ public class elevator {
     private static elevator instance = new elevator();
     private controller mController = controller.getInstance();
 
-    private CANSparkMax mWinch;
+    private CANSparkMax mWinchLeft;
+    private CANSparkMax mWinchRight;
     private CANPIDController mPIDController;
     private CANEncoder mEncoder; 
     private sparkconfig mSparkConfig; 
@@ -41,11 +42,12 @@ public class elevator {
     private state mWantedState;
 
     public elevator() {
-        mWinch = new CANSparkMax(constants.ELEVATOR, MotorType.kBrushless);
-        mEncoder = mWinch.getEncoder();
-        mPIDController = mWinch.getPIDController();
+        mWinchLeft = new CANSparkMax(constants.ELEVATOR, MotorType.kBrushless);
+        mWinchRight = new CANSparkMax(constants.ELEVATOR+1, MotorType.kBrushless);
+        mEncoder = mWinchLeft.getEncoder();
+        mPIDController = mWinchLeft.getPIDController();
 
-        mSparkConfig = new sparkconfig(mPIDController, mWinch, constants.ELEVATOR);
+        mSparkConfig = new sparkconfig(mPIDController, mWinchLeft, constants.ELEVATOR);
         mSparkConfig.configPID(constants.ELEVATOR_PID_CONFIG);
         mSparkConfig.configSmartMotion(constants.ELEVATOR_MOTION_CONFIG); 
         mSparkConfig.configCurrentLimit(constants.SMART_CURRENT_LIMIT);
@@ -105,7 +107,7 @@ public class elevator {
                         System.out.println("In Open Loop State");
                         cWantedSpeed = mController.openLoopElevator();
                         SmartDashboard.putNumber("Speed", cWantedSpeed);
-                        mWinch.set(cWantedSpeed); 
+                        mWinchLeft.set(cWantedSpeed);
                         break;
                     case HOLDING:
                         setHeight(getHeight());
@@ -119,6 +121,7 @@ public class elevator {
                         setHeight(cWantedHeight);
 						break;     
                 }
+            mWinchRight.follow(mWinchLeft, true);
             checkState();
             }
             public void onStop(){}
