@@ -201,14 +201,14 @@ public class controller {
      * @return wanted motion in the y direction on an exponential scale
      */
     public double getForward() {
-        return expoScale(mThrustStick.getY(), kThrustStickDeadband, kThrustStickOffset, kThrustStickScale);
+        return -expoScale(mThrustStick.getY(), kThrustStickDeadband, kThrustStickOffset, kThrustStickScale);
     }
 
     /**
      * @return wanted motion in the x direction
      */
     public double getStrafe() {
-        return expoScale(mThrustStick.getX(), kThrustStickDeadband, kThrustStickOffset, kThrustStickScale);
+        return -expoScale(mThrustStick.getX(), kThrustStickDeadband, kThrustStickOffset, kThrustStickScale);
     }
 
     /*************\
@@ -273,7 +273,7 @@ public class controller {
      * @return wanted motion in the omega axis
      */
     public double getSpin() {
-        if(Math.abs(mYawStick.getX()) > 0.04) {
+        if(Math.abs(mYawStick.getX()) > 0.06) {
             return mYawStick.getX() * 0.14;
         } else {
             return 0; 

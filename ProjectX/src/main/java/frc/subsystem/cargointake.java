@@ -139,7 +139,7 @@ public class cargointake {
             mCargoWinchEncoder.reset();
         } else {
             isHomed = false; 
-            mCargoIntakeWinch.set(-.3);
+            mCargoIntakeWinch.set(.3);
         }
     }
 
