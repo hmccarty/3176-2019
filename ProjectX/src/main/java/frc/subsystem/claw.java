@@ -1,10 +1,7 @@
 package frc.subsystem;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import frc.robot.constants;
-
-//CURRENTLY NOT IN USE
 
 public class claw {
     private static claw instance = new claw(constants.CLAW_EXTENDER_FRONT, 
@@ -30,9 +27,11 @@ public class claw {
     public void stow() {
         extender.set(DoubleSolenoid.Value.kReverse);
     }
+    
     public void intake() {
         pincher.set(DoubleSolenoid.Value.kOff);
     }
+
     public void clamp() {
         pincher.set(DoubleSolenoid.Value.kReverse);
     }
