@@ -14,6 +14,8 @@ public class controller {
     private double kThrustStickDeadband = constants.TRANSLATIONAL_DEADBAND; 
     private double kThrustStickScale = constants.TRANSLATIONAL_SCALE; 
     private double kThrustStickOffset = constants.TRANSLATIONAL_SCALE; 
+
+    private Boolean elevatorOpenLoop = false;
     
     public static controller getInstance() {
         return instance; 
@@ -76,6 +78,15 @@ public class controller {
         mButtonMonkey.setRumble(RumbleType.kRightRumble, 1);
     }
 
+    public Boolean openLoopElevatorEnabled() {
+        if (mButtonMonkey.getRawButton(7) && mButtonMonkey.getRawButton(8) && elevatorOpenLoop){
+            elevatorOpenLoop = false;
+        } else if (mButtonMonkey.getRawButton(7) && mButtonMonkey.getRawButton(8) && !elevatorOpenLoop) {
+            elevatorOpenLoop = true;
+        }
+        return elevatorOpenLoop;
+    }
+
     public double openLoopElevator() {
         if(Math.abs(mThrustStick.getY()) > 0.01) {
             return (mThrustStick.getY()*.7);
@@ -101,7 +112,7 @@ public class controller {
      */
     public double wantedElevatorVelocity() {
         if(Math.abs(mButtonMonkey.getY()) > 0.07) {
-            return mButtonMonkey.getY();
+            return mButtonMonkey.getY()*15;
         } else {
             return 0; 
         }
@@ -273,8 +284,8 @@ public class controller {
      * @return wanted motion in the omega axis
      */
     public double getSpin() {
-        if(Math.abs(mYawStick.getX()) > 0.06) {
-            return mYawStick.getX() * 0.14;
+        if(Math.abs(mYawStick.getX()) > 0.07) {
+            return -mYawStick.getX() * 0.14;
         } else {
             return 0; 
         }

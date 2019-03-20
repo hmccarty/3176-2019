@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import frc.subsystem.controller;
 import frc.robot.constants;
@@ -31,6 +32,10 @@ public class elevator {
     private double cSpeed;
     private double cTrajectoryStartTime;
 
+    private DigitalInput mLeftBumpSwitch;
+    private DigitalInput mRightBumpSwitch;
+    private Boolean isAtBottom = false;
+
     public enum state {
         HOLDING,
         OPEN_LOOP,
@@ -51,6 +56,9 @@ public class elevator {
         mSparkConfig.configPID(constants.ELEVATOR_PID_CONFIG);
         mSparkConfig.configSmartMotion(constants.ELEVATOR_MOTION_CONFIG); 
         mSparkConfig.configCurrentLimit(constants.SMART_CURRENT_LIMIT);
+
+        mLeftBumpSwitch = new DigitalInput(constants.LEFT_BUMP_SWITCH);
+        mRightBumpSwitch = new DigitalInput(constants.RIGHT_BUMP_SWITCH);
     }
 
     public static elevator getInstance() {
@@ -75,6 +83,15 @@ public class elevator {
 
     public double getHeight() {
         return mEncoder.getPosition();
+    }
+
+    private void updateBumpSwitches() {
+        if(!mLeftBumpSwitch.get() && !mRightBumpSwitch.get()){
+            isAtBottom = true;
+            mEncoder.setPosition(0);
+        } else{
+            isAtBottom = false;
+        }
     }
 
     public void setWantedState(state wantedState) {
@@ -110,18 +127,31 @@ public class elevator {
                         mWinchLeft.set(cWantedSpeed);
                         break;
                     case HOLDING:
+                        updateBumpSwitches();
                         setHeight(getHeight());
                         break; 
                     case VELOCITY_CONTROL:
-                        cWantedSpeed = mController.wantedElevatorVelocity()*3; 
-                        setSpeed(cWantedSpeed);
+                        cWantedSpeed = mController.wantedElevatorVelocity();
+                        // updateBumpSwitches();
+                        // cWantedSpeed = mController.wantedElevatorVelocity()*3;
+                        // if(cWantedSpeed < 0 && isAtBottom){
+                        //     mWantedState = state.HOLDING;
+                        // } else {
+                            setSpeed(cWantedSpeed);
+                        // }
                         break;
                     case POSITION_CONTROL:
+                        updateBumpSwitches();
                         cWantedHeight = mController.wantedElevatorHeight()/(2*Math.PI);
-                        setHeight(cWantedHeight);
+                        if(cWantedHeight < 0 && isAtBottom){
+                            mWantedState = state.HOLDING;
+                        } else{
+                            setHeight(cWantedHeight);
+                        }
 						break;     
                 }
             mWinchRight.follow(mWinchLeft, true);
+            System.out.println(mRightBumpSwitch.get() + " | " + mLeftBumpSwitch.get());
             checkState();
             }
             public void onStop(){}

@@ -126,6 +126,8 @@ public class constants {
 															/*Max Acceleration*/ 0.0, 
 															/*Allowed Error*/ 0.0 };
 	public static final int SMART_CURRENT_LIMIT = 40;
+	public static final int LEFT_BUMP_SWITCH = 6;
+	public static final int RIGHT_BUMP_SWITCH = 5;
 
 	/**************************\
 	|* Cargo Intake Constants *|
