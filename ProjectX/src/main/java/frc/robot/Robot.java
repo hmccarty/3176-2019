@@ -80,15 +80,15 @@ public class Robot extends TimedRobot {
 		|* Elevator States *|
 		\*******************/
 
-		// if(mController.openLoopElevatorEnabled()){
-		// 	mElevator.setWantedState(elevator.state.OPEN_LOOP);
-		// } else if (mController.wantedElevatorHeight() != -1) {
-		// 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
-		// } else if (mController.wantedElevatorVelocity() != 0) {
+		if(mController.openLoopElevatorEnabled()){
+		 	mElevator.setWantedState(elevator.state.OPEN_LOOP);
+		} else if (mController.wantedElevatorHeight() != -1) {
+		 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
+		} else if (mController.wantedElevatorVelocity() != 0) {
 			mElevator.setWantedState(elevator.state.VELOCITY_CONTROL);
-		// } else if (mElevator.inPosition()) {
-		// 	mElevator.setWantedState(elevator.state.HOLDING);
-		// }
+		} else if (mElevator.inPosition()) {
+		 	mElevator.setWantedState(elevator.state.HOLDING);
+		}
 
 		/*****************\
 		|* Vision States *|

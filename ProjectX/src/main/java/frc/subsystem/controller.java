@@ -112,7 +112,7 @@ public class controller {
      */
     public double wantedElevatorVelocity() {
         if(Math.abs(mButtonMonkey.getY()) > 0.07) {
-            return mButtonMonkey.getY()*15;
+            return mButtonMonkey.getY()*10;
         } else {
             return 0; 
         }

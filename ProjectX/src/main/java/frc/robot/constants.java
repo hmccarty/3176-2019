@@ -118,7 +118,7 @@ public class constants {
 	|* Elevator Constants *|
 	\**********************/
 
-	public static final double[] ELEVATOR_PID_CONFIG = { /*kP*/ 0.0001, /*kI*/ 0.0, /*kD*/ 0.0, 
+	public static final double[] ELEVATOR_PID_CONFIG = { /*kP*/ 0.01, /*kI*/ 0.0, /*kD*/ 0.0, 
 														 /*I-Zone*/ 0.0, 
 														 /*Output Range Min*/ 0.0, /*Output Range Max*/ 0.0, 
 														 /*kF*/ 0.0};

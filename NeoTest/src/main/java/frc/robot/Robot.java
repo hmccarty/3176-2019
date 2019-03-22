@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.*;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -17,14 +18,22 @@ public class Robot extends IterativeRobot {
   CANSparkMax motor;
   CANSparkMax motor1;
   Joystick stick;
+  CANPIDController mPIDController;
+  CANEncoder encoder;
 
   @Override
   public void robotInit() {
     motor = new CANSparkMax(5, MotorType.kBrushless);
-    motor1 = new CANSparkMax(4, MotorType.kBrushless);
+    motor1 = new CANSparkMax(6, MotorType.kBrushless);
+    motor.restoreFactoryDefaults();
+    motor1.restoreFactoryDefaults();
     stick = new Joystick(0);
     motor.setSmartCurrentLimit(40);
     motor1.setSmartCurrentLimit(40);
+    mPIDController = motor.getPIDController();
+    encoder = motor.getEncoder();
+    mPIDController.setP(.0001);
+    mPIDController.setOutputRange(-1, 1);
   }
 
   @Override
@@ -41,9 +50,10 @@ public class Robot extends IterativeRobot {
 
   @Override
   public void teleopPeriodic() {
-    motor.set(stick.getY()*.7);
+    double setPoint = stick.getY()*5700;
+    mPIDController.setReference(setPoint, ControlType.kVelocity);
     motor1.follow(motor, true);
-    System.out.println(motor.getOutputCurrent());
+    System.out.println(encoder.getPosition());
   }
 
   @Override

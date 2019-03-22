@@ -25,6 +25,8 @@ public class elevator {
     private CANEncoder mEncoder; 
     private sparkconfig mSparkConfig; 
 
+    private pid mPid = new pid(0.003, 0, 0, 0.8);
+
     private trajectory mTrajectory;
 
     private double cWantedHeight;
@@ -49,13 +51,20 @@ public class elevator {
     public elevator() {
         mWinchLeft = new CANSparkMax(constants.ELEVATOR_LEFT, MotorType.kBrushless);
         mWinchRight = new CANSparkMax(constants.ELEVATOR_RIGHT, MotorType.kBrushless);
+        mWinchLeft.restoreFactoryDefaults();
+        mWinchRight.restoreFactoryDefaults();
         mEncoder = mWinchLeft.getEncoder();
         mPIDController = mWinchLeft.getPIDController();
 
-        mSparkConfig = new sparkconfig(mPIDController, mWinchLeft, constants.ELEVATOR_LEFT);
-        mSparkConfig.configPID(constants.ELEVATOR_PID_CONFIG);
-        mSparkConfig.configSmartMotion(constants.ELEVATOR_MOTION_CONFIG); 
-        mSparkConfig.configCurrentLimit(constants.SMART_CURRENT_LIMIT);
+        // mSparkConfig = new sparkconfig(mPIDController, mWinchLeft, constants.ELEVATOR_LEFT);
+        // mSparkConfig.configPID(constants.ELEVATOR_PID_CONFIG);
+        // mSparkConfig.configSmartMotion(constants.ELEVATOR_MOTION_CONFIG); 
+        // mSparkConfig.configCurrentLimit(constants.SMART_CURRENT_LIMIT);
+        mPIDController.setP(.0002);
+        mPIDController.setFF(.13);
+        mPIDController.setOutputRange(-1, 0.1);
+        mWinchLeft.setSmartCurrentLimit(40);
+        mWinchRight.setSmartCurrentLimit(40);
 
         mLeftBumpSwitch = new DigitalInput(constants.LEFT_BUMP_SWITCH);
         mRightBumpSwitch = new DigitalInput(constants.RIGHT_BUMP_SWITCH);
@@ -70,7 +79,11 @@ public class elevator {
     }
 
     private void setSpeed(double wantedSpeed) {
-        mPIDController.setReference(wantedSpeed/6, ControlType.kVelocity);
+        mPIDController.setReference(wantedSpeed, ControlType.kPosition);
+        // mWinchLeft.set(-mPid.returnOutput(mEncoder.getVelocity()/100, wantedSpeed/20));
+        // System.out.println("Encoder Velocity: " + mEncoder.getVelocity());
+        // SmartDashboard.putNumber("Encoder Velocity", mEncoder.getVelocity());
+        // SmartDashboard.putNumber("Wanted Velocity", mPid.returnOutput(mEncoder.getVelocity(), wantedSpeed/20));
     }
 
     public boolean inPosition() {
@@ -132,13 +145,13 @@ public class elevator {
                         break; 
                     case VELOCITY_CONTROL:
                         cWantedSpeed = mController.wantedElevatorVelocity();
-                        // updateBumpSwitches();
-                        // cWantedSpeed = mController.wantedElevatorVelocity()*3;
-                        // if(cWantedSpeed < 0 && isAtBottom){
-                        //     mWantedState = state.HOLDING;
-                        // } else {
+                        updateBumpSwitches();
+                        if(cWantedSpeed < 0 && isAtBottom){
+                            mWantedState = state.HOLDING;
+                        } else {
                             setSpeed(cWantedSpeed);
-                        // }
+                        }
+                        System.out.println("In velocity control. Velocity: " + cWantedSpeed);
                         break;
                     case POSITION_CONTROL:
                         updateBumpSwitches();
@@ -151,7 +164,9 @@ public class elevator {
 						break;     
                 }
             mWinchRight.follow(mWinchLeft, true);
-            System.out.println(mRightBumpSwitch.get() + " | " + mLeftBumpSwitch.get());
+            System.out.println("Bump switch values: " + mRightBumpSwitch.get() + " | " + mLeftBumpSwitch.get());
+            System.out.println("Motor Outputs: " + mWinchRight.getAppliedOutput() + " | " + mWinchLeft.getAppliedOutput());
+            System.out.println("Encoder velocity: " + mEncoder.getVelocity());
             checkState();
             }
             public void onStop(){}
