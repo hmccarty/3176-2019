@@ -25,7 +25,7 @@ public class elevator {
     private CANEncoder mEncoder; 
     private sparkconfig mSparkConfig; 
 
-    private pid mPid = new pid(0.003, 0, 0, 0.8);
+    private pid mPid = new pid(0.007, 0, 0, 0.8);
 
     private trajectory mTrajectory;
 
@@ -60,11 +60,16 @@ public class elevator {
         // mSparkConfig.configPID(constants.ELEVATOR_PID_CONFIG);
         // mSparkConfig.configSmartMotion(constants.ELEVATOR_MOTION_CONFIG); 
         // mSparkConfig.configCurrentLimit(constants.SMART_CURRENT_LIMIT);
-        mPIDController.setP(.0002);
-        mPIDController.setFF(.13);
-        mPIDController.setOutputRange(-1, 0.1);
+        mPIDController.setP(.4);
+        mPIDController.setFF(0.07);
+        mPIDController.setOutputRange(-0.1, 1);
         mWinchLeft.setSmartCurrentLimit(40);
         mWinchRight.setSmartCurrentLimit(40);
+
+        mPIDController.setSmartMotionMaxVelocity(10000, 0);
+        mPIDController.setSmartMotionMinOutputVelocity(-10000, 0);
+        mPIDController.setSmartMotionMaxAccel(6000, 0);
+        mPIDController.setSmartMotionAllowedClosedLoopError(2.0, 0);
 
         mLeftBumpSwitch = new DigitalInput(constants.LEFT_BUMP_SWITCH);
         mRightBumpSwitch = new DigitalInput(constants.RIGHT_BUMP_SWITCH);
@@ -75,11 +80,11 @@ public class elevator {
     }
 
     private void setHeight(double wantedHeight) {
-        mPIDController.setReference(2, ControlType.kSmartMotion); 
+        mPIDController.setReference(wantedHeight, ControlType.kPosition); 
     }
 
     private void setSpeed(double wantedSpeed) {
-        mPIDController.setReference(wantedSpeed, ControlType.kPosition);
+        mPIDController.setReference(wantedSpeed, ControlType.kVelocity);
         // mWinchLeft.set(-mPid.returnOutput(mEncoder.getVelocity()/100, wantedSpeed/20));
         // System.out.println("Encoder Velocity: " + mEncoder.getVelocity());
         // SmartDashboard.putNumber("Encoder Velocity", mEncoder.getVelocity());
@@ -132,6 +137,8 @@ public class elevator {
 
             @Override
             public void onLoop() {
+                SmartDashboard.putNumber("Wanted Height", mController.wantedElevatorHeight());
+                SmartDashboard.putNumber("Current Height", mEncoder.getPosition());
                 switch(mCurrentState) {
                     case OPEN_LOOP:
                         System.out.println("In Open Loop State");
@@ -140,14 +147,14 @@ public class elevator {
                         mWinchLeft.set(cWantedSpeed);
                         break;
                     case HOLDING:
-                        updateBumpSwitches();
-                        setHeight(getHeight());
-                        break; 
+                        // updateBumpSwitches();
+                        // setHeight(getHeight());
+                        // break; 
                     case VELOCITY_CONTROL:
                         cWantedSpeed = mController.wantedElevatorVelocity();
                         updateBumpSwitches();
                         if(cWantedSpeed < 0 && isAtBottom){
-                            mWantedState = state.HOLDING;
+                            setSpeed(0);
                         } else {
                             setSpeed(cWantedSpeed);
                         }
@@ -155,12 +162,12 @@ public class elevator {
                         break;
                     case POSITION_CONTROL:
                         updateBumpSwitches();
-                        cWantedHeight = mController.wantedElevatorHeight()/(2*Math.PI);
-                        if(cWantedHeight < 0 && isAtBottom){
-                            mWantedState = state.HOLDING;
-                        } else{
-                            setHeight(cWantedHeight);
-                        }
+                        cWantedHeight = mController.wantedElevatorHeight();///(2*Math.PI);
+                        //if(cWantedHeight < 0 && isAtBottom){
+                        //    mWantedState = state.HOLDING;
+                        //} else{
+                        setHeight(cWantedHeight);
+                        //}
 						break;     
                 }
             mWinchRight.follow(mWinchLeft, true);

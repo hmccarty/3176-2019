@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
 		if(mController.trackTarget()) {
 			mDriveTrain.setWantedState(drivetrain.state.VISION);
 		} else {
-			mDriveTrain.setWantedState(drivetrain.state.DRIVE);
+			//mDriveTrain.setWantedState(drivetrain.state.DRIVE);
 		}		
 
 		/*************************\
@@ -86,9 +86,9 @@ public class Robot extends TimedRobot {
 		 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
 		} else if (mController.wantedElevatorVelocity() != 0) {
 			mElevator.setWantedState(elevator.state.VELOCITY_CONTROL);
-		} else if (mElevator.inPosition()) {
-		 	mElevator.setWantedState(elevator.state.HOLDING);
-		}
+		}// else if (mElevator.inPosition()) {
+		//  	mElevator.setWantedState(elevator.state.HOLDING);
+		// }
 
 		/*****************\
 		|* Vision States *|

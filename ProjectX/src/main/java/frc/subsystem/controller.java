@@ -123,12 +123,12 @@ public class controller {
      */
     public double wantedElevatorHeight() {
         if(mButtonMonkey.getPOV() == 0) {
-            return 74.3; 
+            return 18; 
         }
-        else if(mButtonMonkey.getPOV() == 2) {
-            return 46.3; 
+        else if(mButtonMonkey.getPOV() == 90) {
+            return 9; 
         }
-        else if(mButtonMonkey.getPOV() == 4) {
+        else if(mButtonMonkey.getPOV() == 180) {
             return 0.0; 
         } else {
             return -1; 
