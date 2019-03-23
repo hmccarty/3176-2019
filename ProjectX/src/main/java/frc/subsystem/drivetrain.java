@@ -108,7 +108,7 @@ public class drivetrain extends subsystem {
 		mVisionTurn = new pid(0.026, 0, 0, .8); 
 		mVisionStrafe = new pid(0.015,0, 0, .8); 
 
-		mSpinMaster = new pid(0.0009, 0, 0, 0.5);
+		mSpinMaster = new pid(0.0001, 0.000000001, 0, 0.5);
 
 		
 		//Instantiate array list
@@ -212,17 +212,17 @@ public class drivetrain extends subsystem {
 		}
 		
 		//If enabled, sends each pod to a defensive lock when not moving 
-		// if(mController.defenseEnabled()) {
-		// 	// Sending each pod their respective commands
-		// 	mNeoPods.get(0).setPod(0.0,-1.0*Math.PI/4.0);
-		// 	mNeoPods.get(1).setPod(0.0, 1.0*Math.PI/4.0);
-		// 	mNeoPods.get(2).setPod(0.0, 3.0*Math.PI/4.0);
-		// 	mNeoPods.get(3).setPod(0.0, -3.0* Math.PI/4.0);
-		// } else { 			//Sending each pod their respective commands
+		if(mController.defenseEnabled()) {
+			// Sending each pod their respective commands
+			mNeoPods.get(0).setPod(0.0,-1.0*Math.PI/4.0);
+			mNeoPods.get(1).setPod(0.0, 1.0*Math.PI/4.0);
+			mNeoPods.get(2).setPod(0.0, 3.0*Math.PI/4.0);
+			mNeoPods.get(3).setPod(0.0, -3.0* Math.PI/4.0);
+		} else { 			//Sending each pod their respective commands
 			for(int idx = 0; idx < mNeoPods.size(); idx++) {
 				mNeoPods.get(idx).setPod(podDrive[idx],podGear[idx]); 
 			}
-		//}
+		}
 	}
 
 	public void cAutonVision(boolean state){ 
@@ -389,7 +389,7 @@ public class drivetrain extends subsystem {
 					setInputType(inputType.PERCENTPOWER);
 
 					if(spinCommand == 0){
-						spinCommand = mSpinMaster.returnOutput(getAngle(), lastAngle);
+						spinCommand = -mSpinMaster.returnOutput(getAngle(), lastAngle);
 					} else {
 						lastAngle = getAngle();
 					}

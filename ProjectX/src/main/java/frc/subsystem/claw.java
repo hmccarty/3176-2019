@@ -5,13 +5,21 @@ import frc.robot.constants;
 
 public class claw {
     private static claw instance = new claw();
-    DoubleSolenoid extender = new DoubleSolenoid(0, constants.CLAW_PINCHER_FRONT,  //On PCM 0
-                                                    constants.CLAW_PINCHER_BACK); 
-    DoubleSolenoid pincher = new DoubleSolenoid(1,  constants.CLAW_EXTENDER_FRONT, //On PCM 1
-                                                    constants.CLAW_EXTENDER_BACK);
+    DoubleSolenoid extender = new DoubleSolenoid(1, constants.CLAW_EXTENDER_FRONT, //On PCM 1
+                                                    constants.CLAW_EXTENDER_BACK); 
+    DoubleSolenoid pincher = new DoubleSolenoid(0,  constants.CLAW_PINCHER_FRONT,  //On PCM 0
+                                                    constants.CLAW_PINCHER_BACK);
 
     public static claw getInstance() {
         return instance; 
+    }
+
+    public boolean isExtended(){
+        if(extender.get() == DoubleSolenoid.Value.kForward){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void deploy() {

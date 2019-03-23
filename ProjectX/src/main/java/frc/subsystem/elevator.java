@@ -18,6 +18,7 @@ import frc.util.trajectory;
 public class elevator {
     private static elevator instance = new elevator();
     private controller mController = controller.getInstance();
+    private claw mClaw = claw.getInstance();
 
     private CANSparkMax mWinchLeft;
     private CANSparkMax mWinchRight;
@@ -30,6 +31,7 @@ public class elevator {
     private trajectory mTrajectory;
 
     private double cWantedHeight;
+    private double lastWantedHeight = 0; 
     private double cWantedSpeed; 
     private double cSpeed;
     private double cTrajectoryStartTime;
@@ -41,7 +43,7 @@ public class elevator {
     public enum state {
         HOLDING,
         OPEN_LOOP,
-        VELOCITY_CONTROL,
+        MANUAL_CONTROL,
         POSITION_CONTROL
     }
 
@@ -60,16 +62,17 @@ public class elevator {
         // mSparkConfig.configPID(constants.ELEVATOR_PID_CONFIG);
         // mSparkConfig.configSmartMotion(constants.ELEVATOR_MOTION_CONFIG); 
         // mSparkConfig.configCurrentLimit(constants.SMART_CURRENT_LIMIT);
-        mPIDController.setP(.4);
-        mPIDController.setFF(0.07);
+        mPIDController.setP(.0005);
+        mPIDController.setFF(0.000009);
+        mPIDController.setD(0.0001);
         mPIDController.setOutputRange(-0.1, 1);
         mWinchLeft.setSmartCurrentLimit(40);
         mWinchRight.setSmartCurrentLimit(40);
 
-        mPIDController.setSmartMotionMaxVelocity(10000, 0);
-        mPIDController.setSmartMotionMinOutputVelocity(-10000, 0);
-        mPIDController.setSmartMotionMaxAccel(6000, 0);
-        mPIDController.setSmartMotionAllowedClosedLoopError(2.0, 0);
+        mPIDController.setSmartMotionMaxVelocity(25000, 0);
+        mPIDController.setSmartMotionMinOutputVelocity(-25000, 0);
+        mPIDController.setSmartMotionMaxAccel(22000, 0);
+        mPIDController.setSmartMotionAllowedClosedLoopError(0.3, 0);
 
         mLeftBumpSwitch = new DigitalInput(constants.LEFT_BUMP_SWITCH);
         mRightBumpSwitch = new DigitalInput(constants.RIGHT_BUMP_SWITCH);
@@ -80,7 +83,10 @@ public class elevator {
     }
 
     private void setHeight(double wantedHeight) {
-        mPIDController.setReference(wantedHeight, ControlType.kPosition); 
+        if(mClaw.isExtended()){
+            wantedHeight -= 5;
+        }
+        mPIDController.setReference(wantedHeight, ControlType.kSmartMotion); 
     }
 
     private void setSpeed(double wantedSpeed) {
@@ -97,6 +103,10 @@ public class elevator {
         } else {
             return false; 
         }
+    }
+
+    public void setWantedElevatorHeight(double wantedHeight){
+        cWantedHeight = wantedHeight;
     }
 
     public double getHeight() {
@@ -139,6 +149,8 @@ public class elevator {
             public void onLoop() {
                 SmartDashboard.putNumber("Wanted Height", mController.wantedElevatorHeight());
                 SmartDashboard.putNumber("Current Height", mEncoder.getPosition());
+                SmartDashboard.putNumber("Last Height", lastWantedHeight);
+                SmartDashboard.putNumber("Current Velocity", mEncoder.getVelocity());
                 switch(mCurrentState) {
                     case OPEN_LOOP:
                         System.out.println("In Open Loop State");
@@ -148,32 +160,34 @@ public class elevator {
                         break;
                     case HOLDING:
                         // updateBumpSwitches();
-                        // setHeight(getHeight());
-                        // break; 
-                    case VELOCITY_CONTROL:
-                        cWantedSpeed = mController.wantedElevatorVelocity();
+                        setHeight(lastWantedHeight);
+                        break; 
+                    case MANUAL_CONTROL:
+                        cWantedHeight = mEncoder.getPosition() + mController.wantedElevatorVelocity();
                         updateBumpSwitches();
                         if(cWantedSpeed < 0 && isAtBottom){
                             setSpeed(0);
                         } else {
-                            setSpeed(cWantedSpeed);
+                            setHeight(cWantedSpeed);
                         }
                         System.out.println("In velocity control. Velocity: " + cWantedSpeed);
                         break;
                     case POSITION_CONTROL:
                         updateBumpSwitches();
-                        cWantedHeight = mController.wantedElevatorHeight();///(2*Math.PI);
+                        //cWantedHeight = mController.wantedElevatorHeight();///(2*Math.PI);
                         //if(cWantedHeight < 0 && isAtBottom){
                         //    mWantedState = state.HOLDING;
                         //} else{
-                        setHeight(cWantedHeight);
+                        //if(Math.abs(cWantedHeight - mEncoder.getPosition()) > 0.5){
+                            setHeight(cWantedHeight);
+                            lastWantedHeight = cWantedHeight;
+                        //}  else {
+                         //   mWantedState = state.HOLDING;
+                        //}
                         //}
 						break;     
                 }
             mWinchRight.follow(mWinchLeft, true);
-            System.out.println("Bump switch values: " + mRightBumpSwitch.get() + " | " + mLeftBumpSwitch.get());
-            System.out.println("Motor Outputs: " + mWinchRight.getAppliedOutput() + " | " + mWinchLeft.getAppliedOutput());
-            System.out.println("Encoder velocity: " + mEncoder.getVelocity());
             checkState();
             }
             public void onStop(){}

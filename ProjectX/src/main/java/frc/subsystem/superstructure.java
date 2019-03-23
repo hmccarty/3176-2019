@@ -4,6 +4,7 @@ package frc.subsystem;
 import frc.util.loop;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 import frc.robot.constants;
 
 public class superstructure {
@@ -151,21 +152,27 @@ public class superstructure {
                         */
                             break;
                         case TRANSFER_CARGO: 
-                            mCargoIntake.stow();
+                            mCargoIntake.moveToTransfer();
                             mClaw.stow(); 
-                            if(mCargoIntake.isStowed()){
+                            mClaw.intake();
+                            if(!mCargoIntake.isStowed()){
                                 mCargoIntake.transfer(); 
                                 currentTime = transferTimer.getFPGATimestamp();
                                 if(!transferStarted){
                                     transferStarted = true; 
                                     startTime = transferTimer.getFPGATimestamp();
                                 }
-                                else if(currentTime - startTime == 0.2){
+                                else if(currentTime - startTime > 0.5){
                                     transferStarted = false;
                                     startTime = 0; 
                                     mClaw.clamp(); 
+                                    mCargoIntake.stow();
+                                    mCargoIntake.hold();
                                     mWantedState = state.NEUTRAL;
                                 }
+                                SmartDashboard.putNumber("Delta Time", currentTime - startTime);
+                                SmartDashboard.putNumber("Current Time", currentTime);
+                                SmartDashboard.putNumber("Started Time", startTime);
                             }
 
                             break;
@@ -181,11 +188,10 @@ public class superstructure {
                          * Spits cargo out of cargo intake
                          */
                         case DELIVER_CARGO:
-                            if(mCargoIntake.hasBall()){
+                            if(mClaw.isExtended()){
+                                mClaw.release(); 
+                            } else if (mCargoIntake.hasBall()){
                                 mCargoIntake.spit();
-                            } else { 
-                                mClaw.deploy();
-                                mClaw.release();
                             }
                             checkState();
                             break;
@@ -197,6 +203,9 @@ public class superstructure {
                             mCrossbow.shoot();
                             mLastState = mCurrentState;
                             checkState();
+                            break;
+                        case DEPLOY_CLAW:
+                            mClaw.deploy();
                             break;
                         case OPENLOOP_HATCH:
                             break;
@@ -212,9 +221,10 @@ public class superstructure {
                             mCompressor.start();
                             mCargoIntake.stow();
                             mCargoIntake.hold();
-                            mCargoIntake.zeroAllSensors();
+                            //mCargoIntake.zeroAllSensors();
                             mClaw.stow();
                             mClaw.clamp();
+                            mCargoIntake.stow();
                             //mHatchIntake.stow();
                             mCrossbow.draw(); 
                             checkState();
@@ -239,6 +249,7 @@ public class superstructure {
         HOLD_H_CB,
         HOME_C_ROLLER,
         INTAKE_H_G,
+        DEPLOY_CLAW,
         ROCKET_C_ROLLER,
         TRANSFER_CARGO,
         TRANSFER_HATCH,

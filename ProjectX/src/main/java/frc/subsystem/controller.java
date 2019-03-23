@@ -73,6 +73,10 @@ public class controller {
     public boolean stowCargoIntake() {
         return mButtonMonkey.getRawButton(9);
     }
+    
+    public boolean deployClaw() {
+        return mButtonMonkey.getRawButton(8);
+    }
 
     public void alertOperator() { 
         mButtonMonkey.setRumble(RumbleType.kRightRumble, 1);
@@ -111,8 +115,8 @@ public class controller {
      * @return driver wanted velocity of elevator
      */
     public double wantedElevatorVelocity() {
-        if(Math.abs(mButtonMonkey.getY()) > 0.07) {
-            return mButtonMonkey.getY()*10;
+        if(Math.abs(mButtonMonkey.getY()) > 0.04) {
+            return mButtonMonkey.getY()*1.0;
         } else {
             return 0; 
         }
@@ -123,10 +127,10 @@ public class controller {
      */
     public double wantedElevatorHeight() {
         if(mButtonMonkey.getPOV() == 0) {
-            return 18; 
+            return 26; 
         }
         else if(mButtonMonkey.getPOV() == 90) {
-            return 9; 
+            return 17.9; 
         }
         else if(mButtonMonkey.getPOV() == 180) {
             return 0.0; 
@@ -284,7 +288,7 @@ public class controller {
      * @return wanted motion in the omega axis
      */
     public double getSpin() {
-        if(Math.abs(mYawStick.getX()) > 0.07) {
+        if(Math.abs(mYawStick.getX()) > 0.085) {
             return -mYawStick.getX() * 0.14;
         } else {
             return 0; 

@@ -10,7 +10,9 @@ package frc.robot;
 import frc.subsystem.*;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.*;
 import frc.auton.*;
+import frc.util.VL53L0X_v1;
 
 
 public class Robot extends TimedRobot {
@@ -21,6 +23,7 @@ public class Robot extends TimedRobot {
 	private superstructure mSuperstructure = superstructure.getInstance();
 	private claw mClaw = claw.getInstance();
 	private elevator mElevator = elevator.getInstance();
+	private VL53L0X_v1 clawBallSensor = new VL53L0X_v1();
 
 	@Override
 	public void robotInit() {
@@ -37,6 +40,11 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopPeriodic() {
+		try{ 
+			System.out.println("Distance: " + clawBallSensor.getDistance());
+	} catch (Exception e){
+
+	}
 		driverControl();
 	}
 
@@ -49,7 +57,7 @@ public class Robot extends TimedRobot {
 		if(mController.trackTarget()) {
 			mDriveTrain.setWantedState(drivetrain.state.VISION);
 		} else {
-			//mDriveTrain.setWantedState(drivetrain.state.DRIVE);
+			mDriveTrain.setWantedState(drivetrain.state.DRIVE);
 		}		
 
 		/*************************\
@@ -72,7 +80,10 @@ public class Robot extends TimedRobot {
 		 	mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
 		} else if (mController.transferCargo()) {
 			mSuperstructure.setWantedState(superstructure.state.TRANSFER_CARGO);
-		}// else if (mController.wantedCargoIntakePosition() != -1) {
+		} else if (mController.deployClaw()) {
+		mSuperstructure.setWantedState(superstructure.state.DEPLOY_CLAW);
+	}
+		// else if (mController.wantedCargoIntakePosition() != -1) {
 		//  	mSuperstructure.setWantedState(superstructure.state.C_ROLLER_MANUAL);
 		// }
 
@@ -83,12 +94,13 @@ public class Robot extends TimedRobot {
 		if(mController.openLoopElevatorEnabled()){
 		 	mElevator.setWantedState(elevator.state.OPEN_LOOP);
 		} else if (mController.wantedElevatorHeight() != -1) {
+			mElevator.setWantedElevatorHeight(mController.wantedElevatorHeight());
 		 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
 		} else if (mController.wantedElevatorVelocity() != 0) {
-			mElevator.setWantedState(elevator.state.VELOCITY_CONTROL);
-		}// else if (mElevator.inPosition()) {
-		//  	mElevator.setWantedState(elevator.state.HOLDING);
-		// }
+			mElevator.setWantedState(elevator.state.MANUAL_CONTROL);
+		} else {
+		  	mElevator.setWantedState(elevator.state.HOLDING);
+		}
 
 		/*****************\
 		|* Vision States *|
