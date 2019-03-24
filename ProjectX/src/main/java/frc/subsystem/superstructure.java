@@ -139,6 +139,11 @@ public class superstructure {
                             checkState();
                             break;
                         case INTAKE_C_CLAW:
+                            //if(mLastState != state.INTAKE_C_CLAW){
+                             //   mClaw.clamp();
+                            //} else { 
+                                mClaw.intake();
+                            //}
                         /*  if(mLastState != mCurrentState){
                         *       mClaw.aim();
                         *       mClaw.prepare();
@@ -224,7 +229,7 @@ public class superstructure {
                             //mCargoIntake.zeroAllSensors();
                             mClaw.stow();
                             mClaw.clamp();
-                            mCargoIntake.stow();
+                            //mCargoIntake.stow();
                             //mHatchIntake.stow();
                             mCrossbow.draw(); 
                             checkState();

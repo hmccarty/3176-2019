@@ -109,7 +109,7 @@ public class constants {
 	public static double REV_TO_FT = (17.0/54.0)*(30.0/48.0)*(WHEEL_DIAMETER*Math.PI)*(1.0/12.0);
 	public static final double NEO_MAX_VEL = 6000;
 	
-	public static final double MAX_SLOW_PERCENT_SPEED = .4;
+	public static final double MAX_SLOW_PERCENT_SPEED = .6;
 	public static final double DRIVE_RAMP_RATE = .3;
 	public static final double DRIVE_GEAR_REDUCTION = 30.0/48.0;
 	public static final double DRIVE_MAX_ENCODER_SPEED = 10000.0;

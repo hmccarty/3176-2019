@@ -108,7 +108,7 @@ public class drivetrain extends subsystem {
 		mVisionTurn = new pid(0.026, 0, 0, .8); 
 		mVisionStrafe = new pid(0.015,0, 0, .8); 
 
-		mSpinMaster = new pid(0.0001, 0.000000001, 0, 0.5);
+		mSpinMaster = new pid(0.0001, 0.0, 0, 0.5);
 
 		
 		//Instantiate array list
@@ -389,7 +389,7 @@ public class drivetrain extends subsystem {
 					setInputType(inputType.PERCENTPOWER);
 
 					if(spinCommand == 0){
-						spinCommand = -mSpinMaster.returnOutput(getAngle(), lastAngle);
+						//spinCommand = -mSpinMaster.returnOutput(getAngle(), lastAngle);
 					} else {
 						lastAngle = getAngle();
 					}

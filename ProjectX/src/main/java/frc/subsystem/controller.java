@@ -78,25 +78,29 @@ public class controller {
         return mButtonMonkey.getRawButton(8);
     }
 
+    public boolean intakeClaw() {
+        return mButtonMonkey.getRawButton(7);
+    }
+
     public void alertOperator() { 
         mButtonMonkey.setRumble(RumbleType.kRightRumble, 1);
     }
 
-    public Boolean openLoopElevatorEnabled() {
-        if (mButtonMonkey.getRawButton(7) && mButtonMonkey.getRawButton(8) && elevatorOpenLoop){
-            elevatorOpenLoop = false;
-        } else if (mButtonMonkey.getRawButton(7) && mButtonMonkey.getRawButton(8) && !elevatorOpenLoop) {
-            elevatorOpenLoop = true;
-        }
-        return elevatorOpenLoop;
-    }
+    // public Boolean openLoopElevatorEnabled() {
+    //     if (mButtonMonkey.getRawButton(7) && mButtonMonkey.getRawButton(8) && elevatorOpenLoop){
+    //         elevatorOpenLoop = false;
+    //     } else if (mButtonMonkey.getRawButton(7) && mButtonMonkey.getRawButton(8) && !elevatorOpenLoop) {
+    //         elevatorOpenLoop = true;
+    //     }
+    //     return elevatorOpenLoop;
+    // }
 
     public double openLoopElevator() {
-        if(Math.abs(mThrustStick.getY()) > 0.01) {
-            return (mThrustStick.getY()*.7);
-        } else {
+        // if(Math.abs(mThrustStick.getY()) > 0.01) {
+        //     return (mThrustStick.getY()*.7);
+        // } else {
             return 0;
-        }
+        //}
     }
 
     /**
@@ -104,22 +108,22 @@ public class controller {
      *         (if no position is wanted, then returns -1)
      */
     public int wantedCargoIntakePosition() {
-        if(Math.abs(mButtonMonkey.getY()) > 0.07) {
-            return (int)(mButtonMonkey.getY()*800);
-        } else {
+        // if(Math.abs(mButtonMonkey.getY()) > 0.07) {
+        //     return (int)(mButtonMonkey.getY()*800);
+        // } else {
             return -1; 
-        }
+        //}
     }
 
     /**
      * @return driver wanted velocity of elevator
      */
     public double wantedElevatorVelocity() {
-        if(Math.abs(mButtonMonkey.getY()) > 0.04) {
-            return mButtonMonkey.getY()*1.0;
-        } else {
+        // if(Math.abs(mButtonMonkey.getY()) > 0.04) {
+        //     return mButtonMonkey.getY()*1.0;
+        // } else {
             return 0; 
-        }
+        //}
     }
 
     /** 
@@ -127,14 +131,17 @@ public class controller {
      */
     public double wantedElevatorHeight() {
         if(mButtonMonkey.getPOV() == 0) {
-            return 26; 
+            return 27.5; 
         }
         else if(mButtonMonkey.getPOV() == 90) {
-            return 17.9; 
+            return 15; 
         }
         else if(mButtonMonkey.getPOV() == 180) {
             return 0.0; 
-        } else {
+        } else if(mButtonMonkey.getPOV() == 270){
+            return 8.0;
+        } 
+        else {
             return -1; 
         }
     }

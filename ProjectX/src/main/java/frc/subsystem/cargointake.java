@@ -38,7 +38,7 @@ public class cargointake {
     private double openLoopPower = 0;
 
     public cargointake() {
-        mCargoStowPID = new pid(0.0003, 0,0, .7); //The PID values for Deploying the mechanism
+        mCargoStowPID = new pid(0.0003, 0,0, .3); //The PID values for Deploying the mechanism
         mCargoDeployPID = new pid(0.0003,0,0, .7);      //The PID values for Retracting the mechanism
         mCargoManualPID = new pid(0.00007,0,0, .6);      //Thr PID values for manual control
 
@@ -83,7 +83,7 @@ public class cargointake {
             cargoIntakeWinchPosition = mCargoWinchEncoder.getRaw();
 
             if(intakeIsAtStowedLimit && !intakeIsAtDeployedLimit) {
-                mCargoWinchEncoder.reset();
+                //mCargoWinchEncoder.reset();
                 if(wantedHeight < cargoIntakeWinchPosition) {
                     //In this scenario we are commanding a winch position that is beyond the stowed limit
                     cargoIntakeWinchPower = mCargoDeployPID.returnOutput(cargoIntakeWinchPosition, cargoIntakeWinchPosition);
@@ -163,7 +163,7 @@ public class cargointake {
      */
     public void manualControl(int height, boolean override) {
         if(!mCargoIntakeStowedSwitch.get()) {
-            mCargoWinchEncoder.reset();
+            //mCargoWinchEncoder.reset();
         }
         mCargoIntakeWinch.set(-mCargoManualPID.returnOutput(mCargoWinchEncoder.getRaw(), height));
     }
@@ -211,7 +211,7 @@ public class cargointake {
 
     public void cargoIntakeOpenLoop(double openLoopCommand) {
         if(!mCargoIntakeStowedSwitch.get() && mCargoIntakeDeployedSwitch.get()) {
-            mCargoWinchEncoder.reset();
+            //mCargoWinchEncoder.reset();
             if(openLoopCommand < 0) {
                 mCargoIntakeWinch.set(openLoopCommand);
            } else {
@@ -236,6 +236,6 @@ public class cargointake {
     }
 
     public void zeroAllSensors() {
-        mCargoWinchEncoder.reset();
+        //mCargoWinchEncoder.reset();
     }
 }

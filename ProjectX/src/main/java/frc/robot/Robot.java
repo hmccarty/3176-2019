@@ -82,7 +82,9 @@ public class Robot extends TimedRobot {
 			mSuperstructure.setWantedState(superstructure.state.TRANSFER_CARGO);
 		} else if (mController.deployClaw()) {
 		mSuperstructure.setWantedState(superstructure.state.DEPLOY_CLAW);
-	}
+		} else if (mController.intakeClaw()) {
+			mSuperstructure.setWantedState(superstructure.state.INTAKE_C_CLAW);
+		}
 		// else if (mController.wantedCargoIntakePosition() != -1) {
 		//  	mSuperstructure.setWantedState(superstructure.state.C_ROLLER_MANUAL);
 		// }
@@ -91,9 +93,10 @@ public class Robot extends TimedRobot {
 		|* Elevator States *|
 		\*******************/
 
-		if(mController.openLoopElevatorEnabled()){
-		 	mElevator.setWantedState(elevator.state.OPEN_LOOP);
-		} else if (mController.wantedElevatorHeight() != -1) {
+		// if(mController.openLoopElevatorEnabled()){
+		//  	mElevator.setWantedState(elevator.state.OPEN_LOOP);
+		// } else 
+		if (mController.wantedElevatorHeight() != -1) {
 			mElevator.setWantedElevatorHeight(mController.wantedElevatorHeight());
 		 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
 		} else if (mController.wantedElevatorVelocity() != 0) {
