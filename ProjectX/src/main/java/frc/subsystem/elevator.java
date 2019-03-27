@@ -7,6 +7,7 @@ import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import frc.subsystem.controller;
 import frc.robot.constants;
@@ -23,8 +24,11 @@ public class elevator {
     private CANSparkMax mWinchLeft;
     private CANSparkMax mWinchRight;
     private CANPIDController mPIDController;
+    private CANPIDController mSpeedController;
     private CANEncoder mEncoder; 
     private sparkconfig mSparkConfig; 
+
+    private PowerDistributionPanel powerPanel = new PowerDistributionPanel();
 
     private pid mPid = new pid(0.007, 0, 0, 0.8);
 
@@ -49,6 +53,7 @@ public class elevator {
 
     private state mCurrentState;
     private state mWantedState;
+    private state mLastState;
 
     public elevator() {
         mWinchLeft = new CANSparkMax(constants.ELEVATOR_LEFT, MotorType.kBrushless);
@@ -57,24 +62,33 @@ public class elevator {
         mWinchRight.restoreFactoryDefaults();
         mEncoder = mWinchLeft.getEncoder();
         mPIDController = mWinchLeft.getPIDController();
+        mSpeedController = mWinchLeft.getPIDController();
 
         // mSparkConfig = new sparkconfig(mPIDController, mWinchLeft, constants.ELEVATOR_LEFT);
         // mSparkConfig.configPID(constants.ELEVATOR_PID_CONFIG);
         // mSparkConfig.configSmartMotion(constants.ELEVATOR_MOTION_CONFIG); 
         // mSparkConfig.configCurrentLimit(constants.SMART_CURRENT_LIMIT);
-        mPIDController.setP(.004);
-        mPIDController.setFF(0.00000000);
-        mPIDController.setOutputRange(-0.1, 1.0);
-        mWinchLeft.setSmartCurrentLimit(40);
-        mWinchRight.setSmartCurrentLimit(40);
+        mPIDController.setP(.08);
+        mPIDController.setFF(0.002);
+        mPIDController.setI(0.0000);
+
+        mSpeedController.setP(0.07);
+       // mSpeedController.setFF(0.02);
+        //mPIDController.setD(1000);
+        mSpeedController.setOutputRange(-0.1, 0.35);
+        mPIDController.setOutputRange(-0.05, 1.0);
+        mWinchLeft.setSmartCurrentLimit(75);
+        mWinchRight.setSmartCurrentLimit(75);
 
         mPIDController.setSmartMotionMaxVelocity(1750, 0);
         mPIDController.setSmartMotionMinOutputVelocity(-1750, 0);
         mPIDController.setSmartMotionMaxAccel(1300, 0);
-        mPIDController.setSmartMotionAllowedClosedLoopError(0.25, 0);
+        mPIDController.setSmartMotionAllowedClosedLoopError(0.2, 0);
 
         mLeftBumpSwitch = new DigitalInput(constants.LEFT_BUMP_SWITCH);
         mRightBumpSwitch = new DigitalInput(constants.RIGHT_BUMP_SWITCH);
+
+        mEncoder.setPosition(0);
     }
 
     public static elevator getInstance() {
@@ -82,16 +96,27 @@ public class elevator {
     }
 
     private void setHeight(double wantedHeight) {
-        if(mClaw.isExtended()){
-            wantedHeight -= 3;
+        if(wantedHeight == -1){
+            wantedHeight = 0;
         }
+        if(mClaw.isExtended() && wantedHeight > 4.5 && mCurrentState != state.MANUAL_CONTROL){
+            if(mController.wantedElevatorHeight() == 29){
+                wantedHeight -= 1.5;
+            } else {
+                wantedHeight -= 4.5;
+            }
+        }
+        // if(mCurrentState == state.MANUAL_CONTROL){
+        //     wantedHeight += 4.5;
+        // }
         if(!cargointake.getInstance().isStowed()){
-            mPIDController.setReference(wantedHeight, ControlType.kSmartMotion); 
-        }
+            mPIDController.setReference(wantedHeight, ControlType.kPosition); 
+        } 
     }
 
+
     private void setSpeed(double wantedSpeed) {
-        mPIDController.setReference(wantedSpeed, ControlType.kVelocity);
+        mSpeedController.setReference(wantedSpeed, ControlType.kVelocity);
         // mWinchLeft.set(-mPid.returnOutput(mEncoder.getVelocity()/100, wantedSpeed/20));
         // System.out.println("Encoder Velocity: " + mEncoder.getVelocity());
         // SmartDashboard.putNumber("Encoder Velocity", mEncoder.getVelocity());
@@ -112,6 +137,10 @@ public class elevator {
 
     public double getHeight() {
         return mEncoder.getPosition();
+    }
+
+    public double getLastWantedHeight(){
+        return lastWantedHeight;
     }
 
     private void updateBumpSwitches() {
@@ -148,47 +177,73 @@ public class elevator {
 
             @Override
             public void onLoop() {
-                SmartDashboard.putNumber("Wanted Height", mController.wantedElevatorHeight());
+                SmartDashboard.putNumber("Left Output", mWinchLeft.getOutputCurrent());
+                SmartDashboard.putNumber("Right Output", mWinchRight.getOutputCurrent());
+                SmartDashboard.putNumber("Right Current", powerPanel.getCurrent(0));
+                SmartDashboard.putNumber("Left Current", powerPanel.getCurrent(1));
                 SmartDashboard.putNumber("Current Height", mEncoder.getPosition());
                 SmartDashboard.putNumber("Last Height", lastWantedHeight);
+                SmartDashboard.putNumber("Wanted Height", cWantedHeight);
                 SmartDashboard.putNumber("Current Velocity", mEncoder.getVelocity());
+                SmartDashboard.putBoolean("rightBottom", mRightBumpSwitch.get());
+                SmartDashboard.putBoolean("leftBottom", mLeftBumpSwitch.get());
                 switch(mCurrentState) {
                     case OPEN_LOOP:
-                        System.out.println("In Open Loop State");
+                        //System.out.println("In Open Loop State");
                         cWantedSpeed = mController.openLoopElevator();
                         SmartDashboard.putNumber("Speed", cWantedSpeed);
                         mWinchLeft.set(cWantedSpeed);
                         break;
                     case HOLDING:
+                        mPIDController.setP(0.08);
                         // updateBumpSwitches();
+                        if(mLastState == state.MANUAL_CONTROL && mClaw.isExtended()){
+                            lastWantedHeight += 4.5;
+                        }
                         setHeight(lastWantedHeight);
+                        
                         break; 
                     case MANUAL_CONTROL:
-                        cWantedHeight = mEncoder.getPosition() + mController.wantedElevatorVelocity();
-                        updateBumpSwitches();
-                        if(cWantedSpeed < 0 && isAtBottom){
-                            setSpeed(0);
-                        } else {
-                            setHeight(cWantedSpeed);
-                        }
-                        System.out.println("In velocity control. Velocity: " + cWantedSpeed);
+                        mPIDController.setP(0.0000002);
+                        cWantedSpeed = mController.wantedElevatorVelocity();
+                        setSpeed(cWantedSpeed); 
+                        lastWantedHeight = getHeight();
+                        //if(Math.abs(cWantedHeight - mEncoder.getPosition()) > 0.5){
+                            //if(cWantedHeight > 0 && cWantedHeight < 29.5){
+                                //if(mController.wantedElevatorVelocity() != 0){
+                                   // setHeight(cWantedHeight);
+                                //}
+                              //  lastWantedHeight = cWantedHeight;
+                            //}
+                        //}
+                        
+                        //updateBumpSwitches();
+                        // if(cWantedSpeed < 0 && isAtBottom){
+                        //     setSpeed(0);
+                        // } else {
+                        //     setSpeed(cWantedSpeed);
+                        // }
                         break;
                     case POSITION_CONTROL:
-                        updateBumpSwitches();
+                        mPIDController.setP(0.08);
+                        //updateBumpSwitches();
                         //cWantedHeight = mController.wantedElevatorHeight();///(2*Math.PI);
-                        if(cWantedHeight < 0 && isAtBottom){
-                           mWantedState = state.HOLDING;
-                        } else{
+                        // if(cWantedHeight < 0 && isAtBottom){
+                        //    mWantedState = state.HOLDING;
+                        // } else{
+                        
                         if(Math.abs(cWantedHeight - mEncoder.getPosition()) > 0.5){
                             setHeight(cWantedHeight);
                             lastWantedHeight = cWantedHeight;
-                        } else {
-                           mWantedState = state.HOLDING;
                         }
-                        }
+                        // } else {
+                        //    mWantedState = state.HOLDING;
+                        // }
+                        // }
 						break;     
                 }
             mWinchRight.follow(mWinchLeft, true);
+            mLastState = mCurrentState;
             checkState();
             }
             public void onStop(){}

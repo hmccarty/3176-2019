@@ -26,17 +26,21 @@ public class superstructure {
 
     private int cCargoIntakeHeight = 0; 
 
+    Timer mTimer = new Timer(); 
+
     private boolean firstTime = true;
 
     private Timer transferTimer = new Timer();
     private boolean transferStarted = false; 
     double startTime = 0;
     double currentTime = 0;
+    double deltaTime = 0;
 
     public superstructure (){
         mWantedState = state.HOLD_H_CB; 
         mCurrentState = state.HOLD_H_CB;
         transferTimer.start();
+        mTimer.start();
     }
 
     public static superstructure getInstance(){
@@ -62,9 +66,7 @@ public class superstructure {
                     mWantedState = state.HOME_C_ROLLER;
                 }
                 public void onLoop(){
-                    if(firstTime){
-                        //mCrossbo
-                    }
+                    //System.out.println(mLastState);
                     switch(mCurrentState){
                         /**
                          * Allows driver to control cargo intake manually
@@ -74,16 +76,17 @@ public class superstructure {
                                 cCargoIntakeHeight = mCargoIntake.getHeight();
                             }
                             int wantedHeight = cCargoIntakeHeight + mController.wantedCargoIntakePosition(); 
+                            SmartDashboard.putNumber("Wanted Height", wantedHeight);
                             if(wantedHeight > 0 && wantedHeight < constants.DEPLOYED_HEIGHT){
                                 cCargoIntakeHeight = wantedHeight;
                                 mCargoIntake.manualControl(cCargoIntakeHeight, false);
                             } else {
                                 mCargoIntake.manualControl(cCargoIntakeHeight, false);
                             }
+                            SmartDashboard.putNumber("Cargo Intake Height", cCargoIntakeHeight);
                             if(mCargoIntake.hasBall()){
                                 mCargoIntake.hold();
                             }
-                            checkState();
                             break;
                         /**
                          * Deploys cargo intake, starts roller, then waits for cargo before stowing
@@ -96,7 +99,6 @@ public class superstructure {
                                 mController.alertOperator();
                                 mWantedState = state.STOW_C_ROLLER;
                             }
-                            checkState();
                             break;
                         /**
                          * Stows cargo intake and stops roller
@@ -104,7 +106,6 @@ public class superstructure {
                         case STOW_C_ROLLER:
                             mCargoIntake.stow();
                             mCargoIntake.hold();
-                            checkState();
                             break;
                         /**
                          *Returns cargo intake back to stowed position and prepares to intake hatch
@@ -112,13 +113,11 @@ public class superstructure {
                         case ROCKET_C_ROLLER:
                             mCargoIntake.rocket();
                             mCargoIntake.hold();
-                            checkState(); 
                             break;
                         case INTAKE_H_CB:
                             mCargoIntake.stow();
                             mCrossbow.set();
                             mLastState = mCurrentState;
-                            checkState();
                             break;
                         /**
                          * Latches onto hatch
@@ -127,7 +126,6 @@ public class superstructure {
                             mCargoIntake.stow(); 
                             mCrossbow.draw();
                             mLastState = mCurrentState;
-                            checkState();
                             break;
                         case HOME_C_ROLLER:
                             if(mCargoIntake.isHomed()){
@@ -136,13 +134,24 @@ public class superstructure {
                                 mCrossbow.draw();
                                 mCargoIntake.home();
                             }
-                            checkState();
                             break;
                         case INTAKE_C_CLAW:
-                            //if(mLastState != state.INTAKE_C_CLAW){
-                             //   mClaw.clamp();
-                            //} else { 
+                            currentTime = mTimer.getFPGATimestamp();
+                            deltaTime = currentTime - startTime;
+                            if(!(mLastState == state.INTAKE_C_CLAW)){
+                            SmartDashboard.putBoolean("Check Boolean", true);
+                                startTime = mTimer.getFPGATimestamp();
+                                mClaw.release();
+                            } else if (deltaTime > 0.1){ 
+
                                 mClaw.intake();
+                            }
+                            //System.out.println(mLastState);
+                            //if(mLastState != state.INTAKE_C_CLAW){
+                             //   mClaw.release();
+                            //} else {
+                            
+                            //}
                             //}
                         /*  if(mLastState != mCurrentState){
                         *       mClaw.aim();
@@ -150,6 +159,7 @@ public class superstructure {
                         *   }
                         *   mClaw.clamp();
                         */
+                            // mLastState = state.INTAKE_C_CLAW;
                             break;    
                         case INTAKE_H_G:
                         /*  mHatchIntake.deploy(); 
@@ -198,26 +208,33 @@ public class superstructure {
                             } else if (mCargoIntake.hasBall()){
                                 mCargoIntake.spit();
                             }
-                            checkState();
                             break;
                         /**
                          * Fires hatch from crossbow
                          */
                         case DELIVER_HATCH:
+                            currentTime = mTimer.getFPGATimestamp();
+                            deltaTime = currentTime - startTime;
                             mCargoIntake.stow();
-                            mCrossbow.shoot();
-                            mLastState = mCurrentState;
-                            checkState();
+                            if(mLastState != state.DELIVER_HATCH){
+                                startTime = currentTime; 
+                                mCrossbow.shootOut();
+                            } else if(deltaTime > 0.175){
+                                mCrossbow.shootIn();
+                            }
                             break;
                         case DEPLOY_CLAW:
                             mClaw.deploy();
+                            // mLastState = state.DEPLOY_CLAW;
                             break;
                         case OPENLOOP_HATCH:
+                            // mLastState = state.OPENLOOP_HATCH;
                             break;
                         /**
                          * Allows driver to control cargo intake without closed loop control
                          */
                         case OPENLOOP_CARGO:
+                            // mLastState = state.OPENLOOP_CARGO;
                             break;
                         /**
                          * Returns all mechanism to their starting configuration
@@ -231,14 +248,14 @@ public class superstructure {
                             mClaw.clamp();
                             //mCargoIntake.stow();
                             //mHatchIntake.stow();
-                            mCrossbow.draw(); 
-                            checkState();
+                            mCrossbow.draw();
+                            // mLastState = state.NEUTRAL;
                             break;
                 }
-                checkState();
                 mCargoIntake.outputToSmartDashboard();
                 //System.out.println("Current Height: " + mCargoIntake.getHeight());
                 mLastState = mCurrentState;
+                checkState();
             }
 
             public void onStop(){}

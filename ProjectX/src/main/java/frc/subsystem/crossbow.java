@@ -42,19 +42,11 @@ public class crossbow {
     /**
      * Fires hatch by releasing the back fins before the front fins
      */
-    public void shoot() {
-        if(!shotStarted) {
-            shotStarted = true;
-            mShotTimer.reset();
-            mShotTimer.start();
-            mOuterBow.set(DoubleSolenoid.Value.kForward);
-        }
-        if(mShotTimer.get() > .3) {
-            shotStarted = false; 
-            //mShotTimer.stop(); 
-            //mShotTimer.reset(); 
-            mInnerBow.set(DoubleSolenoid.Value.kForward);
-        }
-        System.out.println(mShotTimer.get());
+    public void shootOut() {
+        mOuterBow.set(DoubleSolenoid.Value.kForward);
+    }
+
+    public void shootIn() {
+        mInnerBow.set(DoubleSolenoid.Value.kForward);
     }
 }

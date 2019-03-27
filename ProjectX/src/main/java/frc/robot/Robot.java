@@ -41,7 +41,6 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		try{ 
-			System.out.println("Distance: " + clawBallSensor.getDistance());
 	} catch (Exception e){
 
 	}
@@ -84,10 +83,9 @@ public class Robot extends TimedRobot {
 		mSuperstructure.setWantedState(superstructure.state.DEPLOY_CLAW);
 		} else if (mController.intakeClaw()) {
 			mSuperstructure.setWantedState(superstructure.state.INTAKE_C_CLAW);
+		} else if (mController.wantedCargoIntakePosition() != -1) {
+		  	mSuperstructure.setWantedState(superstructure.state.C_ROLLER_MANUAL);
 		}
-		// else if (mController.wantedCargoIntakePosition() != -1) {
-		//  	mSuperstructure.setWantedState(superstructure.state.C_ROLLER_MANUAL);
-		// }
 
 		/*******************\
 		|* Elevator States *|
@@ -101,6 +99,7 @@ public class Robot extends TimedRobot {
 		 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
 		} else if (mController.wantedElevatorVelocity() != 0) {
 			mElevator.setWantedState(elevator.state.MANUAL_CONTROL);
+			mElevator.setWantedElevatorHeight(mElevator.getHeight() + mController.wantedElevatorVelocity());
 		} else {
 		  	mElevator.setWantedState(elevator.state.HOLDING);
 		}
@@ -113,18 +112,6 @@ public class Robot extends TimedRobot {
 			mVision.setWantedState(vision.state.SWITCH_CAMERA);
 		} else if(mController.switchVisionMode()) {
 			mVision.setWantedState(vision.state.SWITCH_MODE);
-		}
-
-		if(mController.deployCargo()){
-			mClaw.deploy();
-		} else if(mController.stowCargo()){
-			mClaw.stow();
-		}
-
-		if(mController.release()){
-			mClaw.release();
-		} else if(mController.clamp()){
-			mClaw.clamp();
 		}
 	}
 

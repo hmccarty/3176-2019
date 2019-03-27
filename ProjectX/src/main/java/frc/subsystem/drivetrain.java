@@ -105,10 +105,10 @@ public class drivetrain extends subsystem {
 		cAutonVision = false;
 
 		mVisionForward = new pid(0.009, 0, 0, .8); 
-		mVisionTurn = new pid(0.026, 0, 0, .8); 
-		mVisionStrafe = new pid(0.015,0, 0, .8); 
+		mVisionTurn = new pid(0.01, 0, 0, .8); 
+		mVisionStrafe = new pid(0.015, 0, 0, .8); 
 
-		mSpinMaster = new pid(0.0001, 0.0, 0, 0.5);
+		mSpinMaster = new pid(0.00001, 0.0, 0, 0.5);
 
 		
 		//Instantiate array list
@@ -371,13 +371,19 @@ public class drivetrain extends subsystem {
 				case DRIVE:
 					forwardCommand = mController.getForward();
 					strafeCommand = mController.getStrafe();
-					spinCommand = mController.getSpin();
+					//spinCommand = mController.getSpin();
 
 					if (!mController.sickoMode()) {
 						forwardCommand *= constants.MAX_SLOW_PERCENT_SPEED;
 						strafeCommand *= constants.MAX_SLOW_PERCENT_SPEED;
 						spinCommand *= constants.MAX_SLOW_PERCENT_SPEED;
 					}
+					//System.out.println(mController.gyroClockPosition());
+					//if(mController.gyroClockPosition() != -1){
+					//	spinCommand = -mVisionTurn.returnOutput(getAngle(), mController.gyroClockPosition());
+					//} else {
+						spinCommand = mController.getSpin();
+					//}
 
 					if(mController.robotCentric()) {
 						setCoordType(coordType.ROBOTCENTRIC);
@@ -406,7 +412,6 @@ public class drivetrain extends subsystem {
 					checkState();
 					break;
 				case AUTON:
-					System.out.println(isAtTarget());
 					if(cAutonVision){
 						trackToTarget(); 
 						setCoordType(coordType.ROBOTCENTRIC); 

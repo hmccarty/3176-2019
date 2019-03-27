@@ -63,17 +63,16 @@ public class vision extends subsystem{
                     switch(mCurrentState){
                         case SWITCH_MODE:
                             cIsTracking = !cIsTracking; 
-                            System.out.println("In Switch Mode");
+                            
                             mWantedState = state.NEUTRAL; 
                             break;
                         case SWITCH_CAMERA:
                             if(cVisionSide == 0) {cVisionSide = 1;}
                             else { cVisionSide = 0;}
-                            System.out.println("In Switch Camera");
                             mWantedState = state.NEUTRAL; 
                             break;
                         case NEUTRAL: 
-                            System.out.println("In Neutral");
+                           // System.out.println("In Neutral");
                             break; 
                     }
                     postToNetwork(cVisionSide, cIsTracking);

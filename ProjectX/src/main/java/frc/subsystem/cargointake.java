@@ -110,6 +110,7 @@ public class cargointake {
                         cargoIntakeWinchPower = mCargoDeployPID.returnOutput(cargoIntakeWinchPosition, wantedHeight);
                     }
             }
+        
         mCargoIntakeWinch.set(cargoIntakeWinchPower);
     }
 
@@ -165,7 +166,8 @@ public class cargointake {
         if(!mCargoIntakeStowedSwitch.get()) {
             //mCargoWinchEncoder.reset();
         }
-        mCargoIntakeWinch.set(-mCargoManualPID.returnOutput(mCargoWinchEncoder.getRaw(), height));
+        SmartDashboard.putNumber("Manual Wanted", -mCargoManualPID.returnOutput(mCargoWinchEncoder.getRaw(), height));
+        mCargoIntakeWinch.set(mCargoManualPID.returnOutput(mCargoWinchEncoder.getRaw(), height));
     }
 
     public void deployBoolean() {

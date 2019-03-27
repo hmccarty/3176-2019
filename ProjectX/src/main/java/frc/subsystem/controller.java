@@ -2,6 +2,7 @@ package frc.subsystem;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import frc.robot.constants;
 
@@ -14,6 +15,11 @@ public class controller {
     private double kThrustStickDeadband = constants.TRANSLATIONAL_DEADBAND; 
     private double kThrustStickScale = constants.TRANSLATIONAL_SCALE; 
     private double kThrustStickOffset = constants.TRANSLATIONAL_SCALE; 
+
+    private double kYawStickDeadband = constants.ROTATIONAL_DEADBAND; 
+    private double kYawStickScale = constants.ROTATIONAL_SCALE; 
+    private double kYawStickOffset = constants.ROTATIONAL_SCALE; 
+
 
     private Boolean elevatorOpenLoop = false;
     
@@ -71,7 +77,7 @@ public class controller {
     }    
 
     public boolean stowCargoIntake() {
-        return mButtonMonkey.getRawButton(9);
+        return false;//mButtonMonkey.getRawButton(9);
     }
     
     public boolean deployClaw() {
@@ -108,22 +114,23 @@ public class controller {
      *         (if no position is wanted, then returns -1)
      */
     public int wantedCargoIntakePosition() {
-        // if(Math.abs(mButtonMonkey.getY()) > 0.07) {
-        //     return (int)(mButtonMonkey.getY()*800);
-        // } else {
+        if(Math.abs(mButtonMonkey.getY()) > 0.015) {
+            return (int)(mButtonMonkey.getY()*800);
+        } else {
             return -1; 
-        //}
+        }
     }
 
     /**
      * @return driver wanted velocity of elevator
      */
     public double wantedElevatorVelocity() {
-        // if(Math.abs(mButtonMonkey.getY()) > 0.04) {
-        //     return mButtonMonkey.getY()*1.0;
-        // } else {
+        SmartDashboard.putNumber("Test", mButtonMonkey.getRawAxis(5));
+        if(Math.abs(mButtonMonkey.getRawAxis(5)) > 0.045) {
+             return -mButtonMonkey.getRawAxis(5)*120;
+        } else {
             return 0; 
-        //}
+        }
     }
 
     /** 
@@ -131,13 +138,13 @@ public class controller {
      */
     public double wantedElevatorHeight() {
         if(mButtonMonkey.getPOV() == 0) {
-            return 27.5; 
+            return 27.65; 
         }
         else if(mButtonMonkey.getPOV() == 90) {
-            return 15; 
+            return 16; 
         }
         else if(mButtonMonkey.getPOV() == 180) {
-            return 0.0; 
+            return 0.2; 
         } else if(mButtonMonkey.getPOV() == 270){
             return 8.0;
         } 
@@ -200,25 +207,10 @@ public class controller {
     }
 
     public boolean transferCargo() {
-        return mThrustStick.getRawButton(7);
+        return mButtonMonkey.getRawButton(9);
     }
     
-    public boolean deployCargo(){
-        return mThrustStick.getRawButton(8); 
-    }
-
-    public boolean stowCargo(){
-        return mThrustStick.getRawButton(9); 
-    }
-
-    public boolean release(){
-        return mThrustStick.getRawButton(10); 
-    }
-
-    public boolean clamp(){
-        return mThrustStick.getRawButton(11); 
-    }
-
+   
     /**
      * @return wanted motion in the y direction on an exponential scale
      */
@@ -295,10 +287,6 @@ public class controller {
      * @return wanted motion in the omega axis
      */
     public double getSpin() {
-        if(Math.abs(mYawStick.getX()) > 0.085) {
-            return -mYawStick.getX() * 0.14;
-        } else {
-            return 0; 
-        }
+        return 0.2*expoScale(mYawStick.getX(), kYawStickDeadband, kYawStickOffset, kYawStickScale);
     }
 }

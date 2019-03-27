@@ -138,7 +138,6 @@ public class VL53L0X_v1{
 			for (byte b : data) {
 				sb.append(String.format("%02X ", b));
 			}
-			System.out.println(sb.toString().trim());
 		}
 
 		int ambientCount = ((data[6] & 0xFF) << 8) | (data[7] & 0xFF);

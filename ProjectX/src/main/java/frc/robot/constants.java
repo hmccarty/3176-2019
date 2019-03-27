@@ -61,7 +61,7 @@ public class constants {
 	public static int OPERATOR = 2;
 
 	public static double TRANSLATIONAL_DEADBAND = 0.03; 
-	public static double TRANSLATIONAL_SCALE = 0.5; 
+	public static double TRANSLATIONAL_SCALE = 0.55; 
 	public static double TRANSLATIONAL_OFFSET = 1.0 / (TRANSLATIONAL_SCALE * Math.pow((1.0 - TRANSLATIONAL_DEADBAND), 3) + (1.0 - TRANSLATIONAL_SCALE) * (1.0 - TRANSLATIONAL_SCALE));
 	
 	public static double ROTATIONAL_DEADBAND = 0.03; 
