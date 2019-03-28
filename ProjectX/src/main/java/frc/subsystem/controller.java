@@ -10,7 +10,8 @@ public class controller {
     private static controller instance = new controller();
     private Joystick mThrustStick = new Joystick(0);
     private Joystick mYawStick = new Joystick(1);
-    private Joystick mButtonMonkey = new Joystick(2); 
+    private Joystick mButtonMonkeyMain = new Joystick(3); 
+    private Joystick mButtonMonkeyBackup = new Joystick(2); 
 
     private double kThrustStickDeadband = constants.TRANSLATIONAL_DEADBAND; 
     private double kThrustStickScale = constants.TRANSLATIONAL_SCALE; 
@@ -42,80 +43,238 @@ public class controller {
         } else {
             return 0; 
         }
-    }   
-
-    /*****************\
-	|* Button Monkey *|
-    \*****************/
-
-    public boolean neutral() {
-        return mButtonMonkey.getRawButton(1);
-    }
-
-    public  boolean crossbowIntake() {
-        return mButtonMonkey.getRawButton(2);
-    }
-
-    public  boolean crossbowHold() {
-        return mButtonMonkey.getRawButton(4);
-    }
-
-    public  boolean crossbowDeliver() {
-        return mButtonMonkey.getRawButton(3);
-    }
-
-    public boolean deployCargoIntake() {
-        return mButtonMonkey.getRawButton(5);
-    }
-
-    public boolean spitCargoIntake() {
-        return mButtonMonkey.getRawButton(6);
-    }
-
-    public boolean rocketCargoIntake() {
-        return mButtonMonkey.getRawButton(10);
-    }    
-
-    public boolean stowCargoIntake() {
-        return false;//mButtonMonkey.getRawButton(9);
     }
     
-    public boolean deployClaw() {
-        return mButtonMonkey.getRawButton(8);
+    /*********************\
+	|* Button Monkey Main*|
+    \**************s*******/
+
+    public  boolean crossbowDeliverMain() {
+        return mButtonMonkeyMain.getRawButton(1);
     }
 
-    public boolean intakeClaw() {
-        return mButtonMonkey.getRawButton(7);
+    public boolean neutralMain() {
+        return mButtonMonkeyMain.getRawButton(2);
     }
 
-    public void alertOperator() { 
-        mButtonMonkey.setRumble(RumbleType.kRightRumble, 1);
+    public  boolean crossbowIntakeMain() {
+        return mButtonMonkeyMain.getRawButton(3);
     }
 
-    // public Boolean openLoopElevatorEnabled() {
-    //     if (mButtonMonkey.getRawButton(7) && mButtonMonkey.getRawButton(8) && elevatorOpenLoop){
-    //         elevatorOpenLoop = false;
-    //     } else if (mButtonMonkey.getRawButton(7) && mButtonMonkey.getRawButton(8) && !elevatorOpenLoop) {
-    //         elevatorOpenLoop = true;
-    //     }
-    //     return elevatorOpenLoop;
-    // }
+    public  boolean crossbowHoldMain() {
+        return mButtonMonkeyMain.getRawButton(4);
+    }
 
-    public double openLoopElevator() {
-        // if(Math.abs(mThrustStick.getY()) > 0.01) {
-        //     return (mThrustStick.getY()*.7);
-        // } else {
-            return 0;
-        //}
+    public boolean deployCargoIntakeMain() {
+        return mButtonMonkeyMain.getRawButton(5);
+    }
+
+    public boolean spitCargoIntakeMain() {
+        return mButtonMonkeyMain.getRawButton(6);
+    }
+
+    public boolean intakeClawMain() {
+        return mButtonMonkeyMain.getRawButton(9);
+    }
+
+    public boolean deployClawMain() {
+        return mButtonMonkeyMain.getRawButton(10);
+    }
+
+    public boolean stowCargoIntakeMain() {
+        return false;//mButtonMonkeyBackup.getRawButton(9);
+    }
+
+    public boolean rocketCargoIntakeMain() {
+        return mButtonMonkeyMain.getRawButton(12);
+    }    
+
+    public void alertOperatorMain() { 
+        mButtonMonkeyMain.setRumble(RumbleType.kRightRumble, 1);
     }
 
     /**
      * @return driver set position of cargo intake in encoder units
      *         (if no position is wanted, then returns -1)
      */
+    public int wantedCargoIntakePositionMain() {
+        if(Math.abs(mButtonMonkeyMain.getRawAxis(3)) > 0.015) {
+            return (int)(mButtonMonkeyMain.getRawAxis(3)*600);
+        } else {
+            return -1; 
+        }
+    }
+
+    /**
+     * @return driver wanted velocity of elevator
+     */
+    public double wantedElevatorVelocityMain() {
+        if(Math.abs(mButtonMonkeyMain.getRawAxis(1)) > 0.045) {
+             return -mButtonMonkeyMain.getRawAxis(1)*120;
+        } else {
+            return 0; 
+        }
+    }
+
+    /** 
+     * @return driver wanted elevator height in inches
+     */
+    public double wantedElevatorHeightMain() {
+        if(mButtonMonkeyMain.getPOV() == 0) {
+            return 27.65; 
+        }
+        else if(mButtonMonkeyMain.getPOV() == 90) {
+            return 16; 
+        }
+        else if(mButtonMonkeyMain.getPOV() == 180) {
+            return 0.2; 
+        } else if(mButtonMonkeyMain.getPOV() == 270){
+            return 8.0;
+        } 
+        else {
+            return -1; 
+        }
+    }
+
+    /************************\
+	|* Button Monkey Back Up*|
+    \************************/
+
+    public boolean neutralBackup() {
+        return mButtonMonkeyBackup.getRawButton(1);
+    }
+
+    public  boolean crossbowIntakeBackup() {
+        return mButtonMonkeyBackup.getRawButton(2);
+    }
+
+    public  boolean crossbowDeliverBackup() {
+        return mButtonMonkeyBackup.getRawButton(3);
+    }
+
+    public  boolean crossbowHoldBackup() {
+        return mButtonMonkeyBackup.getRawButton(4);
+    }
+
+    public boolean deployCargoIntakeBackup() {
+        return mButtonMonkeyBackup.getRawButton(5);
+    }
+
+    public boolean spitCargoIntakeBackup() {
+        return mButtonMonkeyBackup.getRawButton(6);
+    }
+
+    public boolean intakeClawBackup() {
+        return mButtonMonkeyBackup.getRawButton(7);
+    }
+
+    public boolean deployClawBackup() {
+        return mButtonMonkeyBackup.getRawButton(8);
+    }
+
+    public boolean stowCargoIntakeBackup() {
+        return false;//mButtonMonkeyBackup.getRawButton(9);
+    }
+
+    public boolean rocketCargoIntakeBackup() {
+        return mButtonMonkeyBackup.getRawButton(10);
+    }    
+
+    /**
+     * @return driver set position of cargo intake in encoder units
+     *         (if no position is wanted, then returns -1)
+     */
+    public double wantedCargoIntakeOpenLoop() {
+        SmartDashboard.putNumber("Open Loop Value", mButtonMonkeyBackup.getRawAxis(5));
+        if(Math.abs(mButtonMonkeyBackup.getRawAxis(5)) > 0.015) {
+            return mButtonMonkeyBackup.getRawAxis(5)*.6;
+        } else {
+            return 0; 
+        }
+    }
+
+    /**
+     * @return driver wanted velocity of elevator
+     */
+    public double wantedElevatorOpenLoop() {
+        if(Math.abs(mButtonMonkeyBackup.getRawAxis(5)) > 0.045) {
+             return -mButtonMonkeyBackup.getRawAxis(5);
+        } else {
+            return 0; 
+        }
+    }
+
+    /** 
+     * @return driver wanted elevator height in inches
+     */
+    public double wantedElevatorHeightBackup() {
+        if(mButtonMonkeyBackup.getPOV() == 0) {
+            return 27.65; 
+        }
+        else if(mButtonMonkeyBackup.getPOV() == 90) {
+            return 16; 
+        }
+        else if(mButtonMonkeyBackup.getPOV() == 180) {
+            return 0.2; 
+        } else if(mButtonMonkeyBackup.getPOV() == 270){
+            return 8.0;
+        } 
+        else {
+            return -1; 
+        }
+    }
+
+    /*************************\
+	|* Button Monkey Handler *|
+    \*************************/
+
+    public boolean neutral() {
+        return neutralMain() || neutralBackup();
+    }
+
+    public  boolean crossbowIntake() {
+        return crossbowIntakeMain() || crossbowIntakeBackup();
+    }
+
+    public  boolean crossbowDeliver() {
+        return crossbowDeliverMain() || crossbowDeliverBackup();
+    }
+
+    public  boolean crossbowHold() {
+        return crossbowHoldMain() || crossbowHoldBackup();
+    }
+
+    public boolean deployCargoIntake() {
+        return deployCargoIntakeMain() || deployCargoIntakeBackup(); 
+    }
+
+    public boolean spitCargoIntake() {
+        return spitCargoIntakeMain() || spitCargoIntakeBackup(); 
+    }
+
+    public boolean intakeClaw() {
+        return intakeClawMain() || intakeClawBackup(); 
+    }
+
+    public boolean deployClaw() {
+        return deployClawMain() || deployClawBackup(); 
+    }
+
+    public boolean stowCargoIntake() {
+        return false;//mButtonMonkeyBackup.getRawButton(9);
+    }
+
+    public boolean rocketCargoIntake() {
+        return rocketCargoIntakeMain() || rocketCargoIntakeBackup(); 
+    }    
+
+    /**
+     * @return driver set position of cargo intake in encoder units
+     *         (if no position is wanted, then returns -1)
+     */
     public int wantedCargoIntakePosition() {
-        if(Math.abs(mButtonMonkey.getY()) > 0.015) {
-            return (int)(mButtonMonkey.getY()*800);
+        if(wantedCargoIntakePositionMain() != -1) {
+            return wantedCargoIntakePositionMain();
         } else {
             return -1; 
         }
@@ -125,11 +284,10 @@ public class controller {
      * @return driver wanted velocity of elevator
      */
     public double wantedElevatorVelocity() {
-        SmartDashboard.putNumber("Test", mButtonMonkey.getRawAxis(5));
-        if(Math.abs(mButtonMonkey.getRawAxis(5)) > 0.045) {
-             return -mButtonMonkey.getRawAxis(5)*120;
+        if(wantedElevatorVelocityMain() != 0){
+            return wantedElevatorVelocityMain();
         } else {
-            return 0; 
+            return 0;
         }
     }
 
@@ -137,18 +295,11 @@ public class controller {
      * @return driver wanted elevator height in inches
      */
     public double wantedElevatorHeight() {
-        if(mButtonMonkey.getPOV() == 0) {
-            return 27.65; 
-        }
-        else if(mButtonMonkey.getPOV() == 90) {
-            return 16; 
-        }
-        else if(mButtonMonkey.getPOV() == 180) {
-            return 0.2; 
-        } else if(mButtonMonkey.getPOV() == 270){
-            return 8.0;
-        } 
-        else {
+        if(wantedElevatorHeightMain() != -1){
+            return wantedElevatorHeightMain(); 
+        } else if(wantedElevatorHeightBackup() != -1){
+            return wantedElevatorHeightBackup(); 
+        } else {
             return -1; 
         }
     }
@@ -179,13 +330,6 @@ public class controller {
     }
 
      /**
-     * @return if driver wants to control in reverse robot centric
-     */
-    public boolean backRobotCentric() {
-        return mYawStick.getRawButton(3);
-    }
-
-     /**
      * @return if driver wants to enable a locking position
      */
     public boolean defenseEnabled() {
@@ -207,7 +351,7 @@ public class controller {
     }
 
     public boolean transferCargo() {
-        return mButtonMonkey.getRawButton(9);
+        return mButtonMonkeyBackup.getRawButton(9);
     }
     
    
@@ -234,6 +378,13 @@ public class controller {
      */
     public boolean trackTarget() {
         return mYawStick.getRawButton(1);
+    }
+
+    /**
+     * @return if driver wants to control in reverse robot centric
+     */
+    public boolean backRobotCentric() {
+        return mYawStick.getRawButton(3);
     }
 
     /**

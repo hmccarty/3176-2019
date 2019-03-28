@@ -67,6 +67,11 @@ public class superstructure {
                 }
                 public void onLoop(){
                     //System.out.println(mLastState);
+                    if(mCurrentState == state.OPENLOOP_CARGO) {
+                        mCargoIntake.setOpenLoop(true);
+                    } else {
+                        mCargoIntake.setOpenLoop(false);
+                    }
                     switch(mCurrentState){
                         /**
                          * Allows driver to control cargo intake manually
@@ -96,7 +101,7 @@ public class superstructure {
                                 mCargoIntake.deploy();
                                 mCargoIntake.intake();
                             } else {
-                                mController.alertOperator();
+                                mController.alertOperatorMain();
                                 mWantedState = state.STOW_C_ROLLER;
                             }
                             break;
@@ -234,7 +239,9 @@ public class superstructure {
                          * Allows driver to control cargo intake without closed loop control
                          */
                         case OPENLOOP_CARGO:
-                            // mLastState = state.OPENLOOP_CARGO;
+                            SmartDashboard.putBoolean("In Cargo Openloop", true);
+                            SmartDashboard.putNumber("Open Loop Joystick", mController.wantedCargoIntakeOpenLoop());
+                            mCargoIntake.openLoop(mController.wantedCargoIntakeOpenLoop());
                             break;
                         /**
                          * Returns all mechanism to their starting configuration

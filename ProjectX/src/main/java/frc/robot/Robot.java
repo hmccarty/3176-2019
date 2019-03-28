@@ -24,6 +24,7 @@ public class Robot extends TimedRobot {
 	private claw mClaw = claw.getInstance();
 	private elevator mElevator = elevator.getInstance();
 	private VL53L0X_v1 clawBallSensor = new VL53L0X_v1();
+	private cargointake mCargoIntake = cargointake.getInstance();
 
 	@Override
 	public void robotInit() {
@@ -65,6 +66,8 @@ public class Robot extends TimedRobot {
 
 		if(mController.crossbowIntake()) {
 		 	mSuperstructure.setWantedState(superstructure.state.INTAKE_H_CB);
+		} else if (mController.wantedCargoIntakeOpenLoop() != 0) {
+			mSuperstructure.setWantedState(superstructure.state.OPENLOOP_CARGO); 
 		} else if(mController.crossbowHold()) {
 		 	mSuperstructure.setWantedState(superstructure.state.HOLD_H_CB);
 		} else if(mController.crossbowDeliver()) {

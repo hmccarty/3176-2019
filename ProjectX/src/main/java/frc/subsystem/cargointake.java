@@ -29,13 +29,12 @@ public class cargointake {
     int cargoIntakeWinchPosition;
     double cargoIntakeWinchPower;
 
+    Boolean isOpenLoop = false; 
+
     private int kStowedHeight = constants.STOWED_HEIGHT;   //The position of the winch when stowed
     private int kIntakeHeight = constants.DEPLOYED_HEIGHT; //The position of the winch when deployed
     private int kRocketHeight = constants.ROCKET_HEIGHT;   //The position of the winch when shooting in the rocket
     private int kTransferHeight = constants.TRANSFER_HEIGHT; 
-
-    private Boolean inOpenLoop = false;
-    private double openLoopPower = 0;
 
     public cargointake() {
         mCargoStowPID = new pid(0.0003, 0,0, .3); //The PID values for Deploying the mechanism
@@ -71,6 +70,10 @@ public class cargointake {
 
     public static cargointake getInstance() {
         return instance;
+    }
+
+    public void setOpenLoop(boolean isOpenLoop){
+        this.isOpenLoop = isOpenLoop; 
     }
 
     /** 
@@ -115,19 +118,27 @@ public class cargointake {
     }
 
     public void deploy() {
-        closedLoopControl(kIntakeHeight);
+        if(!isOpenLoop){
+            closedLoopControl(kIntakeHeight);
+        }
     }
 
     public void stow() {
-        closedLoopControl(kStowedHeight);
+        if(!isOpenLoop){
+            closedLoopControl(kStowedHeight);
+        }
     }
 
     public void rocket() {
-        closedLoopControl(kRocketHeight);
+        if(!isOpenLoop){
+            closedLoopControl(kRocketHeight);
+        }
     }
 
     public void moveToTransfer() {
-        closedLoopControl(kTransferHeight);
+        if(!isOpenLoop){
+            closedLoopControl(kTransferHeight);
+        }
     }
 
     public boolean  isStowed() {
@@ -203,30 +214,32 @@ public class cargointake {
     }
 
     public void transfer() {
-        closedLoopControl(kTransferHeight);
-        mCargoIntakeBeaterBar.set(.3);
+        if(!isOpenLoop){
+            closedLoopControl(kTransferHeight);
+            mCargoIntakeBeaterBar.set(.3);
+        }
     }
 
     public void hold() {
         mCargoIntakeBeaterBar.set(0);
     }
 
-    public void cargoIntakeOpenLoop(double openLoopCommand) {
-        if(!mCargoIntakeStowedSwitch.get() && mCargoIntakeDeployedSwitch.get()) {
-            //mCargoWinchEncoder.reset();
-            if(openLoopCommand < 0) {
-                mCargoIntakeWinch.set(openLoopCommand);
-           } else {
-               mCargoIntakeWinch.set(0);
-           }
-       }
-       else if(mCargoIntakeStowedSwitch.get() && !mCargoIntakeDeployedSwitch.get()) {
-           if(openLoopCommand > 0) {
-               mCargoIntakeWinch.set(openLoopCommand);
-           } else {
-               mCargoIntakeWinch.set(0);
-           }
-        }
+    public void openLoop(double openLoopCommand) {
+    //     if(!mCargoIntakeStowedSwitch.get() && mCargoIntakeDeployedSwitch.get()) {
+    //         //mCargoWinchEncoder.reset();
+    //         if(openLoopCommand > 0) {
+    //             mCargoIntakeWinch.set(openLoopCommand);
+    //        } else {
+    //            mCargoIntakeWinch.set(0);
+    //        }
+    //    }
+    //    else if(mCargoIntakeStowedSwitch.get() && !mCargoIntakeDeployedSwitch.get()) {
+    //        if(openLoopCommand < 0) {
+               mCargoIntakeWinch.set(openLoopCommand + .15);
+        //    } else {
+        //        mCargoIntakeWinch.set(0);
+        //    }
+        // }
     }
 
     public void outputToSmartDashboard() {

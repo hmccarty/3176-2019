@@ -190,7 +190,7 @@ public class elevator {
                 switch(mCurrentState) {
                     case OPEN_LOOP:
                         //System.out.println("In Open Loop State");
-                        cWantedSpeed = mController.openLoopElevator();
+                        //cWantedSpeed = mController.openLoopElevator();
                         SmartDashboard.putNumber("Speed", cWantedSpeed);
                         mWinchLeft.set(cWantedSpeed);
                         break;
