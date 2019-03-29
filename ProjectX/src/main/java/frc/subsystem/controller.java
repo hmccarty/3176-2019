@@ -110,7 +110,7 @@ public class controller {
      */
     public double wantedElevatorVelocityMain() {
         if(Math.abs(mButtonMonkeyMain.getRawAxis(1)) > 0.045) {
-             return -mButtonMonkeyMain.getRawAxis(1)*120;
+             return -mButtonMonkeyMain.getRawAxis(1)*450;
         } else {
             return 0; 
         }
@@ -284,6 +284,7 @@ public class controller {
      * @return driver wanted velocity of elevator
      */
     public double wantedElevatorVelocity() {
+        SmartDashboard.putNumber("Jostick Velocity", wantedElevatorVelocityMain());
         if(wantedElevatorVelocityMain() != 0){
             return wantedElevatorVelocityMain();
         } else {
@@ -295,11 +296,13 @@ public class controller {
      * @return driver wanted elevator height in inches
      */
     public double wantedElevatorHeight() {
+        SmartDashboard.putNumber("Wanted Elevator Joystick", wantedElevatorHeightMain() );
         if(wantedElevatorHeightMain() != -1){
-            return wantedElevatorHeightMain(); 
-        } else if(wantedElevatorHeightBackup() != -1){
-            return wantedElevatorHeightBackup(); 
-        } else {
+            return wantedElevatorHeightMain();
+        } 
+        //} else if(wantedElevatorHeightBackup() != -1){
+        //    return wantedElevatorHeightBackup(); 
+         else {
             return -1; 
         }
     }

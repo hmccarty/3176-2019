@@ -71,8 +71,8 @@ public class constants {
 	/************************\
 	|* Drivetrain Constants *|
 	\************************/
-
-	public static double OFFSETS[] = {1813,3776,1186,1178}; //Gears Facing Right
+	public static double OFFSETS[] = {2802,2426,2599,2997};
+	//public static double OFFSETS[] = {1813,3776,1186,1178}; //Gears Facing Right
 	public static double DRIVETRAIN_LENGTH = 30.5; // inches
 	public static double DRIVETRAIN_WIDTH = 29.5; // inches
 	public static final double WHEEL_DIAMETER = 3.25;
@@ -84,10 +84,10 @@ public class constants {
 	|* Swervepod Constants *|
 	\***********************/
 
-	public static final double SWERVE_KP[] = {4.0, 1.5, 1.5, 4.0}; // proportional gain for turning each pod
-	public static final double SWERVE_KI[] = {0.0023, 0, 0, 0.0023}; // integral gain for turning each pod
-	public static final double SWERVE_KD[] = {210.0, 100, 100, 210.0}; // derivative gain for turning each pod
-	public static final double SWERVE_KF = 0.0;
+	public static final double SWERVE_KP[] = {4.5, 2, 2, 4.5}; // proportional gain for turning each pod
+	public static final double SWERVE_KI[] = {0.0023, 0.00001, 0.00001, 0.0023}; // integral gain for turning each pod
+	public static final double SWERVE_KD[] = {190.0, 170, 170, 190.0}; // derivative gain for turning each pod
+	public static final double SWERVE_KF = 0.00001;
 	public static final int SWERVE_ALLOWABLE_ERROR = 5; 
 
 	public static final double DRIVE_KP = .4; // proportional gain for driving each pod

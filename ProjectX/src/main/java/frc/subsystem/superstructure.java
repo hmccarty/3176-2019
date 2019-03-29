@@ -210,7 +210,7 @@ public class superstructure {
                         case DELIVER_CARGO:
                             if(mClaw.isExtended()){
                                 mClaw.release(); 
-                            } else if (mCargoIntake.hasBall()){
+                            } else {//if (mCargoIntake.hasBall() || mLastState == ){
                                 mCargoIntake.spit();
                             }
                             break;
