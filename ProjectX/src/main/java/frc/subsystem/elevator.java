@@ -72,11 +72,11 @@ public class elevator {
         mPIDController.setFF(0.002);
         mPIDController.setI(0.0000);
 
-        mSpeedController.setP(0.09);
+        mSpeedController.setP(0.3);
         //mSpeedController.setFF(0.00);
         //mPIDController.setD(1000);
         mSpeedController.setOutputRange(-.1, 0.35);//-.3,.5
-        mPIDController.setOutputRange(-0.05, 1.0);//-.015,1
+        mPIDController.setOutputRange(-0.1, 1.0);//-.015,1
         int kStallCurrent = 40;//100; 
         //int kFreeCurrent = 100; 
         mWinchLeft.setSmartCurrentLimit(kStallCurrent);//, kFreeCurrent);
@@ -105,10 +105,12 @@ public class elevator {
             wantedHeight = 0;
         }
         if(mClaw.isExtended() && wantedHeight > 4.5 && mCurrentState != state.MANUAL_CONTROL){
-            if(mController.wantedElevatorHeight() == 29){
-                wantedHeight -= 1.5;
+            if(mController.wantedElevatorHeight() > 15.25 ){
+                wantedHeight -= 4.0;
+            } else if (mController.wantedElevatorHeight() < 14) {
+                wantedHeight -= 5.1;
             } else {
-                wantedHeight -= 4.5;
+                wantedHeight -= 6.0;
             }
         }
         // if(mCurrentState == state.MANUAL_CONTROL){
@@ -121,7 +123,8 @@ public class elevator {
 
 
     private void setSpeed(double wantedSpeed) {
-        mSpeedController.setReference(wantedSpeed, ControlType.kVelocity);
+        mWinchLeft.set(mPid.returnOutput(mEncoder.getVelocity(), wantedSpeed));
+        //mSpeedController.setReference(wantedSpeed, ControlType.kVelocity);
         //mWinchLeft.set(-mPid.returnOutput(mEncoder.getVelocity()/100, wantedSpeed/20));
         // System.out.println("Encoder Velocity: " + mEncoder.getVelocity());
         // SmartDashboard.putNumber("Encoder Velocity", mEncoder.getVelocity());

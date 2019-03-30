@@ -23,6 +23,8 @@ public class controller {
 
 
     private Boolean elevatorOpenLoop = false;
+
+    private Boolean compressorSwitch = true;
     
     public static controller getInstance() {
         return instance; 
@@ -121,10 +123,10 @@ public class controller {
      */
     public double wantedElevatorHeightMain() {
         if(mButtonMonkeyMain.getPOV() == 0) {
-            return 27.65; 
+            return 28.7; 
         }
         else if(mButtonMonkeyMain.getPOV() == 90) {
-            return 16; 
+            return 15.25; 
         }
         else if(mButtonMonkeyMain.getPOV() == 180) {
             return 0.2; 
@@ -217,7 +219,7 @@ public class controller {
         else if(mButtonMonkeyBackup.getPOV() == 180) {
             return 0.2; 
         } else if(mButtonMonkeyBackup.getPOV() == 270){
-            return 8.0;
+            return 10.0;
         } 
         else {
             return -1; 
@@ -307,6 +309,10 @@ public class controller {
         }
     }
 
+    public boolean transferCargo() {
+         return false;// mButtonMonkeyMain.getRawButton(9);
+    }
+
     /****************\
 	|* Thrust Stick *|
     \****************/
@@ -352,11 +358,6 @@ public class controller {
     public boolean frontRightRotation() {
         return mThrustStick.getRawButton(6);
     }
-
-    public boolean transferCargo() {
-        return mButtonMonkeyBackup.getRawButton(9);
-    }
-    
    
     /**
      * @return wanted motion in the y direction on an exponential scale
@@ -370,6 +371,13 @@ public class controller {
      */
     public double getStrafe() {
         return -expoScale(mThrustStick.getX(), kThrustStickDeadband, kThrustStickOffset, kThrustStickScale);
+    }
+
+    public boolean runCompressor() {
+        if (mThrustStick.getRawButton(7)){
+            compressorSwitch = !compressorSwitch;
+        }
+        return compressorSwitch;
     }
 
     /*************\

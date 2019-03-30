@@ -55,7 +55,13 @@ public class superstructure {
         if(mCurrentState != mWantedState){
             mCurrentState = mWantedState; 
         }
-        mCompressor.start();
+        if(!mController.runCompressor()){
+            mCompressor.stop();
+            SmartDashboard.putBoolean("Compressor", false);
+        } else {
+            mCompressor.start();
+            SmartDashboard.putBoolean("Compressor", true);
+        }
     }
 
     public void registerLoop(){
