@@ -8,7 +8,7 @@ public class vision extends subsystem{
     private static vision instance = new vision();
     loopmanager mLoopMan = loopmanager.getInstance();
 
-    NetworkTableInstance inst = NetworkTableInstance.getDefault(); 
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
     NetworkTable table = inst.getTable("SmartDashboard");
 
     NetworkTableEntry distanceToTarget = table.getEntry("distance");
@@ -47,8 +47,8 @@ public class vision extends subsystem{
     }
 
     public void postToNetwork(int visionSide, boolean isTracking){
-        whichCamera.setString(Integer.toString(visionSide));
-        streamType.setString(Boolean.toString(isTracking));
+        whichCamera.setNumber(visionSide);
+        streamType.setBoolean(isTracking);
     }
 
     public void registerLoop(){
@@ -88,6 +88,12 @@ public class vision extends subsystem{
     public void zeroAllSensors(){}
     public void outputToSmartDashboard(){}
 
+    public enum state {
+        SWITCH_MODE,
+        SWITCH_CAMERA,
+        NEUTRAL
+    }
+} 
     public enum state {
         SWITCH_MODE,
         SWITCH_CAMERA,
