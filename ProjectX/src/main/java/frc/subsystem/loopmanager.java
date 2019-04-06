@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class loopmanager {
     private static loopmanager instance = new loopmanager();
     private ArrayList<loop> subsystems = new ArrayList<loop>();
+    
 
     public loopmanager() {}
 

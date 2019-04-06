@@ -43,7 +43,7 @@ public class constants {
 	\************************/
 
 	//Gear Facing Right
-	public static double OFFSETS[] = {1945,1058,878,2363};
+	public static double OFFSETS[] = {1833,3801,1180,1214};
 	public static double OFFSETS_P[] = {268.0,3228.0,1184.0,2160.0};
 	public static double DRIVETRAINLENGTH = 23.5;
 	public static double DRIVETRAINWIDTH = 24.0;
@@ -59,6 +59,7 @@ public class constants {
 
 	public static final double SWERVE_KP = 4.0;
 	public static final double SWERVE_KI = 0.0023;
+
 	public static final double SWERVE_KD = 210.0;
 	public static final double SWERVE_KF = 0.0;
 	public static final int SWERVE_ALLOWABLE_ERROR = 5;
