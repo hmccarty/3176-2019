@@ -20,7 +20,7 @@ import numpy as np
 import cv2
 import math
 
-from cscore import CameraServer, VideoSource, CvSource, VideoMode, CvSink, UsbCamera
+from cscore import CameraServer, VideoSource, CvSource, VideoMode, CvSink, UsbCamera, VideoCamera, VideoSink
 from networktables import NetworkTablesInstance
 
 #
@@ -57,7 +57,7 @@ def readCameraConfig(config):
     except KeyError:
         parseError("camera '{}': could not read path".format(cam.name))
         return False
-		
+
     # stream properties
     cam.streamConfig = config.get("stream")
 
@@ -246,10 +246,13 @@ def TrackTheTarget(frame, sd):
         pidx = 0
         for points in target:
             cidx = 0
-            for coords in points:
-                print("Point " + str(pidx) + " Corner " + str(cidx) + ": " + str(coords))
-                cidx += 1
-            pidx += 1
+            if type(points) == float:
+                print("No targets detected")
+            else:
+                for coords in points:
+                    print("Point " + str(pidx) + " Corner " + str(cidx) + ": " + str(coords))
+                    cidx += 1
+                pidx += 1
             
         xcent = int(M['m10']/M['m00'])
         ycent = int(M['m01']/M['m00'])
@@ -310,17 +313,23 @@ if __name__ == "__main__":
     print("Connecting to camera")
     cs = CameraServer.getInstance()
     cs.enableLogging()
-    Camera = UsbCamera('RPi Camero 0', 0)
-    Camera2 = UsbCamera('RPi Camero 1', 1)
+    
+    print("connecting to ELP")
+    Camera = UsbCamera('ElpCamera', 0)
+    print("connected to ELP")
+    Camera2 = UsbCamera('LifeCam', 1)
+    print("connected to LIFE")
     Camera.setResolution(160,120)
     Camera2.setResolution(160,120)
     cs.addCamera(Camera)
     cs.addCamera(Camera2)
+    cvSinkSw = cs.addSwitchedCamera("switchedCam")
+    cvSinkSw.setResolution(160, 120)
 
     print("connected")
 
     #This Is the object we pull the imgs for OpenCV magic
-    CvSink = cs.getVideo()
+    CvSink = cs.getVideo(name="LifeCam")
 
     #This will send the process frames to the Driver station
     #allowing the us to see what OpenCV sees
@@ -331,16 +340,22 @@ if __name__ == "__main__":
     # loop forever
     while True:
         start = time.time()
-        #Quick little FYI, This ll throw a Unicode Decode Error first time around
+        #Quick little FYI, This will throw a Unicode Decode Error first time around
         #Something about a invalid start byte. This is fine, the Program will continue
-        # and after a few loops and should start grabing frames from the camera
+        # and after a few loops and should start grabbing frames from the camera
         GotFrame, img = CvSink.grabFrame(img)
-        if GotFrame  == 0:
+        if GotFrame == 0:
             outputStream.notifyError(CvSink.getError())
             continue
         img = TrackTheTarget(img, SmartDashboardValues)
         end = time.time()
         #print(img)
         outputStream.putFrame(img)
-
+        values = SmartDashboardValues.getNumber("WhichCamera", -1)
+        if values < 1:
+            print("%%%%%% I'm the zeroth %%%%%%%")
+            cvSinkSw.setSource(Camera)
+        else:
+            print("$$$$$$ I'm the one $$$$$$")
+            cvSinkSw.setSource(Camera2)
         #print(end-start)

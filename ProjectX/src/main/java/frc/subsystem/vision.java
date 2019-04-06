@@ -47,8 +47,8 @@ public class vision extends subsystem{
     }
 
     public void postToNetwork(int visionSide, boolean isTracking){
-        whichCamera.setString(Integer.toString(visionSide));
-        streamType.setString(Boolean.toString(isTracking));
+        whichCamera.setNumber(visionSide);
+        streamType.setBoolean(isTracking);
     }
 
     public void registerLoop(){
