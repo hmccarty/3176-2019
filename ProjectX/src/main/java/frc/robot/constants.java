@@ -71,6 +71,19 @@ public class constants {
 	/************************\
 	|* Drivetrain Constants *|
 	\************************/
+<<<<<<< HEAD
+
+	//Gear Facing Right
+	public static double OFFSETS[] = {1833,3801,1180,1214};
+	public static double OFFSETS_P[] = {268.0,3228.0,1184.0,2160.0};
+	public static double DRIVETRAINLENGTH = 23.5;
+	public static double DRIVETRAINWIDTH = 24.0;
+	public static double DRIVETRAINWIDTH_2 = 26.0;
+	public static final double WHEELDIAMETER = 3.0;
+	public static double DRIVETRAINMAXWHEELSPEED = 13.5; // ft/s
+	public static double DRIVETRAINMAXROTATIONSPEED = 5.0; // radians/s
+	public static double ENCODER_UNITS = 4096.0;
+=======
 	public static double OFFSETS[] = {2802,2426,2599,2997};
 	//public static double OFFSETS[] = {1813,3776,1186,1178}; //Gears Facing Right
 	public static double DRIVETRAIN_LENGTH = 30.5; // inches
@@ -79,11 +92,27 @@ public class constants {
 	public static double DRIVETRAIN_MAX_WHEEL_SPEED = 13.5; // ft/s
 	public static double DRIVETRAIN_MAX_ROTATION_SPEED = 5.0; // radians/s
 	public static double ENCODER_UNITS = 4096.0; // encoder units
+>>>>>>> 62dded51f6e2688a8fe93c36840939b14f879e75
 	
 	/***********************\
 	|* Swervepod Constants *|
 	\***********************/
 
+<<<<<<< HEAD
+	public static final double SWERVE_KP = 4.0;
+	public static final double SWERVE_KI = 0.0023;
+
+	public static final double SWERVE_KD = 210.0;
+	public static final double SWERVE_KF = 0.0;
+	public static final int SWERVE_ALLOWABLE_ERROR = 5;
+
+	public static final double DRIVE_KP = .4;
+	public static final double DRIVE_KI = 0.0001;
+	public static final double DRIVE_KD = 9.33;
+	public static final double DRIVE_KF = 0.130654611;
+	public static final int DRIVE_IZONE = 200;
+	public static double fps2ups = 12.0 /(constants.WHEELDIAMETER * Math.PI) * 4096.0/10.0 *48.0/30.0;
+=======
 	public static final double SWERVE_KP[] = {4.5, 2, 2, 4.5}; // proportional gain for turning each pod
 	public static final double SWERVE_KI[] = {0.0023, 0.00001, 0.00001, 0.0023}; // integral gain for turning each pod
 	public static final double SWERVE_KD[] = {190.0, 170, 170, 190.0}; // derivative gain for turning each pod
@@ -96,6 +125,7 @@ public class constants {
 	public static final double DRIVE_KF = 0.130654611; // feed forward gain for driving each pod
 	public static final int DRIVE_IZONE = 200; // integral zone for driving each pod
 	public static double FPS_TO_UPS = 12.0 /(constants.WHEEL_DIAMETER * Math.PI) * 4096.0/10.0 *48.0/30.0; // converts fps to ups
+>>>>>>> 62dded51f6e2688a8fe93c36840939b14f879e75
 	public static final int DRIVE_ALLOWABLE_ERROR = 50;
 
 	public static final double NEO_KP = 0.000095;
