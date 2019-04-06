@@ -35,21 +35,6 @@ public class Robot extends TimedRobot {
 		myLoops.startLoops();
 	}
 	
-	public void robotPeriodic(){
-		//This is where code goes that runs all the time whether or not the robot is enabled/disabled/Auton/Teleop
-		
-		
-		/*****************\
-		|* Vision States *|
-		\*****************/
- 
-		if(mController.switchVisionCamera()) {
-			mVision.setWantedState(vision.state.SWITCH_CAMERA);
-		} else if(mController.switchVisionMode()) {
-			mVision.setWantedState(vision.state.SWITCH_MODE);
-		}
-	}
-
 	public void autonomousPeriodic() {
 		driverControl();
 	}
@@ -122,7 +107,15 @@ public class Robot extends TimedRobot {
 		  	mElevator.setWantedState(elevator.state.HOLDING);
 		}
 
-
+		/*****************\
+		|* Vision States *|
+		\*****************/
+ 
+		if(mController.switchVisionCamera()) {
+			mVision.setWantedState(vision.state.SWITCH_CAMERA);
+		} else if(mController.switchVisionMode()) {
+			mVision.setWantedState(vision.state.SWITCH_MODE);
+		}
 	}
 
 	@Override

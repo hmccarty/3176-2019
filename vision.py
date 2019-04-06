@@ -191,7 +191,7 @@ def calculateDistance(kTargetWidth, kFocalLength, targetPixelWidth):
 
 def calculateAngle(kTargetWidth, distanceFromCenter, lengthOfTarget):
     return math.atan((kTargetWidth * distanceFromCenter) / lengthOfTarget)
-	
+    
 def calculateX(kTargetWidth, distanceFromCenter, lengthOfTarget):
     return (kTargetWidth * distanceFromCenter) / lengthOfTarget
 
