@@ -1,27 +1,44 @@
 package frc.subsystem;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import frc.robot.constants;
 
 public class claw {
-    private static claw instance = new claw(2,3);
-    Value dsolval;
-    static DoubleSolenoid dsol;
-    
-    public claw(int sol1, int sol2){
-        dsol = new DoubleSolenoid(sol1,sol2);
-    }
+    private static claw instance = new claw();
+    DoubleSolenoid extender = new DoubleSolenoid(1, constants.CLAW_EXTENDER_FRONT, //On PCM 1
+                                                    constants.CLAW_EXTENDER_BACK); 
+    DoubleSolenoid pincher = new DoubleSolenoid(0,  constants.CLAW_PINCHER_FRONT,  //On PCM 0
+                                                    constants.CLAW_PINCHER_BACK);
 
-    public static claw getInstance(){
+    public static claw getInstance() {
         return instance; 
     }
-    public void forward() {
-        dsol.set(DoubleSolenoid.Value.kForward);
+
+    public boolean isExtended(){
+        if(extender.get() == DoubleSolenoid.Value.kForward){
+            return true;
+        } else {
+            return false;
+        }
     }
-    public void reverse() {
-        dsol.set(DoubleSolenoid.Value.kReverse);
+
+    public void deploy() {
+        extender.set(DoubleSolenoid.Value.kForward);
     }
-    public void off() {
-        dsol.set(DoubleSolenoid.Value.kOff);
+
+    public void stow() {
+        extender.set(DoubleSolenoid.Value.kReverse);
+    }
+    
+    public void intake() {
+        pincher.set(DoubleSolenoid.Value.kOff);
+    }
+
+    public void clamp() {
+        pincher.set(DoubleSolenoid.Value.kReverse);
+    }
+
+    public void release() {
+        pincher.set(DoubleSolenoid.Value.kForward);
     }
 }

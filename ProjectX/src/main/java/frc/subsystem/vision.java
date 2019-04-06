@@ -20,7 +20,7 @@ public class vision extends subsystem{
     private state mCurrentState;
 
     private int cVisionSide = 0; 
-    private boolean cIsTracking = false; 
+    private boolean cIsTracking = true; 
 
     public vision(){}
 
@@ -47,8 +47,8 @@ public class vision extends subsystem{
     }
 
     public void postToNetwork(int visionSide, boolean isTracking){
-        whichCamera.setDouble(visionSide);
-        streamType.setBoolean(false);
+        whichCamera.setNumber(visionSide);
+        streamType.setBoolean(isTracking);
     }
 
     public void registerLoop(){
@@ -63,6 +63,7 @@ public class vision extends subsystem{
                     switch(mCurrentState){
                         case SWITCH_MODE:
                             cIsTracking = !cIsTracking; 
+                            
                             mWantedState = state.NEUTRAL; 
                             break;
                         case SWITCH_CAMERA:
@@ -71,6 +72,7 @@ public class vision extends subsystem{
                             mWantedState = state.NEUTRAL; 
                             break;
                         case NEUTRAL: 
+                           // System.out.println("In Neutral");
                             break; 
                     }
                     postToNetwork(cVisionSide, cIsTracking);

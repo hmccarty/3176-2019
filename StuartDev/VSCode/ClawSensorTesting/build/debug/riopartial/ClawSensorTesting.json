@@ -1,9 +1,0 @@
-[
-  {
-    "artifact": "frcJava (in project ClawSensorTesting)",
-    "target": "roborio",
-    "debugfile": "frcJava_roborio.debugconfig",
-    "project": "ClawSensorTesting",
-    "language": "java"
-  }
-]

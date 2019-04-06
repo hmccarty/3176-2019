@@ -18,7 +18,7 @@ public class visiontrack extends command {
 		super.setLoop(new loop() {
 			@Override
 			public void onStart() {
-                drivetrain.getInstance().autonVision(true);
+                drivetrain.getInstance().cAutonVision(true);
 			}
 			@Override
 			public void onLoop() {
@@ -26,7 +26,7 @@ public class visiontrack extends command {
 			}
 			@Override
 			public void onStop() {
-                drivetrain.getInstance().autonVision(false);
+                drivetrain.getInstance().cAutonVision(false);
 			}
 		});
     

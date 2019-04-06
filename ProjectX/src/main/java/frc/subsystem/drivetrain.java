@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import frc.robot.constants;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.*;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import frc.util.*;
 
@@ -22,33 +23,35 @@ public class drivetrain extends subsystem {
 	private PowerDistributionPanel mPDP = new PowerDistributionPanel(0);
 	private AHRS mGyro;
 	
-	private ArrayList<swervepod> mPods;
-	//private ArrayList<neopod> mNeoPods;
-	
-	private swervepod mUpperRight;
-	private swervepod mUpperLeft;
-	private swervepod mLowerLeft;
-	private swervepod mLowerRight;
+	private ArrayList<neopod> mNeoPods;
 
-	// private neopod mUpperRight;
-	// private neopod mUpperLeft;
-	// private neopod mLowerLeft;
-	// private neopod mLowerRight;
+	private neopod mUpperRight;
+	private neopod mUpperLeft;
+	private neopod mLowerLeft;
+	private neopod mLowerRight;
 	
 	private coordType mCoordType;
 	private inputType mInputType;
 
-	private boolean autonVision; 
+	private boolean cAutonVision; 
 
-	private pid visionForward;
-	private pid visionTurn;  
-	private pid visionStrafe; 
+	private pid mVisionForward;
+	private pid mVisionTurn;  
+	private pid mVisionStrafe; 
+
+	private pid mSpinMaster; 
 	
 	private double lastGyroClock; 
 	
-	public TalonSRX[] mDriveTalons = {new TalonSRX(constants.DRIVE_ONE), new TalonSRX(constants.DRIVE_TWO), new TalonSRX(constants.DRIVE_THREE), new TalonSRX(constants.DRIVE_FOUR)}; 
-	//public CANSparkMax[] mDriveSparks = {new CANSparkMax(constants.DRIVE_ONE, MotorType.kBrushless), new CANSparkMax(constants.DRIVE_TWO, MotorType.kBrushless), new CANSparkMax(constants.DRIVE_THREE, MotorType.kBrushless), new CANSparkMax(constants.DRIVE_FOUR, MotorType.kBrushless)}; 
-	public TalonSRX[] mGearTalons = {new TalonSRX(constants.STEER_ONE), new TalonSRX(constants.STEER_TWO), new TalonSRX(constants.STEER_THREE), new TalonSRX(constants.STEER_FOUR)};
+	
+	public CANSparkMax[] mDriveSparks = {new CANSparkMax(constants.DRIVE_ONE, MotorType.kBrushless), 
+										 new CANSparkMax(constants.DRIVE_TWO, MotorType.kBrushless),
+										 new CANSparkMax(constants.DRIVE_THREE, MotorType.kBrushless),
+										 new CANSparkMax(constants.DRIVE_FOUR, MotorType.kBrushless)}; 
+	public TalonSRX[] mGearTalons = {new TalonSRX(constants.STEER_ONE), 
+									 new TalonSRX(constants.STEER_TWO),
+									 new TalonSRX(constants.STEER_THREE),
+									 new TalonSRX(constants.STEER_FOUR)};
 	
 	private double kLength;
 	private double kWidth;
@@ -58,14 +61,15 @@ public class drivetrain extends subsystem {
 	private double kMaxAccel;
 	private double kMaxVel;
 	
-	private double cMaxSpeed;
-	private double cAngle;
+	private double relMaxSpeed;
+	private double currentAngle;
+	private double lastAngle; 
 	
-	private double cForwardCommand;
-	private double cStrafeCommand;
-	private double cSpinCommand;
+	private double forwardCommand;
+	private double strafeCommand;
+	private double spinCommand;
 	
-	public enum state{
+	public enum state {
 		NEUTRAL,
 		HOMING,
 		DRIVE,
@@ -73,12 +77,13 @@ public class drivetrain extends subsystem {
 		AUTON
 	}
 	
-	public enum coordType{
+	public enum coordType {
 		ROBOTCENTRIC,
-		FIELDCENTRIC
+		FIELDCENTRIC,
+		BACKROBOTCENTRIC
 	}
 	
-	public enum inputType{
+	public enum inputType {
 		PERCENTPOWER,
 		VELOCITY
 	}
@@ -88,49 +93,39 @@ public class drivetrain extends subsystem {
 	
 	private drivetrain(){
 		//instantiate the mPods
-		mUpperRight = new swervepod(0, mDriveTalons[0], mGearTalons[0]);
-		mUpperLeft = new swervepod(1, mDriveTalons[1], mGearTalons[1]);
-		mLowerLeft = new swervepod(2, mDriveTalons[2], mGearTalons[2]);
-		mLowerRight = new swervepod(3, mDriveTalons[3], mGearTalons[3]);
-
-		// mUpperRight = new neopod(0, mDriveSparks[0], mGearTalons[0]);
-		// mUpperLeft = new neopod(1, mDriveSparks[1], mGearTalons[1]);
-		// mLowerLeft = new neopod(2, mDriveSparks[2], mGearTalons[2]);
-		// mLowerRight = new neopod(3, mDriveSparks[3], mGearTalons[3]);
+		mUpperRight = new neopod(0, mDriveSparks[0], mGearTalons[0]);
+		mUpperLeft = new neopod(1, mDriveSparks[1], mGearTalons[1]);
+		mLowerLeft = new neopod(2, mDriveSparks[2], mGearTalons[2]);
+		mLowerRight = new neopod(3, mDriveSparks[3], mGearTalons[3]);
 
 		//set drive type
 		mCoordType = coordType.FIELDCENTRIC;
 		mInputType = inputType.PERCENTPOWER;
 
-		autonVision = false;
+		cAutonVision = false;
 
-		visionForward = new pid(0.009, 0, 0, .8); 
-		visionTurn = new pid(0.026, 0, 0, .8); 
-		visionStrafe = new pid(0.015,0, 0, .8); 
+		mVisionForward = new pid(0.009, 0, 0, .8); 
+		mVisionTurn = new pid(0.01, 0, 0, .8); 
+		mVisionStrafe = new pid(0.015, 0, 0, .8); 
 
-		lastGyroClock = 0;
+		mSpinMaster = new pid(0.00001, 0.0, 0, 0.5);
+
 		
 		//Instantiate array list
-		mPods = new ArrayList<swervepod>();
-		//mNeoPods = new ArrayList<neopod>();
+		mNeoPods = new ArrayList<neopod>();
 			
 		//Add instantiated mPods to the array list
-		mPods.add(mUpperRight);
-		mPods.add(mUpperLeft);
-		mPods.add(mLowerLeft);
-		mPods.add(mLowerRight);
-
-		// mNeoPods.add(mUpperRight);
-		// mNeoPods.add(mUpperLeft);
-		// mNeoPods.add(mLowerLeft);
-		// mNeoPods.add(mLowerRight);
+		mNeoPods.add(mUpperRight);
+		mNeoPods.add(mUpperLeft);
+		mNeoPods.add(mLowerLeft);
+		mNeoPods.add(mLowerRight);
 		
 		//Setting constants
-		kLength = constants.DRIVETRAINLENGTH;
-		kWidth = constants.DRIVETRAINWIDTH;
+		kLength = constants.DRIVETRAIN_LENGTH;
+		kWidth = constants.DRIVETRAIN_WIDTH;
 
-		kMaxSpeed = constants.DRIVETRAINMAXWHEELSPEED;
-		kMaxRotation = constants.DRIVETRAINMAXROTATIONSPEED;
+		kMaxSpeed = constants.DRIVETRAIN_MAX_WHEEL_SPEED;
+		kMaxRotation = constants.DRIVETRAIN_MAX_ROTATION_SPEED;
 
 		kMaxAccel = constants.NEO_MAX_ACCEL;
 		kMaxVel = constants.NEO_MAX_VEL;
@@ -141,9 +136,9 @@ public class drivetrain extends subsystem {
 		updateAngle();
 		
 		//Start wheels in a forward facing direction
-		cForwardCommand = Math.pow(10, -15); 
-		cStrafeCommand = 0.0;
-		cSpinCommand = 0.0;
+		forwardCommand = Math.pow(10, -15); 
+		strafeCommand = 0.0;
+		spinCommand = 0.0;
 	}
 	
 	/**
@@ -155,18 +150,32 @@ public class drivetrain extends subsystem {
 	
 	/**
 	 * Handles each swerve command and communicates with the Swerve Pods
+	 * 
+	 * For a better understanding of the equations, see Ether's Swerve whitepaper: 
+	 * https://drive.google.com/file/d/1Ny6jm400zbYKn7ZM9AllUX-0SE9cbts2/view?usp=sharing 
 	 */
 	private void crabDrive() {
 		if(mCoordType == coordType.FIELDCENTRIC){
-			final double temp = cForwardCommand * Math.sin(cAngle) + cStrafeCommand * Math.cos(cAngle);
-		    cStrafeCommand = (-cForwardCommand * Math.cos(cAngle) + cStrafeCommand * Math.sin(cAngle));
-		    cForwardCommand = temp;
+			final double temp = forwardCommand * Math.sin(currentAngle) + strafeCommand * Math.cos(currentAngle);
+		    strafeCommand = (-forwardCommand * Math.cos(currentAngle) + strafeCommand * Math.sin(currentAngle));
+		    forwardCommand = temp;
+		}
+
+		if(mCoordType == coordType.BACKROBOTCENTRIC){
+			strafeCommand *= -1;
+			forwardCommand *= -1;
+		}
+
+		if(mCoordType == coordType.ROBOTCENTRIC) {
+			strafeCommand *= .75;
+			forwardCommand *= .75;
+			spinCommand *= .75;
 		}
 
 		if(mInputType == inputType.PERCENTPOWER){
-			cForwardCommand *= kMaxSpeed;
-			cStrafeCommand *= kMaxSpeed;
-			cSpinCommand *= kMaxRotation;
+			forwardCommand *= kMaxSpeed;
+			strafeCommand *= kMaxSpeed;
+			spinCommand *= kMaxRotation;
 		}
 
 		//Create arrays with the speed and angle of each pod
@@ -174,10 +183,10 @@ public class drivetrain extends subsystem {
 		double[] podGear = new double[4];
 		
 		//Calculating components
-		double a = cStrafeCommand + cSpinCommand * getRadius("A"); 
-		double b = cStrafeCommand - cSpinCommand * getRadius("B"); 
-		double c = cForwardCommand - cSpinCommand * getRadius("C"); 
-		double d = cForwardCommand + cSpinCommand * getRadius("D"); 
+		double a = strafeCommand + spinCommand * getRadius("A"); 
+		double b = strafeCommand - spinCommand * getRadius("B"); 
+		double c = forwardCommand - spinCommand * getRadius("C"); 
+		double d = forwardCommand + spinCommand * getRadius("D"); 
 		
 		//Calculating the speed and angle of each pod
 		podDrive[0] = Math.sqrt(Math.pow(b, 2)+ Math.pow(c, 2));
@@ -193,43 +202,43 @@ public class drivetrain extends subsystem {
 		podGear[3] = Math.atan2(a,c);
 		
 		//Finding the highest commanded velocity between the mPods
-		cMaxSpeed = Math.max(Math.max(podDrive[0],podDrive[1]),Math.max(podDrive[2], podDrive[3]));
+		relMaxSpeed = Math.max(Math.max(podDrive[0],podDrive[1]),Math.max(podDrive[2], podDrive[3]));
 		
 		//Reducing mPods by the relative max speed
-		if(cMaxSpeed > kMaxSpeed) {
-			for(int idx = 0; idx < mPods.size(); idx++) {
-				podDrive[idx] /= cMaxSpeed/kMaxSpeed;
+		if(relMaxSpeed > kMaxSpeed) {
+			for(int idx = 0; idx < mNeoPods.size(); idx++) {
+				podDrive[idx] /= relMaxSpeed/kMaxSpeed;
 			}
 		}
 		
 		//If enabled, sends each pod to a defensive lock when not moving 
 		if(mController.defenseEnabled()) {
 			// Sending each pod their respective commands
-			mPods.get(0).setPod(0.0,-1.0*Math.PI/4.0);
-			mPods.get(1).setPod(0.0, 1.0*Math.PI/4.0);
-			mPods.get(2).setPod(0.0, 3.0*Math.PI/4.0);
-			mPods.get(3).setPod(0.0, -3.0* Math.PI/4.0);
+			mNeoPods.get(0).setPod(0.0,-1.0*Math.PI/4.0);
+			mNeoPods.get(1).setPod(0.0, 1.0*Math.PI/4.0);
+			mNeoPods.get(2).setPod(0.0, 3.0*Math.PI/4.0);
+			mNeoPods.get(3).setPod(0.0, -3.0* Math.PI/4.0);
 		} else { 			//Sending each pod their respective commands
-			for(int idx = 0; idx < mPods.size(); idx++) {
-				mPods.get(idx).setPod(podDrive[idx],podGear[idx]); 
+			for(int idx = 0; idx < mNeoPods.size(); idx++) {
+				mNeoPods.get(idx).setPod(podDrive[idx],podGear[idx]); 
 			}
 		}
 	}
 
-	public void autonVision(boolean state){ 
-		autonVision = state; 
+	public void cAutonVision(boolean state){ 
+		cAutonVision = state; 
 	}
 
 	public void setForwardCommand(double wantedForwardCommand){
-		cForwardCommand = wantedForwardCommand; 
+		forwardCommand = wantedForwardCommand; 
 	}
 
 	public void setStrafeCommand(double wantedStrafeCommand){
-		cStrafeCommand = wantedStrafeCommand; 
+		strafeCommand = wantedStrafeCommand; 
 	}
 
 	public void setSpinCommand(double wantedSpinCommand){
-		cSpinCommand = wantedSpinCommand; 
+		spinCommand = wantedSpinCommand; 
 	}
 
 	private void setCoordType(coordType mCoordType){
@@ -244,31 +253,37 @@ public class drivetrain extends subsystem {
 		mWantedState = wanted;
 	}
 	
+	/**
+	 * Checks to ensure drivetrain is in the correct state
+	 */
 	private void checkState() {
 		if(mWantedState!=mCurrentState) {
 			mCurrentState = mWantedState;
 		}
 	}
 	
-	public PowerDistributionPanel getmPDP() {return mPDP;}
+	public PowerDistributionPanel getPDP() {return mPDP;}
 	
-	public swervepod getPod(int idx) {return mPods.get(idx);}
+	public neopod getPod(int idx) {return mNeoPods.get(idx);}
 	
 	public double getAvgWheelSpeed() {
 		double average =0;
-		for(swervepod pod: mPods) {
+		for(neopod pod: mNeoPods) {
 			average += pod.getWheelSpeed();
 		}
-		return average/mPods.size();
+		return average/mNeoPods.size();
 	}
 	
 	public double getAngle() {return ((mGyro.getAngle()* Math.PI/180.0) % (2*Math.PI));} //Converts mGyro Angle (0-360) to Radians (0-2pi)
 	
 	private void updateAngle(){
 		//-pi to pi 0 = straight ahead
-		cAngle = ((((mGyro.getAngle()+90)* Math.PI/180.0)) % (2*Math.PI));
+		currentAngle = ((((mGyro.getAngle()+90)* Math.PI/180.0)) % (2*Math.PI));
 	}
 
+	/**
+	 * Adjust radius to pivot around different positions
+	 */
 	private double getRadius(String component){
 		if(mController.frontRightRotation() || mController.frontLeftRotation()){
 			if(component.equals("A")) {return(kLength);}
@@ -287,6 +302,9 @@ public class drivetrain extends subsystem {
 		return 0; 
 	}
 
+	/**
+	 * Uses PID to home in on vision targets
+	 */
 	private void trackToTarget(){
 		double wantedGyroPosition = mController.gyroClockPosition();
 
@@ -295,24 +313,27 @@ public class drivetrain extends subsystem {
 		} else {
 			wantedGyroPosition = lastGyroClock; 
 		}
-		cSpinCommand = -visionTurn.returnOutput(getAngle(), wantedGyroPosition);
+		spinCommand = mVisionTurn.returnOutput(getAngle(), wantedGyroPosition);
 
-		if(Math.abs(cSpinCommand) <= 0.06){
+		if(Math.abs(spinCommand) <= 0.06){
 			if(mVision.getDistance() != -1){
-				cForwardCommand = visionForward.returnOutput(mVision.getDistance(), 14);
+				forwardCommand = -mVisionForward.returnOutput(mVision.getDistance(), 18);
 			} else {
-				cForwardCommand = 0;
+				forwardCommand = 0;
 			}
 			if(mVision.getAngle() != -1){
-				cStrafeCommand = visionStrafe.returnOutput(mVision.getAngle(), -4);
+				strafeCommand = mVisionStrafe.returnOutput(mVision.getAngle(), 5);
 			} else {
-				cStrafeCommand = 0;
+				strafeCommand = 0;
 			}
 		}
 	}
 
+	/**
+	 * Determines when robot has reached the position it was tracking to
+	 */
 	public boolean isAtTarget(){
-		if(Math.abs((visionTurn.returnOutput(mVision.getDistance(), 0))) < .5){
+		if(Math.abs((mVisionTurn.returnOutput(mVision.getDistance(), 0))) < .5){
 			return true;
 		} else {
 			return false;
@@ -324,7 +345,7 @@ public class drivetrain extends subsystem {
 	@Override public void zeroAllSensors() {
 		for(int idx = 0; idx < 4; idx++)
 		{
-			mPods.get(idx).zeroAllSensors();
+			mNeoPods.get(idx).zeroAllSensors();
 		}
 	}
 	
@@ -339,7 +360,7 @@ public class drivetrain extends subsystem {
 		}
 		@Override
 		public void onLoop() {
-			if(mController.getGyroReset()) {
+			if(mController.gyroReset()) {
 				resetGyro();
 			}
 			updateAngle();
@@ -348,24 +369,37 @@ public class drivetrain extends subsystem {
 					checkState();
 					break;
 				case DRIVE:
-					cForwardCommand = mController.getForward();
-					cStrafeCommand = mController.getStrafe();
-						cSpinCommand = mController.getSpin();
-					
+					forwardCommand = mController.getForward();
+					strafeCommand = mController.getStrafe();
+					//spinCommand = mController.getSpin();
 
-					if (!mController.boost()){
-						cForwardCommand *= constants.MAXSLOWPERCENTSPEED;
-						cStrafeCommand *= constants.MAXSLOWPERCENTSPEED;
-						cSpinCommand *= constants.MAXSLOWPERCENTSPEED;
+					if (!mController.sickoMode()) {
+						forwardCommand *= constants.MAX_SLOW_PERCENT_SPEED;
+						strafeCommand *= constants.MAX_SLOW_PERCENT_SPEED;
+						spinCommand *= constants.MAX_SLOW_PERCENT_SPEED;
 					}
+					//System.out.println(mController.gyroClockPosition());
+					//if(mController.gyroClockPosition() != -1){
+					//	spinCommand = -mVisionTurn.returnOutput(getAngle(), mController.gyroClockPosition());
+					//} else {
+						spinCommand = mController.getSpin();
+					//}
 
-					if(mController.robotCentric()){
+					if(mController.robotCentric()) {
 						setCoordType(coordType.ROBOTCENTRIC);
+					} else if (mController.backRobotCentric()){
+						setCoordType(coordType.BACKROBOTCENTRIC);
 					} else {
 						setCoordType(coordType.FIELDCENTRIC);
 					}
 					setInputType(inputType.PERCENTPOWER);
 
+					if(spinCommand == 0){
+						//spinCommand = -mSpinMaster.returnOutput(getAngle(), lastAngle);
+					} else {
+						lastAngle = getAngle();
+					}
+					
 					crabDrive();
 					checkState();
 					break;
@@ -378,8 +412,7 @@ public class drivetrain extends subsystem {
 					checkState();
 					break;
 				case AUTON:
-					System.out.println(isAtTarget());
-					if(autonVision){
+					if(cAutonVision){
 						trackToTarget(); 
 						setCoordType(coordType.ROBOTCENTRIC); 
 						setInputType(inputType.PERCENTPOWER);
@@ -402,6 +435,6 @@ public class drivetrain extends subsystem {
 
 	@Override
 	public void outputToSmartDashboard() {
-		SmartDashboard.putNumber("Vision Gyro", mController.gyroClockPosition()); 
+		//SmartDashboard.putNumber("Vision Gyro", mController.gyroClockPosition()); 
 	}
 }

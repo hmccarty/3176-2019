@@ -7,7 +7,7 @@ Features of Project X include:
 - Swerve Drive
    - Field Centric Control 
    - Vision Integration
-   - A Defensive Locking Position
+   - Defensive Locking Position
    - Variable Pivot Points
 - Superstructure
    - Collision Detection 
