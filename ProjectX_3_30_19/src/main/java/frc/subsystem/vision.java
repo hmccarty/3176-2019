@@ -94,9 +94,3 @@ public class vision extends subsystem{
         NEUTRAL
     }
 } 
-    public enum state {
-        SWITCH_MODE,
-        SWITCH_CAMERA,
-        NEUTRAL
-    }
-}   
