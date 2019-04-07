@@ -68,16 +68,17 @@ public class elevator {
         // mSparkConfig.configPID(constants.ELEVATOR_PID_CONFIG);
         // mSparkConfig.configSmartMotion(constants.ELEVATOR_MOTION_CONFIG); 
         // mSparkConfig.configCurrentLimit(constants.SMART_CURRENT_LIMIT);
-        mPIDController.setP(.3); //3.0
-        mPIDController.setFF(0.002);
-        mPIDController.setI(0.0000);
+        mPIDController.setP(constants.ELEVATOR_PID_CONFIG[0]);
+        //mPIDController.setP(.3); //3.0
+        //mPIDController.setFF(0.002);
+        mPIDController.setFF(constants.ELEVATOR_PID_CONFIG[6]);
 
-        mSpeedController.setP(0.3);
+        //mSpeedController.setP(0.3);
         //mSpeedController.setFF(0.00);
         //mPIDController.setD(1000);
-        mSpeedController.setOutputRange(-.1, 0.35);//-.3,.5
+        //mSpeedController.setOutputRange(-.1, 0.35);//-.3,.5
         mPIDController.setOutputRange(-0.1, 1.0);//-.015,1
-        int kStallCurrent = 40;//100; 
+        int kStallCurrent = 75;//100; 
         //int kFreeCurrent = 100; 
         mWinchLeft.setSmartCurrentLimit(kStallCurrent);//, kFreeCurrent);
         mWinchRight.setSmartCurrentLimit(kStallCurrent);//, kFreeCurrent);
@@ -154,7 +155,7 @@ public class elevator {
     private void updateBumpSwitches() {
         if(!mLeftBumpSwitch.get() || !mRightBumpSwitch.get()){
             isAtBottom = true;
-            mEncoder.setPosition(0);
+            //smEncoder.setPosition(0);
         } else{
             isAtBottom = false;
         }

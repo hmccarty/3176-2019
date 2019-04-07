@@ -3,6 +3,11 @@ package frc.robot;
 import java.lang.Math;
 
 public class constants {
+	private static boolean isCompBot = false;
+
+	public static void whichRobot(boolean setBot){
+		isCompBot = setBot;
+	}
 
 	/***********\
 	|* CAN IDs *|
@@ -71,8 +76,8 @@ public class constants {
 	/************************\
 	|* Drivetrain Constants *|
 	\************************/
-	public static double OFFSETS[] = {2802,2426,2599,2997};
-	//public static double OFFSETS[] = {1813,3776,1186,1178}; //Gears Facing Right
+	//public static double OFFSETS[] = {2802,2426,2599,2997};
+	public static double OFFSETS[] = {1857,3780,1180,1230}; //Gears Facing Right
 	public static double DRIVETRAIN_LENGTH = 30.5; // inches
 	public static double DRIVETRAIN_WIDTH = 29.5; // inches
 	public static final double WHEEL_DIAMETER = 3.25;
@@ -83,8 +88,8 @@ public class constants {
 	/***********************\
 	|* Swervepod Constants *|
 	\***********************/
-
-	public static final double SWERVE_KP[] = {4.5, 2, 2, 4.5}; // proportional gain for turning each pod
+											//{4.5, 2, 2, 4.5};
+	public static final double SWERVE_KP[] = {2, 2, 2, 4.5}; // proportional gain for turning each pod
 	public static final double SWERVE_KI[] = {0.0023, 0.00001, 0.00001, 0.0023}; // integral gain for turning each pod
 	public static final double SWERVE_KD[] = {190.0, 170, 170, 190.0}; // derivative gain for turning each pod
 	public static final double SWERVE_KF = 0.00001;
@@ -118,14 +123,22 @@ public class constants {
 	|* Elevator Constants *|
 	\**********************/
 
-	public static final double[] ELEVATOR_PID_CONFIG = { /*kP*/ 0.01, /*kI*/ 0.0, /*kD*/ 0.0, 
-														 /*I-Zone*/ 0.0, 
-														 /*Output Range Min*/ 0.0, /*Output Range Max*/ 0.0, 
-														 /*kF*/ 0.0};
+	public static final double[] ELEVATOR_PID_COMPETITION = { /*kP*/ 0.01, /*kI*/ 0.0, /*kD*/ 0.0, 
+														   /*I-Zone*/ 0.0, 
+														   /*Output Range Min*/ 0.0, /*Output Range Max*/ 0.0, 
+														   /*kF*/ 0.0};
+
+	public static final double[] ELEVATOR_PID_PRACTICE = { /*kP*/ 0.07, /*kI*/ 0.0, /*kD*/ 0.0, 
+														   /*I-Zone*/ 0.0, 
+														   /*Output Range Min*/ -0.1, /*Output Range Max*/ 1.0, 
+														   /*kF*/ 0.002};
+
+	public static final double[] ELEVATOR_PID_CONFIG = (isCompBot) ? ELEVATOR_PID_COMPETITION : ELEVATOR_PID_PRACTICE;
+
 	public static final double[] ELEVATOR_MOTION_CONFIG = { /*Max Velocity*/ 0.0, /*Min Velocity*/ 0.0, 
 															/*Max Acceleration*/ 0.0, 
 															/*Allowed Error*/ 0.0 };
-	public static final int SMART_CURRENT_LIMIT = 40;
+	public static final int SMART_CURRENT_LIMIT = 75;
 	public static final int LEFT_BUMP_SWITCH = 6;
 	public static final int RIGHT_BUMP_SWITCH = 5;
 

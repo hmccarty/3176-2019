@@ -65,7 +65,7 @@ public class cargointake {
         isHomed = false; 
 
         //Initialize members
-        mCargoWinchEncoder.reset();
+       // mCargoWinchEncoder.reset();
     }
 
     public static cargointake getInstance() {
@@ -114,7 +114,7 @@ public class cargointake {
                     }
             }
         
-        mCargoIntakeWinch.set(-cargoIntakeWinchPower);
+        mCargoIntakeWinch.set(cargoIntakeWinchPower);
     }
 
     public void deploy() {
@@ -156,7 +156,7 @@ public class cargointake {
             mCargoWinchEncoder.reset();
         } else {
             isHomed = false; 
-            mCargoIntakeWinch.set(-.3);
+            mCargoIntakeWinch.set(.3);
         }
     }
 
@@ -178,12 +178,12 @@ public class cargointake {
             //mCargoWinchEncoder.reset();
         }
         SmartDashboard.putNumber("Manual Wanted", -mCargoManualPID.returnOutput(mCargoWinchEncoder.getRaw(), height));
-        mCargoIntakeWinch.set(-mCargoManualPID.returnOutput(mCargoWinchEncoder.getRaw(), height));
+        mCargoIntakeWinch.set(mCargoManualPID.returnOutput(mCargoWinchEncoder.getRaw(), height));
     }
 
     public void deployBoolean() {
         if(mCargoIntakeDeployedSwitch.get()) {
-            mCargoIntakeWinch.set(-.4);
+            mCargoIntakeWinch.set(.4);
         } else {
             mCargoIntakeWinch.set(0);
         }
@@ -235,7 +235,7 @@ public class cargointake {
     //    }
     //    else if(mCargoIntakeStowedSwitch.get() && !mCargoIntakeDeployedSwitch.get()) {
     //        if(openLoopCommand < 0) {
-               mCargoIntakeWinch.set(-(openLoopCommand + .15));
+               mCargoIntakeWinch.set((openLoopCommand + .15));
         //    } else {
         //        mCargoIntakeWinch.set(0);
         //    }

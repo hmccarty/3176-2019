@@ -129,11 +129,10 @@ public class controller {
             return 15.25; 
         }
         else if(mButtonMonkeyMain.getPOV() == 180) {
-            return 0.2; 
-        } else if(mButtonMonkeyMain.getPOV() == 270){
+            return 0; 
+        } else if(mButtonMonkeyMain.getPOV() == 270 || trackTarget()){
             return 8.0;
-        } 
-        else {
+        } else {
             return -1; 
         }
     }

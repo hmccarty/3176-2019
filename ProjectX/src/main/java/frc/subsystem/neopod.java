@@ -75,6 +75,7 @@ public class neopod extends subsystem {
         m_pidController.setFF(constants.NEO_FF);
 		m_pidController.setIZone(constants.NEO_IZ);
 		driveMotor.setSmartCurrentLimit(40);
+		driveMotor.setClosedLoopRampRate(0.1);
 		m_pidController.setSmartMotionMaxAccel(constants.NEO_MAX_ACCEL,0);
 		m_pidController.setSmartMotionMaxVelocity(constants.NEO_MAX_VEL,0);
 		driveEncoder.setPosition(0);

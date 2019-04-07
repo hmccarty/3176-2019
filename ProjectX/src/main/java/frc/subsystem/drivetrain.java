@@ -74,6 +74,7 @@ public class drivetrain extends subsystem {
 		HOMING,
 		DRIVE,
 		VISION,
+		VISION_EXIT,
 		AUTON
 	}
 	
@@ -90,6 +91,7 @@ public class drivetrain extends subsystem {
 	
 	private state mCurrentState;
 	private state mWantedState;
+	private state mLastState; 
 	
 	private drivetrain(){
 		//instantiate the mPods
@@ -229,6 +231,10 @@ public class drivetrain extends subsystem {
 		cAutonVision = state; 
 	}
 
+	public state getLastState(){
+		return mLastState; 
+	}
+
 	public void setForwardCommand(double wantedForwardCommand){
 		forwardCommand = wantedForwardCommand; 
 	}
@@ -313,16 +319,19 @@ public class drivetrain extends subsystem {
 		} else {
 			wantedGyroPosition = lastGyroClock; 
 		}
-		spinCommand = mVisionTurn.returnOutput(getAngle(), wantedGyroPosition);
+		spinCommand = -mVisionTurn.returnOutput(getAngle(), wantedGyroPosition);
 
 		if(Math.abs(spinCommand) <= 0.06){
-			if(mVision.getDistance() != -1){
-				forwardCommand = -mVisionForward.returnOutput(mVision.getDistance(), 18);
+			if(mVision.getDistance() < 23.6){
+				forwardCommand = -0.2; 
+			}
+			else if(mVision.getDistance() != -1){
+				forwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 18);
 			} else {
 				forwardCommand = 0;
 			}
 			if(mVision.getAngle() != -1){
-				strafeCommand = mVisionStrafe.returnOutput(mVision.getAngle(), 5);
+				strafeCommand = -mVisionStrafe.returnOutput(mVision.getAngle(), 0);
 			} else {
 				strafeCommand = 0;
 			}
@@ -366,7 +375,10 @@ public class drivetrain extends subsystem {
 			updateAngle();
 			switch(mCurrentState) {
 				case NEUTRAL:
-					checkState();
+					forwardCommand = 0; 
+					strafeCommand = 0; 
+					spinCommand = 0; 
+					crabDrive(); 
 					break;
 				case DRIVE:
 					forwardCommand = mController.getForward();
@@ -401,16 +413,20 @@ public class drivetrain extends subsystem {
 					}
 					
 					crabDrive();
-					checkState();
 					break;
 				case VISION:
 					trackToTarget();
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
-
 					crabDrive();
-					checkState();
 					break;
+				case VISION_EXIT: 
+					setCoordType(coordType.ROBOTCENTRIC); 
+					setInputType(inputType.PERCENTPOWER);
+					forwardCommand = 0.3;
+					strafeCommand = 0; 
+					spinCommand = 0; 
+					crabDrive();
 				case AUTON:
 					if(cAutonVision){
 						trackToTarget(); 
@@ -421,11 +437,12 @@ public class drivetrain extends subsystem {
 						setInputType(inputType.VELOCITY);
 					}
 					crabDrive();
-					checkState();
 					break;
 				default:
 					break;			
 				}
+			mLastState = mCurrentState; 
+			checkState();
 			outputToSmartDashboard();
 		}
 		@Override
