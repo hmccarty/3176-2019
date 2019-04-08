@@ -20,10 +20,12 @@ public class Robot extends TimedRobot {
 	private controller mController = controller.getInstance();
 	private superstructure mSuperstructure = superstructure.getInstance();
 	private elevator mElevator = elevator.getInstance();
-	private static Timer mTimer = new Timer(); 
 
 	double startTime = -0.5; 
 	double endTime = 0; 
+
+	boolean visionIntaking = false; 
+	boolean visionDeploying = false; 
 
 	@Override
 	public void robotInit() {
@@ -32,7 +34,6 @@ public class Robot extends TimedRobot {
 		mSuperstructure.registerLoop();
 		mElevator.registerLoop();
 		myLoops.startLoops();
-		mTimer.start(); 
 	}
 	
 	public void robotPeriodic(){
@@ -63,17 +64,25 @@ public class Robot extends TimedRobot {
 	public void driverControl() {
 		myLoops.runLoops();
 	
-		endTime = mTimer.getFPGATimestamp();
+		endTime = Timer.getFPGATimestamp();
 
 		/*********************\
 		|* Drivetrain States *|
 		\*********************/
+
 		if(mController.trackTarget()) {
-			mDriveTrain.setWantedState(drivetrain.state.VISION);
-		} else if ((!mController.trackTarget() && mDriveTrain.getLastState() == drivetrain.state.VISION) || (endTime - startTime) < 0.15){
-			startTime = mTimer.getFPGATimestamp(); 
+			if(mSuperstructure.getCurrentState() == superstructure.state.INTAKE_H_CB){
+				visionIntaking = true; 
+			} else {
+				visionDeploying = true; 
+			}
+			mDriveTrain.setWantedState(drivetrain.state.VISION_TRACK);
+		} else if (mController.finishedTracking() || (endTime - startTime) < 0.15){
+			startTime = Timer.getFPGATimestamp(); 
 			mDriveTrain.setWantedState(drivetrain.state.VISION_EXIT); 
 	    } else {
+			visionIntaking = false; 
+			visionDeploying = false; 
 			mDriveTrain.setWantedState(drivetrain.state.DRIVE);
 		}		
 
@@ -85,9 +94,9 @@ public class Robot extends TimedRobot {
 		 	mSuperstructure.setWantedState(superstructure.state.INTAKE_H_CB);
 		} else if (mController.wantedCargoIntakeOpenLoop() != 0) {
 			mSuperstructure.setWantedState(superstructure.state.OPENLOOP_CARGO); 
-		} else if(mController.crossbowHold() || (!mController.trackTarget() && mDriveTrain.getLastState() == drivetrain.state.VISION)) {
+		} else if(mController.crossbowHold() || (mController.finishedTracking() && visionIntaking)) {
 		 	mSuperstructure.setWantedState(superstructure.state.HOLD_H_CB);
-		} else if(mController.crossbowDeliver()) {
+		} else if(mController.crossbowDeliver() || (mController.finishedTracking() && visionDeploying)) {
 		 	mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
 		} else if(mController.deployCargoIntake()) {
 		 	mSuperstructure.setWantedState(superstructure.state.INTAKE_C_ROLLER);
@@ -112,7 +121,8 @@ public class Robot extends TimedRobot {
 		\*******************/
 
 		if (mController.wantedElevatorHeight() != -1) {
-			double wantedHeight = (mVision.getDistance() < 23.6) ? 0.0 : mController.wantedElevatorHeight();
+			double visionHeight = (mElevator.getHeight() < 8.0) ? 8.0 : mElevator.getHeight(); 
+			double wantedHeight = (mDriveTrain.isVisionDriving()) ? visionHeight : mController.wantedElevatorHeight();
 			mElevator.setWantedElevatorHeight(wantedHeight);
 		 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
 		} else if (mController.wantedElevatorVelocity() != 0) {

@@ -67,12 +67,14 @@ public class drivetrain extends subsystem {
 	private double forwardCommand;
 	private double strafeCommand;
 	private double spinCommand;
+
+	private boolean isVisionDriving;
 	
 	public enum state {
 		NEUTRAL,
 		HOMING,
 		DRIVE,
-		VISION,
+		VISION_TRACK, 
 		VISION_EXIT,
 		AUTON
 	}
@@ -132,6 +134,8 @@ public class drivetrain extends subsystem {
 		mGyro = new AHRS(SPI.Port.kMXP);
 		resetGyro();
 		updateAngle();
+
+		isVisionDriving = false;
 		
 		//Start wheels in a forward facing direction
 		forwardCommand = Math.pow(10, -15); 
@@ -231,6 +235,10 @@ public class drivetrain extends subsystem {
 		return mLastState; 
 	}
 
+	public boolean isVisionDriving(){
+		return isVisionDriving; 
+	}
+
 	public void setForwardCommand(double wantedForwardCommand){
 		forwardCommand = wantedForwardCommand; 
 	}
@@ -318,10 +326,7 @@ public class drivetrain extends subsystem {
 		spinCommand = -mVisionSpin.returnOutput(getAngle(), wantedGyroPosition);
 
 		if(Math.abs(spinCommand) <= 0.06){
-			if(mVision.getDistance() < 23.6){
-				forwardCommand = -0.2; 
-			}
-			else if(mVision.getDistance() != -1){
+			if(mVision.getDistance() != -1){
 				forwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 18);
 			} else {
 				forwardCommand = 0;
@@ -338,7 +343,7 @@ public class drivetrain extends subsystem {
 	 * Determines when robot has reached the position it was tracking to
 	 */
 	public boolean isAtTarget(){
-		if(Math.abs((mVisionSpin.returnOutput(mVision.getDistance(), 0))) < .5){
+		if(Math.abs((mVisionSpin.returnOutput(mVision.getDistance(), 18))) < .5){
 			return true;
 		} else {
 			return false;
@@ -400,8 +405,21 @@ public class drivetrain extends subsystem {
 					
 					crabDrive();
 					break;
-				case VISION:
-					trackToTarget();
+				case VISION_TRACK:
+					if(mLastState != state.VISION_TRACK){
+						isVisionDriving = true; 
+					} else if (mVision.getDistance() < 23.6) {
+						isVisionDriving = false; 
+					}
+					
+					if(isVisionDriving){
+						trackToTarget();
+					} else {
+						forwardCommand = -0.2; 
+						strafeCommand = 0.0; 
+						spinCommand = 0.0; 
+					}
+
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
 					crabDrive();
