@@ -27,7 +27,7 @@ public class pathfollower {
 	 */
 	public pathfollower(trajectory t) {
 		this.t = t;
-		spinHandler = new pid(.4,0.0,0.0);
+		//spinHandler = new pid(.4,0.0,0.0);
 	}
 	public void init()
 	{
@@ -58,17 +58,17 @@ public class pathfollower {
 					double wheelAngle = t.getWheelAngle(Time);
 					double strafeCommand = speed*Math.cos(wheelAngle);
 					double forwardCommand = speed*Math.sin(wheelAngle);
-					double spinCommand = spinHandler.returnOutput(drivetrain.getInstance().getAngle(), heading);
+					//double spinCommand = spinHandler.returnOutput(drivetrain.getInstance().getAngle(), heading);
 					currY += forwardCommand * dt;
-					SmartDashboard.putNumber("autoSpinCommand", spinCommand);
+					//SmartDashboard.putNumber("autoSpinCommand", spinCommand);
 					SmartDashboard.putNumber("autoSpeed", forwardCommand);
 					SmartDashboard.putNumber("calculatedY", currY);
                     drivetrain.getInstance().setForwardCommand(forwardCommand);
                     drivetrain.getInstance().setStrafeCommand(strafeCommand);
-                    drivetrain.getInstance().setSpinCommand(spinCommand);
+                    //drivetrain.getInstance().setSpinCommand(spinCommand);
 					double wheelSpeed = drivetrain.getInstance().getPod(0).getWheelSpeed();
 					double reqWheelSpeed = drivetrain.getInstance().getPod(0).getSpeed();
-					double wheelSpeedfps = wheelSpeed / constants.FPS_TO_UPS;
+					double wheelSpeedfps = wheelSpeed / 714.0;//constants.FPS_TO_UPS;
 					SmartDashboard.putNumber("wheelSpeed", wheelSpeedfps);
 					SmartDashboard.putNumber("requested wheel Speed", reqWheelSpeed);
 					currY2 += wheelSpeedfps * dt;

@@ -20,14 +20,13 @@ public class Robot extends TimedRobot {
 	private controller mController = controller.getInstance();
 	private superstructure mSuperstructure = superstructure.getInstance();
 	private elevator mElevator = elevator.getInstance();
-	private Timer mTimer = new Timer(); 
+	private static Timer mTimer = new Timer(); 
 
 	double startTime = -0.5; 
 	double endTime = 0; 
 
 	@Override
 	public void robotInit() {
-		constants.whichRobot(false); 
 		mDriveTrain.registerLoop(); 
 		mVision.registerLoop();
 		mSuperstructure.registerLoop();
@@ -37,9 +36,6 @@ public class Robot extends TimedRobot {
 	}
 	
 	public void robotPeriodic(){
-		//This is where code goes that runs all the time whether or not the robot is enabled/disabled/Auton/Teleop
-		
-		
 		/*****************\
 		|* Vision States *|
 		\*****************/
@@ -57,11 +53,11 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		try{ 
-	} catch (Exception e){
+		try { 
+			driverControl();
+		} catch (Exception e) {
 
-	}
-		driverControl();
+		}
 	}
 
 	public void driverControl() {
@@ -115,11 +111,8 @@ public class Robot extends TimedRobot {
 		|* Elevator States *|
 		\*******************/
 
-		// if(mController.openLoopElevatorEnabled()){
-		//  	mElevator.setWantedState(elevator.state.OPEN_LOOP);
-		// } else 
 		if (mController.wantedElevatorHeight() != -1) {
-			double wantedHeight = (mVision.getDistance() < 23.6) ? 0 : mController.wantedElevatorHeight();
+			double wantedHeight = (mVision.getDistance() < 23.6) ? 0.0 : mController.wantedElevatorHeight();
 			mElevator.setWantedElevatorHeight(wantedHeight);
 		 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
 		} else if (mController.wantedElevatorVelocity() != 0) {
@@ -128,8 +121,6 @@ public class Robot extends TimedRobot {
 		} else {
 		  	mElevator.setWantedState(elevator.state.HOLDING);
 		}
-
-
 	}
 
 	@Override

@@ -20,26 +20,22 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-/**
- * Add your docs here.
- */
 public class neopod extends subsystem {
-    private CANSparkMax driveMotor;
-	private TalonSRX steerMotor;
+	private CANSparkMax driveMotor;
+	private CANPIDController driveController;
+    private CANEncoder driveEncoder;
+	private TalonSRX spinMotor;
 	private int id;
 
 	private double PI = Math.PI;
 	private double kEncoderUnits = constants.ENCODER_UNITS; //# of ticks on Mag Encoder
-	private double kConstants[] = constants.OFFSETS;
+	private double kAbsoluteOffsets[] = constants.OFFSETS;
 	private double gearRatio = constants.DRIVE_GEAR_RATI0;
-	private double fps2ups = constants.FPS_TO_UPS; //Converts Feet/s to Encoder Units (770.24)
 	private double fps2rpm = constants.FPS_TO_RPM;
-	private double rev2ft = constants.REV_TO_FT;
 	
 	private double lastEncoderPosition; //Previous position in encoder units	
 	private double encoderError; //Error in encoder units
 	private double encoderPosition; //Current position in encoder units
-	//private double encoderSetpoint; //Position wanted in encoder units
 	private double driveCommand;
 
 	private double encoderSetpoint;
@@ -49,46 +45,31 @@ public class neopod extends subsystem {
 	
 	private double velocitySetpoint; //Wanted velocity in ft/s
 
-    private CANPIDController m_pidController;
-    private CANEncoder driveEncoder;
-
-	controller mController;
+	controller mController = controller.getInstance();
 	
-    neopod(int id, CANSparkMax driveMotor, TalonSRX steerMotor) {
+    neopod(int id, CANSparkMax driveMotor, TalonSRX spinMotor) {
 		this.id = id;
-		mController = controller.getInstance();
+
 		this.driveMotor = driveMotor;
-		this.steerMotor = steerMotor;
-		this.steerMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,0,0);
-        driveEncoder = this.driveMotor.getEncoder();
-        //this.steerMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,0,0);
-		//this.steerMotor.setSelectedSensorPosition(0,0,0);
-		this.steerMotor.config_kP(0, constants.SWERVE_KP[id], 0);
-		this.steerMotor.config_kI(0, constants.SWERVE_KI[id], 0);
-		this.steerMotor.config_kD(0, constants.SWERVE_KD[id], 0);
-		this.steerMotor.config_kF(0, constants.SWERVE_KF, 0);
-        
-        m_pidController = driveMotor.getPIDController();
-        m_pidController.setP(constants.NEO_KP);
-        m_pidController.setI(constants.NEO_KI);
-        m_pidController.setD(constants.NEO_KD);
-        m_pidController.setFF(constants.NEO_FF);
-		m_pidController.setIZone(constants.NEO_IZ);
-		driveMotor.setSmartCurrentLimit(40);
-		driveMotor.setClosedLoopRampRate(0.1);
-		m_pidController.setSmartMotionMaxAccel(constants.NEO_MAX_ACCEL,0);
-		m_pidController.setSmartMotionMaxVelocity(constants.NEO_MAX_VEL,0);
-		driveEncoder.setPosition(0);
-		
-		// this.driveMotor.config_kP(0, constants.DRIVE_kP, 0);
-		// this.driveMotor.config_kI(0, constants.DRIVE_kI, 0);
-		// this.driveMotor.config_kD(0, constants.DRIVE_kD, 0);
-		// this.driveMotor.config_kF(0, constants.DRIVE_kF,0);
-		// this.driveMotor.config_IntegralZone(0, constants.DRIVE_IZONE, 0);
-		// this.driveMotor.configClosedloopRamp(constants.DRIVE_RAMPRATE, 0);
-        
-		//this.steerMotor.configAllowableClosedloopError(0, constants.SWERVE_ALLOWABLE_ERROR, 0);
-		//this.steerMotor.configAllowableClosedloopError(0, constants.DRIVE_ALLOWABLE_ERROR, 0);
+		driveController = driveMotor.getPIDController();
+		driveEncoder = this.driveMotor.getEncoder();
+
+        driveController.setP(constants.DRIVE_PID_CONFIG[0]);
+        driveController.setI(constants.DRIVE_PID_CONFIG[1]);
+        driveController.setD(constants.DRIVE_PID_CONFIG[2]);
+        driveController.setFF(constants.DRIVE_PID_CONFIG[3]);
+		driveController.setIZone(constants.DRIVE_PID_CONFIG[4]);
+
+		driveMotor.setSmartCurrentLimit(constants.DRIVE_CURRENT_LIMIT);
+		driveMotor.setClosedLoopRampRate(constants.DRIVE_RAMP_RATE);
+
+		this.spinMotor = spinMotor;
+		this.spinMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,0,0);
+
+		this.spinMotor.config_kP(0, constants.SPIN_PID_CONFIG[id][0], 0);
+		this.spinMotor.config_kI(0, constants.SPIN_PID_CONFIG[id][1], 0);
+		this.spinMotor.config_kD(0, constants.SPIN_PID_CONFIG[id][2], 0);
+		this.spinMotor.config_kF(0, constants.SPIN_PID_CONFIG[id][3], 0);
 	}
 	
 	/**
@@ -101,15 +82,13 @@ public class neopod extends subsystem {
 		encoderSetpoint = findSteerPosition(Angle);
 		
 		if(Speed != 0.0) {
-            steerMotor.set(ControlMode.Position, encoderSetpoint);
+            spinMotor.set(ControlMode.Position, encoderSetpoint);
 			lastEncoderPosition = encoderSetpoint;
 		}
 		else {
-            steerMotor.set(ControlMode.Position, lastEncoderPosition);
+            spinMotor.set(ControlMode.Position, lastEncoderPosition);
 		}
-        // driveMotor.set(ControlMode.Velocity, velocitySetpoint);
-        m_pidController.setReference(velocitySetpoint, ControlType.kVelocity);
-		outputToSmartDashboard();
+        driveController.setReference(velocitySetpoint, ControlType.kVelocity);
 	}
 	
 	/**
@@ -120,7 +99,7 @@ public class neopod extends subsystem {
 	 *		{@link Swervepod#encoderUnitsToRadian(double EncoderUnits) encoderUnitsToRadian()}
 	 */
 	private double findSteerPosition(double wantedAngle) {
-        encoderPosition = steerMotor.getSelectedSensorPosition(0) - kConstants[id];
+        encoderPosition = spinMotor.getSelectedSensorPosition(0) - kAbsoluteOffsets[id];
 		radianPosition = encoderUnitsToRadian(encoderPosition);
 		radianError = wantedAngle - radianPosition;
 		if(Math.abs(radianError) > (3*PI/2)) {
@@ -131,7 +110,7 @@ public class neopod extends subsystem {
 			velocitySetpoint = -velocitySetpoint;
 		}
 		encoderError = radianToEncoderUnits(radianError);
-		driveCommand = encoderError + encoderPosition + kConstants[id];
+		driveCommand = encoderError + encoderPosition + kAbsoluteOffsets[id];
 		return (driveCommand);
 	}
 	
@@ -139,12 +118,9 @@ public class neopod extends subsystem {
 	 * @return Whether pod is still driving
 	 */
 	public boolean isStopped() {
-		if(Math.abs(driveEncoder.getVelocity())*gearRatio<300)
-		{
+		if(Math.abs(driveEncoder.getVelocity()) * gearRatio < 300) {
 			return true;
-		}
-		else
-		{
+		} else {
 			return false;
 		}
 	}
@@ -175,7 +151,7 @@ public class neopod extends subsystem {
 	/**
 	 * @return Encoder position in absolute encoder ticks
 	 */
-	public double getPosition() {return (steerMotor.getSelectedSensorPosition(0));}
+	public double getPosition() {return (spinMotor.getSelectedSensorPosition(0));}
 	
 	/**
 	 * @return Encoder units traveled total
@@ -213,23 +189,20 @@ public class neopod extends subsystem {
 	public double getRawSpeed() {return driveEncoder.getVelocity();}
 	
 	@Override public void zeroAllSensors() {
-		steerMotor.set(ControlMode.Position, 0.0);
-		m_pidController.setReference(0, ControlType.kVelocity);
+		spinMotor.set(ControlMode.Position, 0.0);
+		driveController.setReference(0, ControlType.kVelocity);
 	}
 	
-	@Override public void registerLoop() {/*NA*/} //Not being used
+	@Override public void registerLoop() {/*NA*/}
 
 	@Override public void outputToSmartDashboard() {
-		SmartDashboard.putNumber("Pod " + id + "'s Encoder Position", steerMotor.getSelectedSensorPosition());
+		SmartDashboard.putNumber("Pod " + id + "'s Encoder Position", spinMotor.getSelectedSensorPosition());
 		SmartDashboard.putNumber("Pod " + id + "'s Wanted Position", encoderSetpoint );
-		//SmartDashboard.putNumber("Pod " + id + "'s motor velocity", driveEncoder.getVelocity());
-		// SmartDashboard.putNumber("Pod " + id + "'s linear feet", driveEncoder.getPosition()*rev2ft);
-		// SmartDashboa
-		//SmartDashboard.putNumber("Pod " + id + "'s linear velocity", driveEncoder.getVelocity() * (1/fps2rpm));
-		//SmartDashboard.putNumber("Pod " + id + "'s velocity setpoint", velocitySetpoint);
-		// // SmartDashboard.putNumber("Pod " + id + "'s kP", m_pidController.getP());
-		// SmartDashboard.putNumber("Pod " + id + "'s kI", m_pidController.getI());
-		// SmartDashboard.putNumber("Pod " + id + "'s kD", m_pidController.getD());
-		// SmartDashboard.putNumber("Pod " + id + "'s current", driveMotor.getOutputCurrent());
+		SmartDashboard.putNumber("Pod " + id + "'s motor velocity", driveEncoder.getVelocity());
+		SmartDashboard.putNumber("Pod " + id + "'s velocity setpoint", velocitySetpoint);
+		SmartDashboard.putNumber("Pod " + id + "'s kP", driveController.getP());
+		SmartDashboard.putNumber("Pod " + id + "'s kI", driveController.getI());
+		SmartDashboard.putNumber("Pod " + id + "'s kD", driveController.getD());
+		SmartDashboard.putNumber("Pod " + id + "'s current", driveMotor.getOutputCurrent());
 	}
 }

@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import java.util.ArrayList;
 import frc.robot.constants;
-import edu.wpi.first.wpilibj.smartdashboard.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -36,7 +35,7 @@ public class drivetrain extends subsystem {
 	private boolean cAutonVision; 
 
 	private pid mVisionForward;
-	private pid mVisionTurn;  
+	private pid mVisionSpin;  
 	private pid mVisionStrafe; 
 
 	private pid mSpinMaster; 
@@ -106,12 +105,9 @@ public class drivetrain extends subsystem {
 
 		cAutonVision = false;
 
-		mVisionForward = new pid(0.009, 0, 0, .8); 
-		mVisionTurn = new pid(0.01, 0, 0, .8); 
-		mVisionStrafe = new pid(0.015, 0, 0, .8); 
-
-		mSpinMaster = new pid(0.00001, 0.0, 0, 0.5);
-
+		mVisionForward = new pid(0.009, 0.0, 0.0, 0.0, 0.8, -0.8, 0.0); 
+		mVisionSpin = new pid(0.01, 0.0, 0.0, 0.0, 0.8, -0.8, 0.0); 
+		mVisionStrafe = new pid(0.015, 0.0, 0.0, 0.0, 0.8, -0.8, 0.0); 
 		
 		//Instantiate array list
 		mNeoPods = new ArrayList<neopod>();
@@ -129,8 +125,8 @@ public class drivetrain extends subsystem {
 		kMaxSpeed = constants.DRIVETRAIN_MAX_WHEEL_SPEED;
 		kMaxRotation = constants.DRIVETRAIN_MAX_ROTATION_SPEED;
 
-		kMaxAccel = constants.NEO_MAX_ACCEL;
-		kMaxVel = constants.NEO_MAX_VEL;
+		kMaxVel = constants.DRIVE_MAX_VEL;
+		kMaxAccel = constants.DRIVE_MAX_ACCEL;
 		
 		//Instantiating the Gyro
 		mGyro = new AHRS(SPI.Port.kMXP);
@@ -319,7 +315,7 @@ public class drivetrain extends subsystem {
 		} else {
 			wantedGyroPosition = lastGyroClock; 
 		}
-		spinCommand = -mVisionTurn.returnOutput(getAngle(), wantedGyroPosition);
+		spinCommand = -mVisionSpin.returnOutput(getAngle(), wantedGyroPosition);
 
 		if(Math.abs(spinCommand) <= 0.06){
 			if(mVision.getDistance() < 23.6){
@@ -342,7 +338,7 @@ public class drivetrain extends subsystem {
 	 * Determines when robot has reached the position it was tracking to
 	 */
 	public boolean isAtTarget(){
-		if(Math.abs((mVisionTurn.returnOutput(mVision.getDistance(), 0))) < .5){
+		if(Math.abs((mVisionSpin.returnOutput(mVision.getDistance(), 0))) < .5){
 			return true;
 		} else {
 			return false;
@@ -383,20 +379,14 @@ public class drivetrain extends subsystem {
 				case DRIVE:
 					forwardCommand = mController.getForward();
 					strafeCommand = mController.getStrafe();
-					//spinCommand = mController.getSpin();
+					spinCommand = mController.getSpin();
 
 					if (!mController.sickoMode()) {
 						forwardCommand *= constants.MAX_SLOW_PERCENT_SPEED;
 						strafeCommand *= constants.MAX_SLOW_PERCENT_SPEED;
 						spinCommand *= constants.MAX_SLOW_PERCENT_SPEED;
 					}
-					//System.out.println(mController.gyroClockPosition());
-					//if(mController.gyroClockPosition() != -1){
-					//	spinCommand = -mVisionTurn.returnOutput(getAngle(), mController.gyroClockPosition());
-					//} else {
-						spinCommand = mController.getSpin();
-					//}
-
+					
 					if(mController.robotCentric()) {
 						setCoordType(coordType.ROBOTCENTRIC);
 					} else if (mController.backRobotCentric()){
@@ -406,11 +396,7 @@ public class drivetrain extends subsystem {
 					}
 					setInputType(inputType.PERCENTPOWER);
 
-					if(spinCommand == 0){
-						//spinCommand = -mSpinMaster.returnOutput(getAngle(), lastAngle);
-					} else {
-						lastAngle = getAngle();
-					}
+					lastAngle = getAngle();
 					
 					crabDrive();
 					break;
@@ -427,6 +413,7 @@ public class drivetrain extends subsystem {
 					strafeCommand = 0; 
 					spinCommand = 0; 
 					crabDrive();
+					break;
 				case AUTON:
 					if(cAutonVision){
 						trackToTarget(); 

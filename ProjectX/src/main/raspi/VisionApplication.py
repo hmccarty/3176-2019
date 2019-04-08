@@ -1,15 +1,12 @@
-
-
-#!/usr/bin/env python3
 #----------------------------------------------------------------------------
-# Copyright (c) 2018 FIRST. All Rights Reserved.
+# Copyright (c) 2019 FIRST. All Rights Reserved.
 # Open Source Software - may be modified and shared by FRC teams. The code
 # must be accompanied by the FIRST BSD license file in the root directory of
 # the project.
-
-# My 2019 license: use it as much as you want. Crediting is recommended because it lets me know that I am being useful.
-# Credit to Screaming Chickens 3997
-
+#
+# Credits to Team 3997 for the original template
+# Further revisions and edits were done by Team 3176
+#
 # This is meant to be used in conjuction with WPILib Raspberry Pi image: https://github.com/wpilibsuite/FRCVision-pi-gen
 #----------------------------------------------------------------------------
 
@@ -24,21 +21,15 @@ import cv2
 import numpy as np
 from networktables import NetworkTables
 import math
-########### SET RESOLUTION TO 256x144 !!!! ############
-
-
-# import the necessary packages
 import datetime
 
 
-# class that runs separate thread for showing video,
-class VideoShow:
+class video_streamer:
     """
-    Class that continuously shows a frame using a dedicated thread.
+    Streams to  the driver station
     """
-
     def __init__(self, imgWidth, imgHeight, cameraServer, frame=None, name='stream'):
-        self.outputStream = cameraServer.putVideo(name, imgWidth, imgHeight)
+        self.output_stream = cameraServer.putVideo(name, imgWidth, imgHeight)
         self.frame = frame
         self.stopped = False
 
@@ -48,82 +39,57 @@ class VideoShow:
 
     def show(self):
         while not self.stopped:
-            self.outputStream.putFrame(self.frame)
+            self.output_stream.put_frame(self.frame)
 
     def stop(self):
         self.stopped = True
 
     def notifyError(self, error):
-        self.outputStream.notifyError(error)
+        self.output_stream.notifyError(error)
 
-class WebcamVideoStream:
-    def __init__(self, camera, cameraServer, frameWidth, frameHeight, name="WebcamVideoStream"):
-        # initialize the video camera stream and read the first frame
-        # from the stream
-
-        #Automatically sets exposure to 0 to track tape
+class video_manager:
+    """
+    Manages camera settings and frames
+    """
+    def __init__(self, camera, cameraServer, frameWidth, frameHeight, name="video_manager"):
         self.webcam = camera
         self.webcam.setExposureManual(0)
-        #Some booleans so that we don't keep setting exposure over and over to the same value
         self.autoExpose = False
         self.prevValue = self.autoExpose
-        #Make a blank image to write on
         self.img = np.zeros(shape=(frameWidth, frameHeight, 3), dtype=np.uint8)
-        #Gets the video
         self.stream = cameraServer.getVideo(camera = camera)
         (self.timestamp, self.img) = self.stream.grabFrame(self.img)
-
-        # initialize the thread name
         self.name = name
-
-        # initialize the variable used to indicate if the thread should
-        # be stopped
         self.stopped = False
-
     def start(self):
-        # start the thread to read frames from the video stream
         t = Thread(target=self.update, name=self.name, args=())
         t.daemon = True
         t.start()
         return self
-
     def update(self):
-        # keep looping infinitely until the thread is stopped
         while True:
-            # if the thread indicator variable is set, stop the thread
             if self.stopped:
                 return
-            #Boolean logic we don't keep setting exposure over and over to the same value
             if self.autoExpose:
-
                 self.webcam.setExposureAuto()
             else:
-
                 self.webcam.setExposureManual(0)
-            #gets the image and timestamp from cameraserver
             (self.timestamp, self.img) = self.stream.grabFrame(self.img)
-
     def read(self):
-        # return the frame most recently read
         return self.timestamp, self.img
-
     def stop(self):
-        # indicate that the thread should be stopped
         self.stopped = True
     def getError(self):
         return self.stream.getError()
+
 ###################### PROCESSING OPENCV ################################
 
 #Angles in radians
 
 #image size ratioed to 16:9
-image_width = 256
-image_height = 144
+IMAGE_WIDTH = 256
+IMAGE_HEIGHT = 144
 
-camera_offset_angle = 45
-camera_horizontal_offset = 16
-
-#Lifecam 3000 from datasheet
 #Datasheet: https://dl2jx7zfbtwvr.cloudfront.net/specsheets/WEBC1010.pdf
 diagonalView = math.radians(68.5)
 
@@ -138,8 +104,8 @@ horizontalView = math.atan(math.tan(diagonalView/2) * (horizontalAspect / diagon
 verticalView = math.atan(math.tan(diagonalView/2) * (verticalAspect / diagonalAspect)) * 2
 
 #Focal Length calculations: https://docs.google.com/presentation/d/1ediRsI-oR3-kwawFJZ34_ZTlQS2SDBLjZasjzZ-eXbQ/pub?start=false&loop=false&slide=id.g12c083cffa_0_165
-H_FOCAL_LENGTH = image_width / (2*math.tan((horizontalView/2)))
-V_FOCAL_LENGTH = image_height / (2*math.tan((verticalView/2)))
+H_FOCAL_LENGTH = IMAGE_WIDTH / (2*math.tan((horizontalView/2)))
+V_FOCAL_LENGTH = IMAGE_HEIGHT / (2*math.tan((verticalView/2)))
 #blurs have to be odd
 green_blur = 7
 orange_blur = 27
@@ -255,12 +221,12 @@ def findTape(contours, image, centerX, centerY, networkTable):
                     yaw = calculateYaw(cx, centerX, H_FOCAL_LENGTH)
                     # Calculates yaw of contour (horizontal position in degrees)
                     pitch = calculatePitch(cy, centerY, V_FOCAL_LENGTH)
-                    try: 
+                    try:
                         #offset_theta = math.acos((camera_horizontal_offset/distance))
                         raw_width = min(rect[1][0], rect[1][1])
                         #width = math.cos(camera_offset_angle)*raw_width
                         #distance = distance * math.sin(offset_theta)
-                    except: 
+                    except:
                         print("Distance function failed")
                     # Draws a vertical white line passing through center of contour
                     cv2.line(image, (cx, screenHeight), (cx, 0), (255, 255, 255))
@@ -287,16 +253,9 @@ def findTape(contours, image, centerX, centerY, networkTable):
                     distance = 0
                     # Appends important info to array
                     if not biggestCnts:
-<<<<<<< HEAD
                          biggestCnts.append([cx, cy, rotation, cnt,distance, raw_width])
                     elif [cx, cy, rotation, cnt, distance, raw_width] not in biggestCnts:
                          biggestCnts.append([cx, cy, rotation, cnt,distance, raw_width])
-=======
-                         biggestCnts.append([cx, cy, rotation])
-                    elif [cx, cy, rotation] not in biggestCnts:
-                         biggestCnts.append([cx, cy, rotation])
->>>>>>> 2c956345b95e6e445cbb2f0a213e941a49a885b4
-
 
         # Sorts array based on coordinates (leftmost to rightmost) to make sure contours are adjacent
         biggestCnts = sorted(biggestCnts, key=lambda x: x[0])
@@ -315,7 +274,7 @@ def findTape(contours, image, centerX, centerY, networkTable):
 
             distance2 = calculateDistance(2,  biggestCnts[i+1][5])
             ratio = biggestCnts[i][5] / biggestCnts[i+1][5]
-			
+
             distance = biggestCnts[i][4]
             # If contour angles are opposite
             if (np.sign(tilt1) != np.sign(tilt2)):
@@ -338,17 +297,12 @@ def findTape(contours, image, centerX, centerY, networkTable):
                     targets.append([centerOfTarget, yawToTarget, distance2, cx1, ratio])
                 elif [centerOfTarget, yawToTarget, distance2, cx1, ratio] not in targets:
                     targets.append([centerOfTarget, yawToTarget, distance2, cx1, ratio])
-    #Check if there are targets seen
     if (len(targets) > 0):
-        # pushes that it sees vision target to network tables
         networkTable.putBoolean("tapeDetected", True)
         #Sorts targets based on x coords to break any angle tie
         targets.sort(key=lambda x: math.fabs(x[0]))
         finalTarget = min(targets, key=lambda x: math.fabs(x[1]))
-        # Puts the yaw on screen
-        #Draws yaw of target + line where center of target is
-        cv2.putText(image, "Yaw: " + str(finalTarget[1]), (40, 40), cv2.FONT_HERSHEY_COMPLEX, .6,
-                    (255, 255, 255))
+
         cv2.line(image, (finalTarget[0], screenHeight), (finalTarget[0], 0), (255, 0, 0), 2)
 
         currentAngleError = finalTarget[1]
@@ -356,19 +310,16 @@ def findTape(contours, image, centerX, centerY, networkTable):
         # pushes vision target angle to network tables
         networkTable.putNumber("angle", finalTarget[1])
         networkTable.putNumber("distance", distance)
-        print(str(distance))
     else:
-        # pushes that it deosn't see vision target to network tables
         networkTable.putBoolean("tapeDetected", False)
 
     cv2.line(image, (round(centerX), screenHeight), (round(centerX), 0), (255, 255, 255), 2)
-
     return image
 
 
 # Checks if tape contours are worthy based off of contour area and (not currently) hull area
 def checkContours(cntSize, hullSize):
-    return cntSize > (image_width / 6)
+    return cntSize > (IMAGE_WIDTH / 6)
 
 #Forgot how exactly it works, but it works!
 def translateRotation(rotation, width, height):
@@ -544,7 +495,7 @@ if __name__ == "__main__":
     sd = ntinst.getTable('SmartDashboard')
 
     #if server:
-        
+
 		#print("Setting up NetworkTables server")
         #ntinst.startServer()
     #else:
@@ -564,13 +515,13 @@ if __name__ == "__main__":
     webcam = cameras[int(sd.getString("WhichCamera", "0"))]
     cameraServer = streams[int(sd.getString("WhichCamera", "0"))]
     #Start thread reading camera
-    cap = WebcamVideoStream(webcam, cameraServer, image_width, image_height).start()
+    cap = video_manager(webcam, cameraServer, IMAGE_WIDTH, IMAGE_HEIGHT).start()
 
     # (optional) Setup a CvSource. This will send images back to the Dashboard
     # Allocating new images is very expensive, always try to preallocate
-    img = np.zeros(shape=(image_height, image_width, 3), dtype=np.uint8)
+    img = np.zeros(shape=(IMAGE_HEIGHT, IMAGE_WIDTH, 3), dtype=np.uint8)
     #Start thread outputing stream
-    streamViewer = VideoShow(image_width,image_height, cameraServer, frame=img).start()
+    streamViewer = video_streamer(IMAGE_WIDTH,IMAGE_HEIGHT, cameraServer, frame=img).start()
     #cap.autoExpose=True;
     tape = False
     #TOTAL_FRAMES = 200;
@@ -605,26 +556,26 @@ if __name__ == "__main__":
             streamViewer.notifyError(cap.getError());
             # skip the rest of the current iteration
             continue
-			
+
         #Checks if you just want camera for driver (No processing), False by default
         #frame = cv2.flip(frame, 90)
         #print(sd.getString("Driver", "false"))
         #if sd.getString("Driver", "false"):
             #print("Reached")
         cap.autoExpose = True
-        #if int(sd.getString("WhichCamera", "1")) == 1: 
+        #if int(sd.getString("WhichCamera", "1")) == 1:
             #frame = flipImage(frame)
         #frame = flipImage(frame)
         try:
             processed = frame
-            if int(sd.getString("WhichCamera", "1")) == 1: 
+            if int(sd.getString("WhichCamera", "1")) == 1:
                 frame = flipImage(frame)
             sd.putNumber("VideoTimestamp", timestamp)
             streamViewer.frame = processed
         #frame = flipImage(frame)
-        except: 
-            print("Failure to get frame") 
-			
+        except:
+            print("Failure to get frame")
+
         #else:
         #print("Vision")
             #Lowers exposure to 0
@@ -639,8 +590,3 @@ if __name__ == "__main__":
     #Doesn't do anything at the moment. You can easily get this working by indenting these three lines
     # and setting while loop to: while fps._numFrames < TOTAL_FRAMES
 # this shit doesnt do anything
-
-
-
-
-
