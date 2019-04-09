@@ -3,6 +3,8 @@ package frc.subsystem;
 import com.kauailabs.navx.frc.AHRS; 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
+
 import java.util.ArrayList;
 import frc.robot.constants;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -67,6 +69,9 @@ public class drivetrain extends subsystem {
 	private double forwardCommand;
 	private double strafeCommand;
 	private double spinCommand;
+	
+	private double startTime = 0; 
+	private double currentTime = 0; 
 
 	private boolean isVisionDriving;
 	
@@ -107,9 +112,10 @@ public class drivetrain extends subsystem {
 
 		cAutonVision = false;
 
-		mVisionForward = new pid(0.009, 0.0, 0.0, 0.0, 0.8, -0.8, 0.0); 
-		mVisionSpin = new pid(0.01, 0.0, 0.0, 0.0, 0.8, -0.8, 0.0); 
-		mVisionStrafe = new pid(0.015, 0.0, 0.0, 0.0, 0.8, -0.8, 0.0); 
+		mVisionForward = new pid(0.008, 0, 0, .6); 
+		mVisionSpin = new pid(0.01, 0, 0, .8); 
+		mVisionStrafe = new pid(0.015, 0, 0, .8); 
+
 		
 		//Instantiate array list
 		mNeoPods = new ArrayList<neopod>();
@@ -233,6 +239,10 @@ public class drivetrain extends subsystem {
 
 	public state getLastState(){
 		return mLastState; 
+	}
+
+	public state getCurrentState(){
+		return mCurrentState; 
 	}
 
 	public boolean isVisionDriving(){
@@ -406,28 +416,31 @@ public class drivetrain extends subsystem {
 					crabDrive();
 					break;
 				case VISION_TRACK:
+					setCoordType(coordType.ROBOTCENTRIC); 
+					setInputType(inputType.PERCENTPOWER);
+					currentTime = Timer.getFPGATimestamp();
 					if(mLastState != state.VISION_TRACK){
 						isVisionDriving = true; 
-					} else if (mVision.getDistance() < 23.6) {
+					} else if (mVision.getDistance() < 21.5) {
 						isVisionDriving = false; 
 					}
 					
 					if(isVisionDriving){
+						startTime = Timer.getFPGATimestamp();
 						trackToTarget();
 					} else {
-						forwardCommand = -0.2; 
-						strafeCommand = 0.0; 
-						spinCommand = 0.0; 
+						if((currentTime - startTime) < 0.15){
+							forwardCommand = -0.1; 
+							strafeCommand = 0.0; 
+							spinCommand = 0.0; 
+						} 
 					}
-
-					setCoordType(coordType.ROBOTCENTRIC); 
-					setInputType(inputType.PERCENTPOWER);
 					crabDrive();
 					break;
 				case VISION_EXIT: 
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
-					forwardCommand = 0.3;
+					forwardCommand = 0.2;
 					strafeCommand = 0; 
 					spinCommand = 0; 
 					crabDrive();

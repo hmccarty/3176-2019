@@ -98,7 +98,7 @@ public class constants {
 	public static final double[][] SPIN_PID_PRACTICE = { /*kP*/ {2, 2, 2, 4.5}, 
 														 /*kI*/ {0.0023, 0.00001, 0.00001, 0.0023},
 														 /*kD*/ {190.0, 170, 170, 190.0},
-														 /*kF*/ {0.00001, 0.00001, 0.00001, 0.00001}};
+														 /*kF*/ {0.00000, 0.00000, 0.00000, 0.00000}};
 
 	public static final double[][] SPIN_PID_CONFIG = (isCompBot) ? SPIN_PID_COMPETITION : SPIN_PID_PRACTICE;
 
