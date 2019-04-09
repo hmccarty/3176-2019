@@ -173,7 +173,7 @@ public class constants {
 															 /*I-Zone*/ 0.0};
 
 	public static final int DEPLOYED_HEIGHT = 48000; //encoder ticks
-    public static final int STOWED_HEIGHT = 3000;
+    public static final int STOWED_HEIGHT = 4500;
 	public static final int ROCKET_HEIGHT = 14500;
 	public static final int TRANSFER_HEIGHT = 0;
 }

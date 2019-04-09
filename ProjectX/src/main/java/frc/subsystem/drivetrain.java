@@ -337,9 +337,9 @@ public class drivetrain extends subsystem {
 
 		if(Math.abs(spinCommand) <= 0.06){
 			if(mVision.getDistance() != -1){
-				forwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 18);
+				//forwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 18);
 			} else {
-				forwardCommand = 0;
+				//forwardCommand = 0;
 			}
 			if(mVision.getAngle() != -1){
 				strafeCommand = -mVisionStrafe.returnOutput(mVision.getAngle(), 0);
@@ -421,7 +421,7 @@ public class drivetrain extends subsystem {
 					currentTime = Timer.getFPGATimestamp();
 					if(mLastState != state.VISION_TRACK){
 						isVisionDriving = true; 
-					} else if (mVision.getDistance() < 21.5) {
+					} else if (mVision.getDistance() < 21.5 || !mController.trackTarget()) {
 						isVisionDriving = false; 
 					}
 					
@@ -430,7 +430,7 @@ public class drivetrain extends subsystem {
 						trackToTarget();
 					} else {
 						if((currentTime - startTime) < 0.15){
-							forwardCommand = -0.1; 
+							forwardCommand = 0.00000000000000001; 
 							strafeCommand = 0.0; 
 							spinCommand = 0.0; 
 						} 

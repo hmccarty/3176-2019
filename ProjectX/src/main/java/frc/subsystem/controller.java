@@ -11,7 +11,7 @@ public class controller {
     private Joystick mThrustStick = new Joystick(0);
     private Joystick mYawStick = new Joystick(1);
     private Joystick mButtonMonkeyMain = new Joystick(3); 
-    private Joystick mButtonMonkeyBackup = new Joystick(2); 
+    private Joystick mButtonMonkeyBackup = new Joystick(4); 
 
     private double kThrustStickDeadband = constants.TRANSLATIONAL_DEADBAND; 
     private double kThrustStickScale = constants.TRANSLATIONAL_SCALE; 
@@ -52,15 +52,15 @@ public class controller {
     \**************s*******/
 
     public  boolean crossbowDeliverMain() {
-        return mButtonMonkeyMain.getRawButton(1);
+        return mButtonMonkeyMain.getRawButton(3);
     }
 
     public boolean neutralMain() {
-        return mButtonMonkeyMain.getRawButton(2);
+        return mButtonMonkeyMain.getRawButton(1);
     }
 
     public  boolean crossbowIntakeMain() {
-        return mButtonMonkeyMain.getRawButton(3);
+        return mButtonMonkeyMain.getRawButton(2);
     }
 
     public  boolean crossbowHoldMain() {
@@ -76,11 +76,11 @@ public class controller {
     }
 
     public boolean intakeClawMain() {
-        return mButtonMonkeyMain.getRawButton(9);
+        return mButtonMonkeyMain.getRawButton(7);
     }
 
     public boolean deployClawMain() {
-        return mButtonMonkeyMain.getRawButton(10);
+        return mButtonMonkeyMain.getRawButton(8);
     }
 
     public boolean stowCargoIntakeMain() {
@@ -88,7 +88,7 @@ public class controller {
     }
 
     public boolean rocketCargoIntakeMain() {
-        return mButtonMonkeyMain.getRawButton(12);
+        return mButtonMonkeyMain.getRawButton(10);
     }    
 
     public void alertOperatorMain() { 
@@ -100,8 +100,8 @@ public class controller {
      *         (if no position is wanted, then returns -1)
      */
     public int wantedCargoIntakePositionMain() {
-        if(Math.abs(mButtonMonkeyMain.getRawAxis(3)) > 0.015) {
-            return (int)(mButtonMonkeyMain.getRawAxis(3)*600);
+        if(Math.abs(mButtonMonkeyMain.getRawAxis(5)) > 0.015) {
+            return (int)(mButtonMonkeyMain.getRawAxis(5)*600);
         } else {
             return -1; 
         }
@@ -198,8 +198,8 @@ public class controller {
      * @return driver wanted velocity of elevator
      */
     public double wantedElevatorOpenLoop() {
-        if(Math.abs(mButtonMonkeyBackup.getRawAxis(5)) > 0.045) {
-             return -mButtonMonkeyBackup.getRawAxis(5);
+        if(Math.abs(mButtonMonkeyBackup.getRawAxis(1)) > 0.045) {
+             return -mButtonMonkeyBackup.getRawAxis(1);
         } else {
             return 0; 
         }
@@ -213,7 +213,7 @@ public class controller {
             return 27.65; 
         }
         else if(mButtonMonkeyBackup.getPOV() == 90) {
-            return 16; 
+            return 18; 
         }
         else if(mButtonMonkeyBackup.getPOV() == 180) {
             return 0.2; 
