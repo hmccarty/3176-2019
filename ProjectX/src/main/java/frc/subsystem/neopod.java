@@ -66,10 +66,10 @@ public class neopod extends subsystem {
 		this.spinMotor = spinMotor;
 		this.spinMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,0,0);
 
-		this.spinMotor.config_kP(0, constants.SPIN_PID_CONFIG[id][0], 0);
-		this.spinMotor.config_kI(0, constants.SPIN_PID_CONFIG[id][1], 0);
-		this.spinMotor.config_kD(0, constants.SPIN_PID_CONFIG[id][2], 0);
-		this.spinMotor.config_kF(0, constants.SPIN_PID_CONFIG[id][3], 0);
+		this.spinMotor.config_kP(0, constants.SPIN_PID_CONFIG[0][id], 0);
+		this.spinMotor.config_kI(0, constants.SPIN_PID_CONFIG[1][id], 0);
+		this.spinMotor.config_kD(0, constants.SPIN_PID_CONFIG[2][id], 0);
+		this.spinMotor.config_kF(0, constants.SPIN_PID_CONFIG[3][id], 0);
 	}
 	
 	/**

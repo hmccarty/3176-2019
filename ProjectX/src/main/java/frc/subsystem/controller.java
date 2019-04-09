@@ -394,7 +394,7 @@ public class controller {
      * @return if driver wants to enable tracking
      */
     public boolean finishedTracking() {
-        return mYawStick.getRawButtonPressed(1);
+        return mYawStick.getRawButtonReleased(1);
     }
 
     /**
