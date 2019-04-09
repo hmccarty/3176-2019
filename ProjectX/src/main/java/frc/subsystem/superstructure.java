@@ -51,6 +51,10 @@ public class superstructure {
         mWantedState = wantedState;
     }
 
+    public state getCurrentState(){
+        return mCurrentState;
+    }
+
     public void checkState(){
         if(mCurrentState != mWantedState){
             mCurrentState = mWantedState; 

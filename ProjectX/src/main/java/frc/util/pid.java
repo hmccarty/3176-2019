@@ -8,79 +8,53 @@ import edu.wpi.first.wpilibj.Timer;
  */
 
 public class pid {
-	private double kP;
-	private double kI;
-	private double kD;
-    private double kF;
-    private double kMaxSpeed = 1.0;
+	private double kP, kI, kD, kF;
+	private double kMaxSpeed, kMinSpeed; 
     
-	private double iError, iPrevError, iIntegral, iDerivative, iOutput, kIntegralMax = 0;
-	private double iCurrTime;
-	private double iLastTime = Timer.getFPGATimestamp();
-	private double iDeltaTime;
+	private double error, prevError, integral, derivative, output, kIntegralMax; 
+	private double currTime;
+	private double lastTime = Timer.getFPGATimestamp();
+	private double deltaTime;
 
-	public pid (double kP, double kI, double kD) {
+	public pid (double kP, double kI, double kD, double kF, double kMaxSpeed, double kMinSpeed, double kIntegralMax) {
 		this.kP = kP;
 		this.kI = kI;
 		this.kD = kD;
-	}
+		this.kF = kF; 
 
-	public pid (double kP, double kI, double kD, double kMaxSpeed) {
-		this.kP = kP;
-		this.kI = kI;
-		this.kD = kD;
 		this.kMaxSpeed = kMaxSpeed;
+		this.kMinSpeed = kMinSpeed;
+
+		this.kIntegralMax = kIntegralMax; 
 	}
 
-	public pid (double kP, double kI, double kD, double kMaxSpeed, double kF) {
-		this.kP = kP;
-		this.kI = kI;
-		this.kD = kD;
-		this.kMaxSpeed = kMaxSpeed;
-		this.kF = kF;
-	}
-
-	public pid (double kP, double kI, double kD, double kMaxSpeed, double kF, double kIntegralMax) {
-		this.kP = kP;
-		this.kI = kI;
-		this.kD = kD;
-        this.kMaxSpeed = kMaxSpeed;
-        this.kF = kF;
-		this.kIntegralMax = kIntegralMax;
-	}
 
 	public double returnOutput(double current, double setpoint) {
-		iError = setpoint - current;
-		return returnOutput(iError);
-	}
+		lastTime = currTime;
+		currTime = Timer.getFPGATimestamp();
+		deltaTime = currTime - lastTime;
 
-	public double returnOutput(double error) {
-		iDeltaTime = .02;
-		iIntegral += (error* iDeltaTime);
+		integral += (error * deltaTime);
 		if(kIntegralMax != 0.0) { 
-			if(iIntegral>kIntegralMax)
-			{
-				iIntegral = kIntegralMax;
+			if(integral > kIntegralMax) {
+				integral = kIntegralMax;
 			}
-			else if(iIntegral<-kIntegralMax)
-			{
-				iIntegral = -kIntegralMax;
+			else if(integral < -kIntegralMax) {
+				integral = -kIntegralMax;
 			}
 		}
 
-		iDerivative = (error - iPrevError)/iDeltaTime;
-		iPrevError = error;
+		derivative = (error - prevError)/deltaTime;
+		prevError = error;
 
-		iOutput = (kP*error) + (kI*iIntegral) + (kD*iDerivative);
+		output = (kP * error) + (kI * integral) + (kD * derivative) + (kF * setpoint);
 
-		if(iOutput>kMaxSpeed) {
-			iOutput = kMaxSpeed;
+		if(output > kMaxSpeed) {
+			output = kMaxSpeed;
+		} else if(output < kMinSpeed) {
+			output = kMinSpeed;
 		}
-		else if(iOutput<-kMaxSpeed) {
-			iOutput = -kMaxSpeed;
-		}
-
-		return iOutput;
+		return output;
 	}
 
 	//getters and setters for everything

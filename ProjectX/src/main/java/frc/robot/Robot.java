@@ -12,8 +12,6 @@ import frc.subsystem.*;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.*;
 import frc.auton.*;
-import frc.util.VL53L0X_v1;
-
 
 public class Robot extends TimedRobot {
 	private loopmanager myLoops = loopmanager.getInstance();
@@ -21,10 +19,13 @@ public class Robot extends TimedRobot {
 	private vision mVision = vision.getInstance();
 	private controller mController = controller.getInstance();
 	private superstructure mSuperstructure = superstructure.getInstance();
-	private claw mClaw = claw.getInstance();
 	private elevator mElevator = elevator.getInstance();
-	private VL53L0X_v1 clawBallSensor = new VL53L0X_v1();
-	private cargointake mCargoIntake = cargointake.getInstance();
+
+	double startTime = -0.5; 
+	double endTime = 0; 
+
+	boolean visionIntaking = false; 
+	boolean visionDeploying = false; 
 
 	@Override
 	public void robotInit() {
@@ -35,28 +36,53 @@ public class Robot extends TimedRobot {
 		myLoops.startLoops();
 	}
 	
+	public void robotPeriodic(){
+		/*****************\
+		|* Vision States *|
+		\*****************/
+ 
+		if(mController.switchVisionCamera()) {
+			mVision.setWantedState(vision.state.SWITCH_CAMERA);
+		} else if(mController.switchVisionMode()) {
+			mVision.setWantedState(vision.state.SWITCH_MODE);
+		}
+	}
+
 	public void autonomousPeriodic() {
 		driverControl();
 	}
 
 	@Override
 	public void teleopPeriodic() {
-		try{ 
-	} catch (Exception e){
+		try { 
+			driverControl();
+		} catch (Exception e) {
 
-	}
-		driverControl();
+		}
 	}
 
 	public void driverControl() {
 		myLoops.runLoops();
-		
+	
+		endTime = Timer.getFPGATimestamp();
+
 		/*********************\
 		|* Drivetrain States *|
 		\*********************/
+
 		if(mController.trackTarget()) {
-			mDriveTrain.setWantedState(drivetrain.state.VISION);
-		} else {
+			if(mSuperstructure.getCurrentState() == superstructure.state.INTAKE_H_CB){
+				visionIntaking = true; 
+			} else {
+				visionDeploying = true; 
+			}
+			mDriveTrain.setWantedState(drivetrain.state.VISION_TRACK);
+		} else if (mController.finishedTracking() || (endTime - startTime) < 0.15){
+			startTime = Timer.getFPGATimestamp(); 
+			mDriveTrain.setWantedState(drivetrain.state.VISION_EXIT); 
+	    } else {
+			visionIntaking = false; 
+			visionDeploying = false; 
 			mDriveTrain.setWantedState(drivetrain.state.DRIVE);
 		}		
 
@@ -68,9 +94,9 @@ public class Robot extends TimedRobot {
 		 	mSuperstructure.setWantedState(superstructure.state.INTAKE_H_CB);
 		} else if (mController.wantedCargoIntakeOpenLoop() != 0) {
 			mSuperstructure.setWantedState(superstructure.state.OPENLOOP_CARGO); 
-		} else if(mController.crossbowHold()) {
+		} else if(mController.crossbowHold() || (mController.finishedTracking() && visionIntaking)) {
 		 	mSuperstructure.setWantedState(superstructure.state.HOLD_H_CB);
-		} else if(mController.crossbowDeliver()) {
+		} else if(mController.crossbowDeliver() || (mController.finishedTracking() && visionDeploying)) {
 		 	mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
 		} else if(mController.deployCargoIntake()) {
 		 	mSuperstructure.setWantedState(superstructure.state.INTAKE_C_ROLLER);
@@ -94,27 +120,16 @@ public class Robot extends TimedRobot {
 		|* Elevator States *|
 		\*******************/
 
-		// if(mController.openLoopElevatorEnabled()){
-		//  	mElevator.setWantedState(elevator.state.OPEN_LOOP);
-		// } else 
 		if (mController.wantedElevatorHeight() != -1) {
-			mElevator.setWantedElevatorHeight(mController.wantedElevatorHeight());
+			double visionHeight = (mElevator.getHeight() < 8.0) ? 8.0 : mElevator.getHeight(); 
+			double wantedHeight = (mDriveTrain.isVisionDriving()) ? visionHeight : mController.wantedElevatorHeight();
+			mElevator.setWantedElevatorHeight(wantedHeight);
 		 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
 		} else if (mController.wantedElevatorVelocity() != 0) {
 			mElevator.setWantedState(elevator.state.MANUAL_CONTROL);
 			mElevator.setWantedElevatorHeight(mElevator.getHeight() + mController.wantedElevatorVelocity());
 		} else {
 		  	mElevator.setWantedState(elevator.state.HOLDING);
-		}
-
-		/*****************\
-		|* Vision States *|
-		\*****************/
- 
-		if(mController.switchVisionCamera()) {
-			mVision.setWantedState(vision.state.SWITCH_CAMERA);
-		} else if(mController.switchVisionMode()) {
-			mVision.setWantedState(vision.state.SWITCH_MODE);
 		}
 	}
 

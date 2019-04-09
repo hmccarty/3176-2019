@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import java.util.ArrayList;
 import frc.robot.constants;
-import edu.wpi.first.wpilibj.smartdashboard.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -36,7 +35,7 @@ public class drivetrain extends subsystem {
 	private boolean cAutonVision; 
 
 	private pid mVisionForward;
-	private pid mVisionTurn;  
+	private pid mVisionSpin;  
 	private pid mVisionStrafe; 
 
 	private pid mSpinMaster; 
@@ -68,12 +67,15 @@ public class drivetrain extends subsystem {
 	private double forwardCommand;
 	private double strafeCommand;
 	private double spinCommand;
+
+	private boolean isVisionDriving;
 	
 	public enum state {
 		NEUTRAL,
 		HOMING,
 		DRIVE,
-		VISION,
+		VISION_TRACK, 
+		VISION_EXIT,
 		AUTON
 	}
 	
@@ -90,6 +92,7 @@ public class drivetrain extends subsystem {
 	
 	private state mCurrentState;
 	private state mWantedState;
+	private state mLastState; 
 	
 	private drivetrain(){
 		//instantiate the mPods
@@ -104,12 +107,9 @@ public class drivetrain extends subsystem {
 
 		cAutonVision = false;
 
-		mVisionForward = new pid(0.009, 0, 0, .8); 
-		mVisionTurn = new pid(0.01, 0, 0, .8); 
-		mVisionStrafe = new pid(0.015, 0, 0, .8); 
-
-		mSpinMaster = new pid(0.00001, 0.0, 0, 0.5);
-
+		mVisionForward = new pid(0.009, 0.0, 0.0, 0.0, 0.8, -0.8, 0.0); 
+		mVisionSpin = new pid(0.01, 0.0, 0.0, 0.0, 0.8, -0.8, 0.0); 
+		mVisionStrafe = new pid(0.015, 0.0, 0.0, 0.0, 0.8, -0.8, 0.0); 
 		
 		//Instantiate array list
 		mNeoPods = new ArrayList<neopod>();
@@ -127,13 +127,15 @@ public class drivetrain extends subsystem {
 		kMaxSpeed = constants.DRIVETRAIN_MAX_WHEEL_SPEED;
 		kMaxRotation = constants.DRIVETRAIN_MAX_ROTATION_SPEED;
 
-		kMaxAccel = constants.NEO_MAX_ACCEL;
-		kMaxVel = constants.NEO_MAX_VEL;
+		kMaxVel = constants.DRIVE_MAX_VEL;
+		kMaxAccel = constants.DRIVE_MAX_ACCEL;
 		
 		//Instantiating the Gyro
 		mGyro = new AHRS(SPI.Port.kMXP);
 		resetGyro();
 		updateAngle();
+
+		isVisionDriving = false;
 		
 		//Start wheels in a forward facing direction
 		forwardCommand = Math.pow(10, -15); 
@@ -229,6 +231,14 @@ public class drivetrain extends subsystem {
 		cAutonVision = state; 
 	}
 
+	public state getLastState(){
+		return mLastState; 
+	}
+
+	public boolean isVisionDriving(){
+		return isVisionDriving; 
+	}
+
 	public void setForwardCommand(double wantedForwardCommand){
 		forwardCommand = wantedForwardCommand; 
 	}
@@ -313,16 +323,16 @@ public class drivetrain extends subsystem {
 		} else {
 			wantedGyroPosition = lastGyroClock; 
 		}
-		spinCommand = mVisionTurn.returnOutput(getAngle(), wantedGyroPosition);
+		spinCommand = -mVisionSpin.returnOutput(getAngle(), wantedGyroPosition);
 
 		if(Math.abs(spinCommand) <= 0.06){
 			if(mVision.getDistance() != -1){
-				forwardCommand = -mVisionForward.returnOutput(mVision.getDistance(), 18);
+				forwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 18);
 			} else {
 				forwardCommand = 0;
 			}
 			if(mVision.getAngle() != -1){
-				strafeCommand = mVisionStrafe.returnOutput(mVision.getAngle(), 5);
+				strafeCommand = -mVisionStrafe.returnOutput(mVision.getAngle(), 0);
 			} else {
 				strafeCommand = 0;
 			}
@@ -333,7 +343,7 @@ public class drivetrain extends subsystem {
 	 * Determines when robot has reached the position it was tracking to
 	 */
 	public boolean isAtTarget(){
-		if(Math.abs((mVisionTurn.returnOutput(mVision.getDistance(), 0))) < .5){
+		if(Math.abs((mVisionSpin.returnOutput(mVision.getDistance(), 18))) < .5){
 			return true;
 		} else {
 			return false;
@@ -366,25 +376,22 @@ public class drivetrain extends subsystem {
 			updateAngle();
 			switch(mCurrentState) {
 				case NEUTRAL:
-					checkState();
+					forwardCommand = 0; 
+					strafeCommand = 0; 
+					spinCommand = 0; 
+					crabDrive(); 
 					break;
 				case DRIVE:
 					forwardCommand = mController.getForward();
 					strafeCommand = mController.getStrafe();
-					//spinCommand = mController.getSpin();
+					spinCommand = mController.getSpin();
 
 					if (!mController.sickoMode()) {
 						forwardCommand *= constants.MAX_SLOW_PERCENT_SPEED;
 						strafeCommand *= constants.MAX_SLOW_PERCENT_SPEED;
 						spinCommand *= constants.MAX_SLOW_PERCENT_SPEED;
 					}
-					//System.out.println(mController.gyroClockPosition());
-					//if(mController.gyroClockPosition() != -1){
-					//	spinCommand = -mVisionTurn.returnOutput(getAngle(), mController.gyroClockPosition());
-					//} else {
-						spinCommand = mController.getSpin();
-					//}
-
+					
 					if(mController.robotCentric()) {
 						setCoordType(coordType.ROBOTCENTRIC);
 					} else if (mController.backRobotCentric()){
@@ -394,22 +401,36 @@ public class drivetrain extends subsystem {
 					}
 					setInputType(inputType.PERCENTPOWER);
 
-					if(spinCommand == 0){
-						//spinCommand = -mSpinMaster.returnOutput(getAngle(), lastAngle);
-					} else {
-						lastAngle = getAngle();
-					}
+					lastAngle = getAngle();
 					
 					crabDrive();
-					checkState();
 					break;
-				case VISION:
-					trackToTarget();
+				case VISION_TRACK:
+					if(mLastState != state.VISION_TRACK){
+						isVisionDriving = true; 
+					} else if (mVision.getDistance() < 23.6) {
+						isVisionDriving = false; 
+					}
+					
+					if(isVisionDriving){
+						trackToTarget();
+					} else {
+						forwardCommand = -0.2; 
+						strafeCommand = 0.0; 
+						spinCommand = 0.0; 
+					}
+
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
-
 					crabDrive();
-					checkState();
+					break;
+				case VISION_EXIT: 
+					setCoordType(coordType.ROBOTCENTRIC); 
+					setInputType(inputType.PERCENTPOWER);
+					forwardCommand = 0.3;
+					strafeCommand = 0; 
+					spinCommand = 0; 
+					crabDrive();
 					break;
 				case AUTON:
 					if(cAutonVision){
@@ -421,11 +442,12 @@ public class drivetrain extends subsystem {
 						setInputType(inputType.VELOCITY);
 					}
 					crabDrive();
-					checkState();
 					break;
 				default:
 					break;			
 				}
+			mLastState = mCurrentState; 
+			checkState();
 			outputToSmartDashboard();
 		}
 		@Override

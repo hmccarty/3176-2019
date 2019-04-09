@@ -129,11 +129,10 @@ public class controller {
             return 15.25; 
         }
         else if(mButtonMonkeyMain.getPOV() == 180) {
-            return 0.2; 
-        } else if(mButtonMonkeyMain.getPOV() == 270){
+            return 0; 
+        } else if(mButtonMonkeyMain.getPOV() == 270) {
             return 8.0;
-        } 
-        else {
+        } else {
             return -1; 
         }
     }
@@ -389,6 +388,13 @@ public class controller {
      */
     public boolean trackTarget() {
         return mYawStick.getRawButton(1);
+    }
+
+    /**
+     * @return if driver wants to enable tracking
+     */
+    public boolean finishedTracking() {
+        return mYawStick.getRawButtonPressed(1);
     }
 
     /**

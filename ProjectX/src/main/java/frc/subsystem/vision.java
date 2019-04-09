@@ -8,7 +8,7 @@ public class vision extends subsystem{
     private static vision instance = new vision();
     loopmanager mLoopMan = loopmanager.getInstance();
 
-    NetworkTableInstance inst = NetworkTableInstance.getDefault(); 
+    NetworkTableInstance inst = NetworkTableInstance.getDefault();
     NetworkTable table = inst.getTable("SmartDashboard");
 
     NetworkTableEntry distanceToTarget = table.getEntry("distance");
