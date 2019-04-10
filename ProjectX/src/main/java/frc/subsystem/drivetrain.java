@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.Timer;
-
+import frc.robot.Robot;
 import java.util.ArrayList;
 import frc.robot.constants;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -334,9 +334,9 @@ public class drivetrain extends subsystem {
 		} else {
 			wantedGyroPosition = lastGyroClock; 
 		}
-		double 
+		
 
-		spinCommand = -mVisionSpin.returnOutput(getRelativeAngle(), wantedGyroPosition);
+		spinCommand = -mVisionSpin.returnOutput(getAngle(), wantedGyroPosition);
 
 		if(Math.abs(spinCommand) <= 0.06){
 			if(mVision.getDistance() != -1){
@@ -424,7 +424,7 @@ public class drivetrain extends subsystem {
 					currentTime = Timer.getFPGATimestamp();
 					if(mLastState != state.VISION_TRACK){
 						isVisionDriving = true; 
-					} else if (mVision.getDistance() < 27.5 || !mController.trackTarget()) {
+					} else if (mVision.getDistance() < 27 || !mController.trackTarget()) {
 						isVisionDriving = false; 
 					}
 					
@@ -445,9 +445,12 @@ public class drivetrain extends subsystem {
 				case VISION_EXIT: 
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
-					forwardCommand = 0.3;
-					strafeCommand = 0; 
-					spinCommand = 0; 
+					System.out.println(Robot.getInstance().isVisionDeploying()); 
+					if(!Robot.getInstance().isVisionDeploying()){
+						forwardCommand = 0.3;
+						strafeCommand = 0; 
+						spinCommand = 0; 
+					}
 					crabDrive();
 					break;
 				case AUTON:
