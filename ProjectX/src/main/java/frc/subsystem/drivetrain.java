@@ -3,6 +3,7 @@ package frc.subsystem;
 import com.kauailabs.navx.frc.AHRS; 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.Timer;
 
 import java.util.ArrayList;
@@ -113,8 +114,8 @@ public class drivetrain extends subsystem {
 		cAutonVision = false;
 
 		mVisionForward = new pid(0.008, 0, 0, .6); 
-		mVisionSpin = new pid(0.01, 0, 0, .8); 
-		mVisionStrafe = new pid(0.015, 0, 0, .8); 
+		mVisionSpin = new pid(0.03, 0, 0, .8); 
+		mVisionStrafe = new pid(0.01225, 0, 0, .8); 
 
 		
 		//Instantiate array list
@@ -293,7 +294,7 @@ public class drivetrain extends subsystem {
 		}
 		return average/mNeoPods.size();
 	}
-	
+	public double getRelativeAngle()  {return ((mGyro.getAngle()* Math.PI/180.0));}
 	public double getAngle() {return ((mGyro.getAngle()* Math.PI/180.0) % (2*Math.PI));} //Converts mGyro Angle (0-360) to Radians (0-2pi)
 	
 	private void updateAngle(){
@@ -333,13 +334,15 @@ public class drivetrain extends subsystem {
 		} else {
 			wantedGyroPosition = lastGyroClock; 
 		}
-		spinCommand = -mVisionSpin.returnOutput(getAngle(), wantedGyroPosition);
+		double 
+
+		spinCommand = -mVisionSpin.returnOutput(getRelativeAngle(), wantedGyroPosition);
 
 		if(Math.abs(spinCommand) <= 0.06){
 			if(mVision.getDistance() != -1){
-				//forwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 18);
+				forwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 24);
 			} else {
-				//forwardCommand = 0;
+				forwardCommand = 0;
 			}
 			if(mVision.getAngle() != -1){
 				strafeCommand = -mVisionStrafe.returnOutput(mVision.getAngle(), 0);
@@ -421,7 +424,7 @@ public class drivetrain extends subsystem {
 					currentTime = Timer.getFPGATimestamp();
 					if(mLastState != state.VISION_TRACK){
 						isVisionDriving = true; 
-					} else if (mVision.getDistance() < 21.5 || !mController.trackTarget()) {
+					} else if (mVision.getDistance() < 27.5 || !mController.trackTarget()) {
 						isVisionDriving = false; 
 					}
 					
@@ -429,18 +432,20 @@ public class drivetrain extends subsystem {
 						startTime = Timer.getFPGATimestamp();
 						trackToTarget();
 					} else {
-						if((currentTime - startTime) < 0.15){
-							forwardCommand = 0.00000000000000001; 
+						if((currentTime - startTime) < 0.35){
+							forwardCommand = 0.0; 
 							strafeCommand = 0.0; 
 							spinCommand = 0.0; 
-						} 
+						} else { 
+							forwardCommand = -0.2; 
+						}
 					}
 					crabDrive();
 					break;
 				case VISION_EXIT: 
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
-					forwardCommand = 0.2;
+					forwardCommand = 0.3;
 					strafeCommand = 0; 
 					spinCommand = 0; 
 					crabDrive();
@@ -460,6 +465,8 @@ public class drivetrain extends subsystem {
 					break;			
 				}
 			mLastState = mCurrentState; 
+			SmartDashboard.putString("Drivetrain State", mCurrentState.toString());
+			SmartDashboard.putBoolean("In Vision", isVisionDriving);
 			checkState();
 			outputToSmartDashboard();
 		}

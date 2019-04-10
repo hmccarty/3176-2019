@@ -427,7 +427,7 @@ public class controller {
             return 0; 
         }
         else if(position > 22 && position < 67) {
-            return Math.PI / 4;
+            return 10.5 * Math.PI / 180;
         }
         else if(position > 67 && position < 112) {
             return Math.PI / 2;

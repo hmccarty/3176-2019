@@ -530,15 +530,10 @@ if __name__ == "__main__":
 
         # So whatever camera you want you just change 0 to 1 or 1 to 0
         # It default to the first (0th) camera
-<<<<<<< HEAD
         webcam = cameras[int(sd.getString("WhichCamera", "0"))]
         cameraServer = streams[int(sd.getString("WhichCamera", "0"))]
         #print(sd.getString("WhichCamera", "1"))
 
-=======
-        webcam = cameras[int(networkTable.getNumber("WhichCamera", 0))]
-        cameraServer = streams[int(networkTable.getNumber("WhichCamera", 0))]
->>>>>>> 2c956345b95e6e445cbb2f0a213e941a49a885b4
         # Sets video reader to read from new webcam and cameraServer
         cap.webcam = webcam
         cap.stream = cameraServer.getVideo(camera = webcam)
