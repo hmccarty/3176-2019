@@ -357,6 +357,10 @@ public class controller {
     public boolean frontRightRotation() {
         return mThrustStick.getRawButton(6);
     }
+
+    public boolean toggleCompressor() {
+        return mThrustStick.getRawButtonPressed(7);
+    }
    
     /**
      * @return wanted motion in the y direction on an exponential scale
@@ -427,7 +431,7 @@ public class controller {
             return 0; 
         }
         else if(position > 22 && position < 67) {
-            return 10.5 * Math.PI / 180;
+            return 29 * Math.PI / 180;
         }
         else if(position > 67 && position < 112) {
             return Math.PI / 2;

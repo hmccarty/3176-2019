@@ -63,7 +63,7 @@ public class elevator {
 
         mPositionController.setOutputRange(constants.ELEVATOR_POSITION_PID_CONFIG[5], constants.ELEVATOR_POSITION_PID_CONFIG[6]);
 
-        mSpeedController = new pid(0.007, 0, 0, 0.8);
+        mSpeedController = new pid(0.07, 0, 0, 0.8);
 
         mWinchLeft.setSmartCurrentLimit(constants.SMART_CURRENT_LIMIT);
         mWinchRight.setSmartCurrentLimit(constants.SMART_CURRENT_LIMIT);

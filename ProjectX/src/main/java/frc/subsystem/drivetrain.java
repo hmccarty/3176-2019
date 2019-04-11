@@ -11,6 +11,7 @@ import frc.robot.constants;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import frc.subsystem.superstructure; 
 
 import frc.util.*;
 
@@ -20,6 +21,7 @@ import frc.util.*;
 public class drivetrain extends subsystem {
 	private static drivetrain instance = new drivetrain();
 	private loopmanager mLoopMan = loopmanager.getInstance();
+	private superstructure mSuperstructure = superstructure.getInstance();
 	private vision mVision = vision.getInstance();
 	private controller mController = controller.getInstance(); 
 	private PowerDistributionPanel mPDP = new PowerDistributionPanel(0);
@@ -113,7 +115,7 @@ public class drivetrain extends subsystem {
 
 		cAutonVision = false;
 
-		mVisionForward = new pid(0.008, 0, 0, .6); 
+		mVisionForward = new pid(0.012, 0, 0, .6); 
 		mVisionSpin = new pid(0.03, 0, 0, .8); 
 		mVisionStrafe = new pid(0.01225, 0, 0, .8); 
 
@@ -340,7 +342,7 @@ public class drivetrain extends subsystem {
 
 		if(Math.abs(spinCommand) <= 0.06){
 			if(mVision.getDistance() != -1){
-				forwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 24);
+				forwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 22);
 			} else {
 				forwardCommand = 0;
 			}
@@ -424,7 +426,7 @@ public class drivetrain extends subsystem {
 					currentTime = Timer.getFPGATimestamp();
 					if(mLastState != state.VISION_TRACK){
 						isVisionDriving = true; 
-					} else if (mVision.getDistance() < 27 || !mController.trackTarget()) {
+					} else if (mVision.getDistance() < 23.75 || !mController.trackTarget()) {
 						isVisionDriving = false; 
 					}
 					
@@ -436,8 +438,14 @@ public class drivetrain extends subsystem {
 							forwardCommand = 0.0; 
 							strafeCommand = 0.0; 
 							spinCommand = 0.0; 
-						} else { 
-							forwardCommand = -0.2; 
+						} else if ((currentTime - startTime) < 1.0){ 
+							forwardCommand = -0.2;
+							strafeCommand = 0.0; 
+							spinCommand = 0.0;  
+						} else {
+							forwardCommand = 0.0; 
+							strafeCommand = 0.0; 
+							spinCommand = 0.0; 
 						}
 					}
 					crabDrive();
@@ -445,9 +453,13 @@ public class drivetrain extends subsystem {
 				case VISION_EXIT: 
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
-					System.out.println(Robot.getInstance().isVisionDeploying()); 
-					if(!Robot.getInstance().isVisionDeploying()){
+					
+					if(mSuperstructure.getCurrentState() != superstructure.state.DELIVER_HATCH){
 						forwardCommand = 0.3;
+						strafeCommand = 0; 
+						spinCommand = 0; 
+					} else {
+						forwardCommand = 0.0;
 						strafeCommand = 0; 
 						spinCommand = 0; 
 					}

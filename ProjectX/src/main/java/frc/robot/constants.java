@@ -75,7 +75,7 @@ public class constants {
 	\************************/
 
 	//Absolute offsets of pod mag encoders, see online documentation for determining these values. 
-	public static double OFFSETS_COMPETITION[] = {2802,2426,2599,2997};
+	public static double OFFSETS_COMPETITION[] = {2799, 2470, 2552, 2962};
 	public static double OFFSETS_PRACTICE[] = {1857,3780,1180,1230};
 	public static double OFFSETS[] = (isCompBot) ? OFFSETS_COMPETITION : OFFSETS_PRACTICE;
 

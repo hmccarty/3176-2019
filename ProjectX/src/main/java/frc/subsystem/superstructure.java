@@ -14,7 +14,7 @@ public class superstructure {
     private state mWantedState;
     private state mCurrentState;
 
-    Compressor mCompressor = new Compressor(0);
+    Compressor mCompressor = new Compressor(1);
     controller mController = controller.getInstance();
     crossbow mCrossbow = crossbow.getInstance();
     // hatchintake mHatchIntake = hatchintake.getInstance();
@@ -82,6 +82,14 @@ public class superstructure {
                     } else {
                         mCargoIntake.setOpenLoop(false);
                     }
+                    if(mController.toggleCompressor()){
+                        boolean compressorState = (mCompressor.enabled()) ? false : true; 
+                        if(compressorState == true){
+                            mCompressor.stop();
+                        } else {
+                            mCompressor.start();
+                        }
+                    } 
                     switch(mCurrentState){
                         /**
                          * Allows driver to control cargo intake manually
@@ -257,7 +265,7 @@ public class superstructure {
                          * Returns all mechanism to their starting configuration
                          */
                         case NEUTRAL:
-                            mCompressor.start();
+                            //mCompressor.start();
                             mCargoIntake.stow();
                             mCargoIntake.hold();
                             //mCargoIntake.zeroAllSensors();
