@@ -75,7 +75,7 @@ public class constants {
 	\************************/
 
 	//Absolute offsets of pod mag encoders, see online documentation for determining these values. 
-	public static double OFFSETS_COMPETITION[] = {2799, 2470, 2552, 2962};
+	public static double OFFSETS_COMPETITION[] = {2818, 2459, 2483, 2995};
 	public static double OFFSETS_PRACTICE[] = {1857,3780,1180,1230};
 	public static double OFFSETS[] = (isCompBot) ? OFFSETS_COMPETITION : OFFSETS_PRACTICE;
 
@@ -90,9 +90,9 @@ public class constants {
 	|* Swervepod Constants *|
 	\***********************/
 
-	public static final double[][] SPIN_PID_COMPETITION = { /*kP*/ {4.5, 4.5, 4.5, 4.5}, 
-															/*kI*/ {0.0023, 0.0023, 0.0023, 0.0023},
-															/*kD*/ {190.0, 190.0, 190.0, 190.0},
+	public static final double[][] SPIN_PID_COMPETITION = { /*kP*/ {4.5, 1.0, 1.0, 4.5}, 
+															/*kI*/ {0.0023, 0.00000, 0.00000, 0.0023},
+															/*kD*/ {190.0, 400.0, 400.0, 190.0},
 															/*kF*/ {0.00001, 0.00001, 0.00001, 0.00001}};
 
 	public static final double[][] SPIN_PID_PRACTICE = { /*kP*/ {2, 2, 2, 4.5}, 

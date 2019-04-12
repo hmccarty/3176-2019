@@ -115,9 +115,9 @@ public class drivetrain extends subsystem {
 
 		cAutonVision = false;
 
-		mVisionForward = new pid(0.012, 0, 0, .6); 
+		mVisionForward = new pid(0.00935, 0, 0, .6); 
 		mVisionSpin = new pid(0.03, 0, 0, .8); 
-		mVisionStrafe = new pid(0.01225, 0, 0, .8); 
+		mVisionStrafe = new pid(0.0125, 0, 0, .8); 
 
 		
 		//Instantiate array list
@@ -297,7 +297,13 @@ public class drivetrain extends subsystem {
 		return average/mNeoPods.size();
 	}
 	public double getRelativeAngle()  {return ((mGyro.getAngle()* Math.PI/180.0));}
-	public double getAngle() {return ((mGyro.getAngle()* Math.PI/180.0) % (2*Math.PI));} //Converts mGyro Angle (0-360) to Radians (0-2pi)
+	public double getAngle() {
+		double angle = ((mGyro. getAngle()* Math.PI/180.0) % (2*Math.PI));; 
+		if(mGyro.getAngle() < 0){
+			angle += (2* Math.PI);
+		}
+		return angle;
+	} //Converts mGyro Angle (0-360) to Radians (0-2pi)
 	
 	private void updateAngle(){
 		//-pi to pi 0 = straight ahead
@@ -338,11 +344,11 @@ public class drivetrain extends subsystem {
 		}
 		
 
-		spinCommand = mVisionSpin.returnOutput(getAngle(), wantedGyroPosition);
+		spinCommand = -mVisionSpin.returnOutput(getAngle(), wantedGyroPosition);
 
 		if(Math.abs(spinCommand) <= 0.06){
 			if(mVision.getDistance() != -1){
-				forwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 22);
+				forwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 27.5);
 			} else {
 				forwardCommand = 0;
 			}
@@ -423,25 +429,27 @@ public class drivetrain extends subsystem {
 					crabDrive();
 					break;
 				case VISION_TRACK:
-					setCoordType(coordType.ROBOTCENTRIC); 
-					setInputType(inputType.PERCENTPOWER);
 					currentTime = Timer.getFPGATimestamp();
 					if(mLastState != state.VISION_TRACK){
 						isVisionDriving = true; 
-					} else if (mVision.getDistance() < 23.75 || !mController.trackTarget()) {
+					} else if (mVision.getDistance() < 27.5 || !mController.trackTarget()) {
 						isVisionDriving = false; 
 					}
 					
 					if(isVisionDriving){
+						setCoordType(coordType.ROBOTCENTRIC); 
+						setInputType(inputType.PERCENTPOWER);
 						startTime = Timer.getFPGATimestamp();
 						trackToTarget();
 					} else {
+						setCoordType(coordType.FIELDCENTRIC); 
+						setInputType(inputType.PERCENTPOWER);
 						if((currentTime - startTime) < 0.35){
 							forwardCommand = 0.0; 
 							strafeCommand = 0.0; 
 							spinCommand = 0.0; 
-						} else if ((currentTime - startTime) < 1.0){ 
-							forwardCommand = -0.2;
+						} else if ((currentTime - startTime) < 1.25){ 
+							forwardCommand = 0.2;
 							strafeCommand = 0.0; 
 							spinCommand = 0.0;  
 						} else {
@@ -457,7 +465,7 @@ public class drivetrain extends subsystem {
 					setInputType(inputType.PERCENTPOWER);
 					
 					if(mSuperstructure.getCurrentState() != superstructure.state.DELIVER_HATCH){
-						forwardCommand = 0.3;
+						forwardCommand = 0.2;
 						strafeCommand = 0; 
 						spinCommand = 0; 
 					} else {

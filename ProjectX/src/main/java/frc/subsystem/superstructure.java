@@ -26,6 +26,8 @@ public class superstructure {
 
     private int cCargoIntakeHeight = 0; 
 
+    private boolean alertStarted; 
+
     Timer mTimer = new Timer(); 
 
     private boolean firstTime = true;
@@ -76,6 +78,9 @@ public class superstructure {
                     mWantedState = state.HOME_C_ROLLER;
                 }
                 public void onLoop(){
+                    if(mCurrentState != state.INTAKE_C_ROLLER){
+                        mController.stopOperatorAlert();
+                    }
                     //System.out.println(mLastState);
                     if(mCurrentState == state.OPENLOOP_CARGO) {
                         mCargoIntake.setOpenLoop(true);
@@ -119,7 +124,6 @@ public class superstructure {
                                 mCargoIntake.deploy();
                                 mCargoIntake.intake();
                             } else {
-                                mController.alertOperatorMain();
                                 mWantedState = state.STOW_C_ROLLER;
                             }
                             break;
@@ -188,6 +192,9 @@ public class superstructure {
                         /*  mHatchIntake.deploy(); 
                         *   mHatchIntake.intake();
                         */
+                            break;
+                        case FIX_C_CLAW:
+                            mClaw.release();
                             break;
                         case TRANSFER_CARGO: 
                             mCargoIntake.moveToTransfer();
@@ -296,6 +303,7 @@ public class superstructure {
         HOLD_H_CB,
         HOME_C_ROLLER,
         INTAKE_H_G,
+        FIX_C_CLAW,
         DEPLOY_CLAW,
         ROCKET_C_ROLLER,
         TRANSFER_CARGO,

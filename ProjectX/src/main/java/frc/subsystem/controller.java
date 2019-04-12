@@ -95,6 +95,10 @@ public class controller {
         mButtonMonkeyMain.setRumble(RumbleType.kRightRumble, 1);
     }
 
+    public void stopOperatorAlert() {
+        mButtonMonkeyMain.setRumble(RumbleType.kRightRumble, 0);
+    }
+
     /**
      * @return driver set position of cargo intake in encoder units
      *         (if no position is wanted, then returns -1)
@@ -115,6 +119,14 @@ public class controller {
              return -mButtonMonkeyMain.getRawAxis(1)*450;
         } else {
             return 0; 
+        }
+    }
+
+    public boolean clawNeutral() {
+        if(Math.abs(mButtonMonkeyMain.getRawAxis(3)) > 0.1) {
+             return true;
+        } else {
+            return false; 
         }
     }
 

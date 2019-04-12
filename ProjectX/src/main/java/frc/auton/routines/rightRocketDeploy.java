@@ -8,7 +8,7 @@ import frc.auton.*;
 import frc.subsystem.*;
 
 public class rightRocketDeploy extends auto {
-		public static leftHab main = new leftHab();
+		public static rightRocketDeploy main = new rightRocketDeploy();
 		private autonmanager manager = new autonmanager();
 		public rightRocketDeploy() {
 			registerManager(manager);

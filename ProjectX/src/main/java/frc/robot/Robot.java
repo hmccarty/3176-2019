@@ -57,8 +57,8 @@ public class Robot extends TimedRobot {
 	}
 
 	public void autonomousPeriodic() {
-		rightRocketDeploy.main.run(); 
-		//driverControl();
+		//rightRocketDeploy.main.run(); 
+		driverControl();
 	}
 
 	@Override
@@ -118,7 +118,9 @@ public class Robot extends TimedRobot {
 			mSuperstructure.setWantedState(superstructure.state.ROCKET_C_ROLLER);
 		} else if (mController.spitCargoIntake()) {
 		 	mSuperstructure.setWantedState(superstructure.state.DELIVER_CARGO);
-		} else if (mController.neutral()) {
+		} else if (mController.clawNeutral()) {
+			mSuperstructure.setWantedState(superstructure.state.FIX_C_CLAW);
+	   } else if (mController.neutral()) {
 		 	mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
 		} else if (mController.transferCargo()) {
 			mSuperstructure.setWantedState(superstructure.state.TRANSFER_CARGO);
@@ -137,8 +139,8 @@ public class Robot extends TimedRobot {
 		double visionHeight = (mElevator.getHeight() < 8.0) ? 8.0 : mElevator.getHeight(); 
 		double wantedHeight = (mDriveTrain.isVisionDriving()) ? visionHeight : mController.wantedElevatorHeight();
 		wantedHeight = (!mDriveTrain.isVisionDriving() && mController.trackTarget()) ? 0 : wantedHeight; 
-		double deploymentBottomHeight = (mDriveTrain.isVisionDriving() && isVisionDeploying()) ? 8.0 : 0.0;
-		if(isVisionDeploying()) {wantedHeight = (lastCommandedHeight == 0) ? deploymentBottomHeight : lastCommandedHeight;}
+		//double deploymentBottomHeight = (mDriveTrain.isVisionDriving() && isVisionDeploying()) ? 8.0 : 0.0;
+		//if(isVisionDeploying()) {wantedHeight = (lastCommandedHeight == 0) ? deploymentBottomHeight : lastCommandedHeight;}
 		if (mController.wantedElevatorHeight() != -1 || wantedHeight != mController.wantedElevatorHeight()) {
 			mElevator.setWantedElevatorHeight(wantedHeight);
 		 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
