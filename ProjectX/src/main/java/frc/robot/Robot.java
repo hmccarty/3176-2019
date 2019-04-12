@@ -88,12 +88,12 @@ public class Robot extends TimedRobot {
 				visionDeploying = true; 
 			}
 			mDriveTrain.setWantedState(drivetrain.state.VISION_TRACK);
-		} else if (mDriveTrain.getLastState() == drivetrain.state.VISION_TRACK){
-			startTime = Timer.getFPGATimestamp(); 
-			mDriveTrain.setWantedState(drivetrain.state.VISION_EXIT);
+		// } else if (mDriveTrain.getLastState() == drivetrain.state.VISION_TRACK){
+		// 	startTime = Timer.getFPGATimestamp(); 
+		// 	mDriveTrain.setWantedState(drivetrain.state.VISION_EXIT);
 			//mDriveTrain.setWantedState(drivetrain.state.VISION_EXIT); 
-		} else if ((endTime - startTime) < 1.0){
-			mDriveTrain.setWantedState(drivetrain.state.VISION_EXIT); 
+		// } else if ((endTime - startTime) < 1.0){
+		// 	mDriveTrain.setWantedState(drivetrain.state.VISION_EXIT); 
 		} else {
 			visionIntaking = false; 
 			visionDeploying = false; 
@@ -108,7 +108,7 @@ public class Robot extends TimedRobot {
 		 	mSuperstructure.setWantedState(superstructure.state.INTAKE_H_CB);
 		} else if (mController.wantedCargoIntakeOpenLoop() != 0) {
 			mSuperstructure.setWantedState(superstructure.state.OPENLOOP_CARGO); 
-		} else if(mController.crossbowHold() || (mDriveTrain.getCurrentState() == drivetrain.state.VISION_EXIT && visionIntaking)) {
+		} else if(mController.crossbowHold()) { //|| (mDriveTrain.getCurrentState() == drivetrain.state.VISION_EXIT && visionIntaking)) {
 		 	mSuperstructure.setWantedState(superstructure.state.HOLD_H_CB);
 		} else if(mController.crossbowDeliver()) {//|| (mDriveTrain.getCurrentState() == drivetrain.state.VISION_EXIT && visionDeploying)) {
 		 	mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
@@ -135,10 +135,10 @@ public class Robot extends TimedRobot {
 		/*******************\
 		|* Elevator States *|
 		\*******************/
-		lastCommandedHeight = (mController.wantedElevatorHeight() != 1) ? mController.wantedElevatorHeight() : lastCommandedHeight; 
-		double visionHeight = (mElevator.getHeight() < 8.0) ? 8.0 : mElevator.getHeight(); 
-		double wantedHeight = (mDriveTrain.isVisionDriving()) ? visionHeight : mController.wantedElevatorHeight();
-		wantedHeight = (!mDriveTrain.isVisionDriving() && mController.trackTarget()) ? 0 : wantedHeight; 
+		//lastCommandedHeight = (mController.wantedElevatorHeight() != 1) ? mController.wantedElevatorHeight() : lastCommandedHeight; 
+		//double visionHeight = (mElevator.getHeight() < 8.0) ? 8.0 : mElevator.getHeight(); 
+		double wantedHeight = mController.wantedElevatorHeight();//(mDriveTrain.isVisionDriving()) ? visionHeight : mController.wantedElevatorHeight();
+		//wantedHeight = (!mDriveTrain.isVisionDriving() && mController.trackTarget()) ? 0 : wantedHeight; 
 		//double deploymentBottomHeight = (mDriveTrain.isVisionDriving() && isVisionDeploying()) ? 8.0 : 0.0;
 		//if(isVisionDeploying()) {wantedHeight = (lastCommandedHeight == 0) ? deploymentBottomHeight : lastCommandedHeight;}
 		if (mController.wantedElevatorHeight() != -1 || wantedHeight != mController.wantedElevatorHeight()) {

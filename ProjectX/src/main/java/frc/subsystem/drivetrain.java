@@ -115,9 +115,9 @@ public class drivetrain extends subsystem {
 
 		cAutonVision = false;
 
-		mVisionForward = new pid(0.00935, 0, 0, .6); 
-		mVisionSpin = new pid(0.03, 0, 0, .8); 
-		mVisionStrafe = new pid(0.0125, 0, 0, .8); 
+		mVisionForward = new pid(0.003, 0, 0, .6); 
+		mVisionSpin = new pid(0.035, 0, 0, .8); 
+		mVisionStrafe = new pid(0.009, 0, 0, .8); 
 
 		
 		//Instantiate array list
@@ -338,17 +338,17 @@ public class drivetrain extends subsystem {
 		double wantedGyroPosition = mController.gyroClockPosition();
 
 		if(wantedGyroPosition != -1){
-			lastGyroClock = wantedGyroPosition; 
+			spinCommand = -mVisionSpin.returnOutput(getAngle(), wantedGyroPosition);
 		} else {
-			wantedGyroPosition = lastGyroClock; 
+			spinCommand = 0; 
 		}
 		
 
 		spinCommand = -mVisionSpin.returnOutput(getAngle(), wantedGyroPosition);
 
 		if(Math.abs(spinCommand) <= 0.06){
-			if(mVision.getDistance() != -1){
-				forwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 27.5);
+			if(mVision.getX() != -1){
+				forwardCommand = -mVisionForward.returnOutput(mVision.getX(), 95);
 			} else {
 				forwardCommand = 0;
 			}
@@ -432,8 +432,8 @@ public class drivetrain extends subsystem {
 					currentTime = Timer.getFPGATimestamp();
 					if(mLastState != state.VISION_TRACK){
 						isVisionDriving = true; 
-					} else if (mVision.getDistance() < 27.5 || !mController.trackTarget()) {
-						isVisionDriving = false; 
+					} else if (mVision.getX() > 90 || !mController.trackTarget()) {
+					 	//isVisionDriving = false; 
 					}
 					
 					if(isVisionDriving){

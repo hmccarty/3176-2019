@@ -3,6 +3,7 @@ package frc.subsystem;
 import frc.util.*; 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class vision extends subsystem{
     private static vision instance = new vision();
@@ -12,6 +13,7 @@ public class vision extends subsystem{
     NetworkTable table = inst.getTable("SmartDashboard");
 
     NetworkTableEntry distanceToTarget = table.getEntry("distance");
+    NetworkTableEntry targetX = table.getEntry("X Diff");
     NetworkTableEntry angleToTarget = table.getEntry("angle");
     NetworkTableEntry whichCamera = table.getEntry("WhichCamera");
     NetworkTableEntry streamType = table.getEntry("Driver");
@@ -34,6 +36,10 @@ public class vision extends subsystem{
 
     public double getAngle(){
         return angleToTarget.getDouble(-1); 
+    }
+
+    public double getX(){
+        return targetX.getDouble(-1); 
     }
 
     public void setWantedState(state wantedState){
@@ -60,6 +66,7 @@ public class vision extends subsystem{
                     mCurrentState = state.NEUTRAL; 
                 }
                 public void onLoop(){
+                    SmartDashboard.putNumber("X Diff", getX());
                     switch(mCurrentState){
                         case SWITCH_MODE:
                             cIsTracking = !cIsTracking; 
