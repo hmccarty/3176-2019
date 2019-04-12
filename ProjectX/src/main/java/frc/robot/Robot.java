@@ -12,7 +12,7 @@ import frc.subsystem.*;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.*;
-import frc.auton.*;
+import frc.auton.routines.*;
 
 public class Robot extends TimedRobot {
 	private static Robot myRobot = new Robot(); 
@@ -57,7 +57,8 @@ public class Robot extends TimedRobot {
 	}
 
 	public void autonomousPeriodic() {
-		driverControl();
+		rightRocketDeploy.main.run(); 
+		//driverControl();
 	}
 
 	@Override

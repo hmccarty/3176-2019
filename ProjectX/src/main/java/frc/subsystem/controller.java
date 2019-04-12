@@ -123,7 +123,7 @@ public class controller {
      */
     public double wantedElevatorHeightMain() {
         if(mButtonMonkeyMain.getPOV() == 0) {
-            return 28.7; 
+            return 27.75; 
         }
         else if(mButtonMonkeyMain.getPOV() == 90) {
             return 15.25; 
@@ -210,7 +210,7 @@ public class controller {
      */
     public double wantedElevatorHeightBackup() {
         if(mButtonMonkeyBackup.getPOV() == 0) {
-            return 27.65; 
+            return 25; 
         }
         else if(mButtonMonkeyBackup.getPOV() == 90) {
             return 18; 

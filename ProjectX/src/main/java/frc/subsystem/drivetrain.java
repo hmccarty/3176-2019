@@ -338,7 +338,7 @@ public class drivetrain extends subsystem {
 		}
 		
 
-		spinCommand = -mVisionSpin.returnOutput(getAngle(), wantedGyroPosition);
+		spinCommand = mVisionSpin.returnOutput(getAngle(), wantedGyroPosition);
 
 		if(Math.abs(spinCommand) <= 0.06){
 			if(mVision.getDistance() != -1){
@@ -385,6 +385,8 @@ public class drivetrain extends subsystem {
 		}
 		@Override
 		public void onLoop() {
+			SmartDashboard.putNumber("Robot Angle", getAngle());
+			SmartDashboard.putNumber("WantedAngle", mController.gyroClockPosition());
 			if(mController.gyroReset()) {
 				resetGyro();
 			}
