@@ -2,6 +2,10 @@ package frc.robot;
 
 import java.lang.Math;
 
+/**
+ * Defined characterics of the physical robot. 
+ * This includes variables like port numbers, closed loop gains, etc. 
+ */
 public class constants {
 	private static boolean isCompBot = true;
 

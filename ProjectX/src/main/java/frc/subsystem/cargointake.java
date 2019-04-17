@@ -7,6 +7,10 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 import frc.util.pid;
 import frc.robot.constants;
 
+/** 
+ * Back intake, picking up cargo from the floor and depositing it into
+ * low scoring positions
+ */
 public class cargointake {
     private static cargointake instance = new cargointake(); 
 
@@ -38,8 +42,8 @@ public class cargointake {
 
     public cargointake() {
         mCargoStowPID = new pid(0.00015, 0,0, .3); //The PID values for Deploying the mechanism
-        mCargoDeployPID = new pid(0.00015,0,0, .7);      //The PID values for Retracting the mechanism
-        mCargoManualPID = new pid(0.00007,0,0, .6);      //Thr PID values for manual control
+        mCargoDeployPID = new pid(0.00015,0,0, .7); //The PID values for Retracting the mechanism
+        mCargoManualPID = new pid(0.00007,0,0, .6);  //The PID values for manual control
 
         /**
          * Declaring Sensors
