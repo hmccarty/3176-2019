@@ -3,7 +3,7 @@ package frc.robot;
 import java.lang.Math;
 
 public class constants {
-	private static boolean isCompBot = false;
+	private static boolean isCompBot = true;
 
 	/***********\
 	|* CAN IDs *|
