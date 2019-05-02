@@ -102,7 +102,10 @@ public class neopod extends subsystem {
         encoderPosition = spinMotor.getSelectedSensorPosition(0) - kAbsoluteOffsets[id];
 		radianPosition = encoderUnitsToRadian(encoderPosition);
 		radianError = wantedAngle - radianPosition;
-		if(Math.abs(radianError) > (3*PI/2)) {
+		if(Math.abs(radianError) > (5*PI/2)){
+			System.out.println("Error Overload");
+		}
+		else if(Math.abs(radianError) > (3*PI/2)) {
 			radianError -= Math.copySign(2*PI, radianError);
 		}
 		else if (Math.abs(radianError) > (PI/2)) {

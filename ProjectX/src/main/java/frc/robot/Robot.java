@@ -12,9 +12,9 @@ import frc.subsystem.*;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.*;
-import frc.auton.*;
 
 public class Robot extends TimedRobot {
+	private static Robot myRobot = new Robot(); 
 	private loopmanager myLoops = loopmanager.getInstance();
 	private drivetrain mDriveTrain = drivetrain.getInstance(); 
 	private vision mVision = vision.getInstance();
@@ -25,8 +25,14 @@ public class Robot extends TimedRobot {
 	double startTime = 0; 
 	double endTime = 0; 
 
+	double lastCommandedHeight = 0; 
+
 	boolean visionIntaking = false; 
 	boolean visionDeploying = false; 
+
+	public static Robot getInstance(){
+		return myRobot; 
+	}
 
 	@Override
 	public void robotInit() {
@@ -50,7 +56,11 @@ public class Robot extends TimedRobot {
 	}
 
 	public void autonomousPeriodic() {
-		driverControl();
+		try {
+			driverControl();
+		} catch (Exception e) {
+			System.out.println("Autonomous control failed, disable immediately."); 
+		}	
 	}
 
 	@Override
@@ -58,10 +68,13 @@ public class Robot extends TimedRobot {
 		try { 
 			driverControl();
 		} catch (Exception e) {
-
+			System.out.println("Teleop control failed, disable immediately."); 
 		}
 	}
 
+	/**
+	 * Inferface between the control board and the on-board systems
+	 */
 	public void driverControl() {
 		myLoops.runLoops();
 	
@@ -70,9 +83,13 @@ public class Robot extends TimedRobot {
 		/*********************\
 		|* Drivetrain States *|
 		\*********************/
-		SmartDashboard.putBoolean("Finished Tracking", mController.finishedTracking());
-		SmartDashboard.putNumber("Time Diff", (endTime - startTime)); 
 
+		/* Vision routine does the following: 
+		*	1. Driver inputs command to enter vision tracking, drivetrain is told to start tracking
+		*   2. Based on state of the crossbow, system is told whether driver is picking up or deploying hatch
+		*   3. If drivetrain exits tracking, enter the exit state
+		*	4. Exit state runs for one second (either deploying hatch or grabbing hatch then backing away)
+		*/
 		if(mController.trackTarget()) {
 			if(mSuperstructure.getCurrentState() == superstructure.state.INTAKE_H_CB){
 				visionIntaking = true; 
@@ -82,8 +99,7 @@ public class Robot extends TimedRobot {
 			mDriveTrain.setWantedState(drivetrain.state.VISION_TRACK);
 		} else if (mDriveTrain.getLastState() == drivetrain.state.VISION_TRACK){
 			startTime = Timer.getFPGATimestamp(); 
-			mDriveTrain.setWantedState(drivetrain.state.VISION_EXIT);
-			//mDriveTrain.setWantedState(drivetrain.state.VISION_EXIT); 
+			mDriveTrain.setWantedState(drivetrain.state.VISION_EXIT); 
 		} else if ((endTime - startTime) < 1.0){
 			mDriveTrain.setWantedState(drivetrain.state.VISION_EXIT); 
 		} else {
@@ -102,7 +118,7 @@ public class Robot extends TimedRobot {
 			mSuperstructure.setWantedState(superstructure.state.OPENLOOP_CARGO); 
 		} else if(mController.crossbowHold() || (mDriveTrain.getCurrentState() == drivetrain.state.VISION_EXIT && visionIntaking)) {
 		 	mSuperstructure.setWantedState(superstructure.state.HOLD_H_CB);
-		} else if(mController.crossbowDeliver() || (mController.finishedTracking() && visionDeploying)) {
+		} else if(mController.crossbowDeliver() || (mDriveTrain.getCurrentState() == drivetrain.state.VISION_EXIT && visionDeploying)) {
 		 	mSuperstructure.setWantedState(superstructure.state.DELIVER_HATCH);
 		} else if(mController.deployCargoIntake()) {
 		 	mSuperstructure.setWantedState(superstructure.state.INTAKE_C_ROLLER);
@@ -110,7 +126,9 @@ public class Robot extends TimedRobot {
 			mSuperstructure.setWantedState(superstructure.state.ROCKET_C_ROLLER);
 		} else if (mController.spitCargoIntake()) {
 		 	mSuperstructure.setWantedState(superstructure.state.DELIVER_CARGO);
-		} else if (mController.neutral()) {
+		} else if (mController.clawNeutral()) {
+			mSuperstructure.setWantedState(superstructure.state.FIX_C_CLAW);
+	   } else if (mController.neutral()) {
 		 	mSuperstructure.setWantedState(superstructure.state.NEUTRAL);
 		} else if (mController.transferCargo()) {
 			mSuperstructure.setWantedState(superstructure.state.TRANSFER_CARGO);
@@ -125,12 +143,14 @@ public class Robot extends TimedRobot {
 		/*******************\
 		|* Elevator States *|
 		\*******************/
-
+		
+		lastCommandedHeight = (mController.wantedElevatorHeight() != 1) ? mController.wantedElevatorHeight() : lastCommandedHeight; 
 		double visionHeight = (mElevator.getHeight() < 8.0) ? 8.0 : mElevator.getHeight(); 
 		double wantedHeight = (mDriveTrain.isVisionDriving()) ? visionHeight : mController.wantedElevatorHeight();
 		wantedHeight = (!mDriveTrain.isVisionDriving() && mController.trackTarget()) ? 0 : wantedHeight; 
+		double deploymentBottomHeight = (mDriveTrain.isVisionDriving() && isVisionDeploying()) ? 8.0 : 0.0;
+		if(isVisionDeploying()) {wantedHeight = (lastCommandedHeight == 0) ? deploymentBottomHeight : lastCommandedHeight;}
 		if (mController.wantedElevatorHeight() != -1 || wantedHeight != mController.wantedElevatorHeight()) {
-			SmartDashboard.putBoolean("Is Vision", mDriveTrain.isVisionDriving()); 
 			mElevator.setWantedElevatorHeight(wantedHeight);
 		 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
 		} else if (mController.wantedElevatorVelocity() != 0) {
@@ -139,6 +159,10 @@ public class Robot extends TimedRobot {
 		} else {
 		  	mElevator.setWantedState(elevator.state.HOLDING);
 		}
+	}
+
+	public boolean isVisionDeploying(){
+		return visionDeploying; 
 	}
 
 	@Override

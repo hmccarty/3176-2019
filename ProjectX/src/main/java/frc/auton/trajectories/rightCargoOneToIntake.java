@@ -1,7 +1,8 @@
-package frc.auton; 
+package frc.auton.trajectories; 
 
 import frc.robot.*; 
 import frc.util.*;
+import frc.auton.*;
 import frc.subsystem.drivetrain; 
 
 public class rightCargoOneToIntake extends path{

@@ -1,8 +1,8 @@
-package frc.auton;
-
+package frc.auton.routines;
 
 import frc.auton.autonmanager;
 import frc.auton.drivetrajectory;
+import frc.auton.trajectories.*;
 import frc.auton.path;
 import frc.auton.*;
 import frc.subsystem.*;
@@ -19,7 +19,5 @@ public class leftHab extends auto {
 			manager.qeueCommand(new drivetrajectory(intakeToCargoTwo.main.get()));
 			manager.qeueCommand(new visiontrack());
 		}
-		
-
 }
 

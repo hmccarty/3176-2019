@@ -2,6 +2,10 @@ package frc.robot;
 
 import java.lang.Math;
 
+/**
+ * Defined characterics of the physical robot. 
+ * This includes variables like port numbers, closed loop gains, etc. 
+ */
 public class constants {
 	private static boolean isCompBot = true;
 
@@ -75,7 +79,7 @@ public class constants {
 	\************************/
 
 	//Absolute offsets of pod mag encoders, see online documentation for determining these values. 
-	public static double OFFSETS_COMPETITION[] = {2802,2426,2599,2997};
+	public static double OFFSETS_COMPETITION[] = {2818, 2459, 2483, 2995};
 	public static double OFFSETS_PRACTICE[] = {1857,3780,1180,1230};
 	public static double OFFSETS[] = (isCompBot) ? OFFSETS_COMPETITION : OFFSETS_PRACTICE;
 
@@ -90,9 +94,9 @@ public class constants {
 	|* Swervepod Constants *|
 	\***********************/
 
-	public static final double[][] SPIN_PID_COMPETITION = { /*kP*/ {4.5, 2, 2, 4.5}, 
-															/*kI*/ {0.0023, 0.00001, 0.00001, 0.0023},
-															/*kD*/ {190.0, 170, 170, 190.0},
+	public static final double[][] SPIN_PID_COMPETITION = { /*kP*/ {4.5, 1.0, 1.0, 4.5}, 
+															/*kI*/ {0.0023, 0.00000, 0.00000, 0.0023},
+															/*kD*/ {190.0, 400.0, 400.0, 190.0},
 															/*kF*/ {0.00001, 0.00001, 0.00001, 0.00001}};
 
 	public static final double[][] SPIN_PID_PRACTICE = { /*kP*/ {2, 2, 2, 4.5}, 
@@ -137,7 +141,7 @@ public class constants {
 	|* Elevator Constants *|
 	\**********************/
 
-	public static final double[] ELEVATOR_POSITION_PID_COMPETITION = { /*kP*/ 0.3, /*kI*/ 0.0, /*kD*/ 0.0, /*kF*/ 0.002,
+	public static final double[] ELEVATOR_POSITION_PID_COMPETITION = { /*kP*/ 0.08, /*kI*/ 0.0, /*kD*/ 0.0, /*kF*/ 0.002,
 														   	  /*I-Zone*/ 0.0, 
 														      /*Output Range Min*/ -0.1, /*Output Range Max*/ 1.0};
 

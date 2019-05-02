@@ -95,6 +95,10 @@ public class controller {
         mButtonMonkeyMain.setRumble(RumbleType.kRightRumble, 1);
     }
 
+    public void stopOperatorAlert() {
+        mButtonMonkeyMain.setRumble(RumbleType.kRightRumble, 0);
+    }
+
     /**
      * @return driver set position of cargo intake in encoder units
      *         (if no position is wanted, then returns -1)
@@ -118,12 +122,20 @@ public class controller {
         }
     }
 
+    public boolean clawNeutral() {
+        if(Math.abs(mButtonMonkeyMain.getRawAxis(3)) > 0.1) {
+             return true;
+        } else {
+            return false; 
+        }
+    }
+
     /** 
      * @return driver wanted elevator height in inches
      */
     public double wantedElevatorHeightMain() {
         if(mButtonMonkeyMain.getPOV() == 0) {
-            return 28.7; 
+            return 27.75; 
         }
         else if(mButtonMonkeyMain.getPOV() == 90) {
             return 15.25; 
@@ -210,7 +222,7 @@ public class controller {
      */
     public double wantedElevatorHeightBackup() {
         if(mButtonMonkeyBackup.getPOV() == 0) {
-            return 27.65; 
+            return 25; 
         }
         else if(mButtonMonkeyBackup.getPOV() == 90) {
             return 18; 
@@ -357,6 +369,10 @@ public class controller {
     public boolean frontRightRotation() {
         return mThrustStick.getRawButton(6);
     }
+
+    public boolean toggleCompressor() {
+        return mThrustStick.getRawButtonPressed(7);
+    }
    
     /**
      * @return wanted motion in the y direction on an exponential scale
@@ -401,53 +417,56 @@ public class controller {
      * @return if driver wants to control in reverse robot centric
      */
     public boolean backRobotCentric() {
-        return mYawStick.getRawButton(3);
+        return false;//mYawStick.getRawButton(3);
     }
 
     /**
      * @return if driver wants to switch streaming camera
      */
     public boolean switchVisionCamera() {
-        return mYawStick.getRawButtonPressed(4);
+        return false;//mYawStick.getRawButtonPressed(4);
     }
 
     /**
      * @return if driver wants to switch streaming mode (either dark and tracking or autoexposure)
      */
     public boolean switchVisionMode() {
-        return mYawStick.getRawButtonPressed(6);
+        return false;//mYawStick.getRawButtonPressed(6);
     }
 
     /**
      * @return wanted direction when tracking
      */
     public double gyroClockPosition() {
-        int position = mYawStick.getPOV(0);
-        if(position < 22 && position < 338) {
-            return 0; 
+        //int position = mYawStick.getPOV(0);
+        // if((position < 22 && position > -1) || position > 338) {
+        //     return 0; 
+        // }
+        if(mYawStick.getRawButton(6)) {
+            return 29 * Math.PI / 180;
         }
-        else if(position > 22 && position < 67) {
-            return Math.PI / 4;
-        }
-        else if(position > 67 && position < 112) {
-            return Math.PI / 2;
-        }
-        else if(position > 112 && position < 157) {
+        // // else if(position > 67 && position < 112) {
+        // //     return Math.PI / 2;
+        // // }
+        else if(mYawStick.getRawButton(4)) {
             return 3 * Math.PI / 4;
         }
-        else if(position > 157 && position < 202) {
-            return Math.PI;
-        }
-        else if(position > 202 && position < 247) {
+        // else if(position > 157 && position < 202) {
+        //     return Math.PI;
+        // }
+        else if(mYawStick.getRawButton(3)) {
             return 5 * Math.PI / 4;
         }
-        else if(position > 247 && position < 292) {
-            return 3 * Math.PI / 2;
-        }
-        else if(position > 247 && position < 292) {
-            return 7 * Math.PI / 4;
+        // else if(position > 247 && position < 292) {
+        //      return 3 * Math.PI / 2;
+        //  }
+        else if(mYawStick.getRawButton(5)) {
+            return 5.72;
+        } 
+        else if(mYawStick.getRawButton(11)) {
+            return Math.PI;
         } else {
-            return 0; 
+            return -1;//5.72; 
         }
     }
 

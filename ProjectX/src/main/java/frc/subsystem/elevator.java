@@ -23,7 +23,7 @@ public class elevator {
     private CANSparkMax mWinchRight;
 
     private CANPIDController mPositionController;
-    private pid mSpeedController; 
+    //private pid mSpeedController; 
     private CANEncoder mEncoder; 
 
     private PowerDistributionPanel powerPanel = new PowerDistributionPanel();
@@ -55,15 +55,18 @@ public class elevator {
         mEncoder = mWinchLeft.getEncoder();
         mPositionController = mWinchLeft.getPIDController();
 
-        mPositionController.setP(constants.ELEVATOR_POSITION_PID_CONFIG[0]);
-        mPositionController.setI(constants.ELEVATOR_POSITION_PID_CONFIG[1]);
-        mPositionController.setD(constants.ELEVATOR_POSITION_PID_CONFIG[2]);
-        mPositionController.setFF(constants.ELEVATOR_POSITION_PID_CONFIG[3]);
-        mPositionController.setIZone(constants.ELEVATOR_POSITION_PID_CONFIG[4]);
+        mPositionController.setP(constants.ELEVATOR_POSITION_PID_CONFIG[0], 0);
+        mPositionController.setI(constants.ELEVATOR_POSITION_PID_CONFIG[1], 0);
+        mPositionController.setD(constants.ELEVATOR_POSITION_PID_CONFIG[2], 0);
+        mPositionController.setFF(constants.ELEVATOR_POSITION_PID_CONFIG[3], 0);
+        mPositionController.setIZone(constants.ELEVATOR_POSITION_PID_CONFIG[4], 0);
 
         mPositionController.setOutputRange(constants.ELEVATOR_POSITION_PID_CONFIG[5], constants.ELEVATOR_POSITION_PID_CONFIG[6]);
 
-        mSpeedController = new pid(0.007, 0, 0, 0.8);
+        mPositionController.setOutputRange(-0.05, 0.8, 1);
+        mPositionController.setP(0.0005, 1);
+
+        //mSpeedController = new pid(0.07, 0, 0, 0.8);
 
         mWinchLeft.setSmartCurrentLimit(constants.SMART_CURRENT_LIMIT);
         mWinchRight.setSmartCurrentLimit(constants.SMART_CURRENT_LIMIT);
@@ -89,8 +92,10 @@ public class elevator {
         }
 
         if(mClaw.isExtended() && wantedHeight > 4.5 && mCurrentState != state.MANUAL_CONTROL) {
-            if(mController.wantedElevatorHeight() > 15.25 ) {
-                wantedHeight -= 4.0;
+            if(mController.wantedElevatorHeight() ==  27.75) {
+                wantedHeight -= 0.5;
+            } else if (mController.wantedElevatorHeight() ==  27.75) {
+                wantedHeight -= 3.5;
             } else if (mController.wantedElevatorHeight() < 14) {
                 wantedHeight -= 5.1;
             } else {
@@ -99,13 +104,14 @@ public class elevator {
         }
 
         if(!cargointake.getInstance().isStowed()) {
-            mPositionController.setReference(wantedHeight, ControlType.kPosition); 
+            mPositionController.setReference(wantedHeight, ControlType.kPosition, 0); 
         } 
     }
 
 
     private void setSpeed(double wantedSpeed) {
-        mWinchLeft.set(mSpeedController.returnOutput(mEncoder.getVelocity(), wantedSpeed));
+        mPositionController.setReference(wantedSpeed, ControlType.kVelocity, 1);
+        //mWinchLeft.set(mSpeedController.returnOutput(mEncoder.getVelocity(), wantedSpeed));
     }
 
     public boolean inPosition() {

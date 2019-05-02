@@ -3,13 +3,15 @@ package frc.subsystem;
 import com.kauailabs.navx.frc.AHRS; 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.Timer;
-
+import frc.robot.Robot;
 import java.util.ArrayList;
 import frc.robot.constants;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import frc.subsystem.superstructure; 
 
 import frc.util.*;
 
@@ -19,6 +21,7 @@ import frc.util.*;
 public class drivetrain extends subsystem {
 	private static drivetrain instance = new drivetrain();
 	private loopmanager mLoopMan = loopmanager.getInstance();
+	private superstructure mSuperstructure = superstructure.getInstance();
 	private vision mVision = vision.getInstance();
 	private controller mController = controller.getInstance(); 
 	private PowerDistributionPanel mPDP = new PowerDistributionPanel(0);
@@ -112,9 +115,9 @@ public class drivetrain extends subsystem {
 
 		cAutonVision = false;
 
-		mVisionForward = new pid(0.008, 0, 0, .6); 
-		mVisionSpin = new pid(0.01, 0, 0, .8); 
-		mVisionStrafe = new pid(0.015, 0, 0, .8); 
+		mVisionForward = new pid(0.003, 0, 0, .6); 
+		mVisionSpin = new pid(0.035, 0, 0, .8); 
+		mVisionStrafe = new pid(0.009, 0, 0, .8); 
 
 		
 		//Instantiate array list
@@ -293,8 +296,14 @@ public class drivetrain extends subsystem {
 		}
 		return average/mNeoPods.size();
 	}
-	
-	public double getAngle() {return ((mGyro.getAngle()* Math.PI/180.0) % (2*Math.PI));} //Converts mGyro Angle (0-360) to Radians (0-2pi)
+	public double getRelativeAngle()  {return ((mGyro.getAngle()* Math.PI/180.0));}
+	public double getAngle() {
+		double angle = ((mGyro. getAngle()* Math.PI/180.0) % (2*Math.PI));; 
+		if(mGyro.getAngle() < 0){
+			angle += (2* Math.PI);
+		}
+		return angle;
+	} //Converts mGyro Angle (0-360) to Radians (0-2pi)
 	
 	private void updateAngle(){
 		//-pi to pi 0 = straight ahead
@@ -329,17 +338,19 @@ public class drivetrain extends subsystem {
 		double wantedGyroPosition = mController.gyroClockPosition();
 
 		if(wantedGyroPosition != -1){
-			lastGyroClock = wantedGyroPosition; 
+			spinCommand = -mVisionSpin.returnOutput(getAngle(), wantedGyroPosition);
 		} else {
-			wantedGyroPosition = lastGyroClock; 
+			spinCommand = 0; 
 		}
+		
+
 		spinCommand = -mVisionSpin.returnOutput(getAngle(), wantedGyroPosition);
 
 		if(Math.abs(spinCommand) <= 0.06){
-			if(mVision.getDistance() != -1){
-				//forwardCommand = mVisionForward.returnOutput(mVision.getDistance(), 18);
+			if(mVision.getX() != -1){
+				forwardCommand = -mVisionForward.returnOutput(mVision.getX(), 95);
 			} else {
-				//forwardCommand = 0;
+				forwardCommand = 0;
 			}
 			if(mVision.getAngle() != -1){
 				strafeCommand = -mVisionStrafe.returnOutput(mVision.getAngle(), 0);
@@ -380,6 +391,8 @@ public class drivetrain extends subsystem {
 		}
 		@Override
 		public void onLoop() {
+			SmartDashboard.putNumber("Robot Angle", getAngle());
+			SmartDashboard.putNumber("WantedAngle", mController.gyroClockPosition());
 			if(mController.gyroReset()) {
 				resetGyro();
 			}
@@ -416,33 +429,50 @@ public class drivetrain extends subsystem {
 					crabDrive();
 					break;
 				case VISION_TRACK:
-					setCoordType(coordType.ROBOTCENTRIC); 
-					setInputType(inputType.PERCENTPOWER);
 					currentTime = Timer.getFPGATimestamp();
 					if(mLastState != state.VISION_TRACK){
 						isVisionDriving = true; 
-					} else if (mVision.getDistance() < 21.5 || !mController.trackTarget()) {
-						isVisionDriving = false; 
+					} else if (mVision.getX() > 90 || !mController.trackTarget()) {
+					 	//isVisionDriving = false; 
 					}
 					
 					if(isVisionDriving){
+						setCoordType(coordType.ROBOTCENTRIC); 
+						setInputType(inputType.PERCENTPOWER);
 						startTime = Timer.getFPGATimestamp();
 						trackToTarget();
 					} else {
-						if((currentTime - startTime) < 0.15){
-							forwardCommand = 0.00000000000000001; 
+						setCoordType(coordType.FIELDCENTRIC); 
+						setInputType(inputType.PERCENTPOWER);
+						if((currentTime - startTime) < 0.35){
+							forwardCommand = 0.0; 
 							strafeCommand = 0.0; 
 							spinCommand = 0.0; 
-						} 
+						} else if ((currentTime - startTime) < 1.25){ 
+							forwardCommand = 0.2;
+							strafeCommand = 0.0; 
+							spinCommand = 0.0;  
+						} else {
+							forwardCommand = 0.0; 
+							strafeCommand = 0.0; 
+							spinCommand = 0.0; 
+						}
 					}
 					crabDrive();
 					break;
 				case VISION_EXIT: 
 					setCoordType(coordType.ROBOTCENTRIC); 
 					setInputType(inputType.PERCENTPOWER);
-					forwardCommand = 0.2;
-					strafeCommand = 0; 
-					spinCommand = 0; 
+					
+					if(mSuperstructure.getCurrentState() != superstructure.state.DELIVER_HATCH){
+						forwardCommand = 0.2;
+						strafeCommand = 0; 
+						spinCommand = 0; 
+					} else {
+						forwardCommand = 0.0;
+						strafeCommand = 0; 
+						spinCommand = 0; 
+					}
 					crabDrive();
 					break;
 				case AUTON:
@@ -460,6 +490,8 @@ public class drivetrain extends subsystem {
 					break;			
 				}
 			mLastState = mCurrentState; 
+			SmartDashboard.putString("Drivetrain State", mCurrentState.toString());
+			SmartDashboard.putBoolean("In Vision", isVisionDriving);
 			checkState();
 			outputToSmartDashboard();
 		}
