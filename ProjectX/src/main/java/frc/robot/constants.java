@@ -7,7 +7,7 @@ import java.lang.Math;
  * This includes variables like port numbers, closed loop gains, etc. 
  */
 public class constants {
-	private static boolean isCompBot = true;
+	private static boolean isCompBot = false;
 
 	/***********\
 	|* CAN IDs *|
