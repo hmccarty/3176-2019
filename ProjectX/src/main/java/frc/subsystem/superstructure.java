@@ -103,14 +103,19 @@ public class superstructure {
                             if(mLastState != state.C_ROLLER_MANUAL){ 
                                 cCargoIntakeHeight = mCargoIntake.getHeight();
                             }
-                            int wantedHeight = cCargoIntakeHeight + mController.wantedCargoIntakePosition(); 
+                            int wantedHeight = cCargoIntakeHeight;
+                            //if (mController.wantedCargoIntakePosition() != -1) {
+                                wantedHeight = wantedHeight +  mController.wantedCargoIntakePosition(); 
+                            //}
                             SmartDashboard.putNumber("Wanted Height", wantedHeight);
+                        
                             if(wantedHeight > 0 && wantedHeight < constants.DEPLOYED_HEIGHT){
                                 cCargoIntakeHeight = wantedHeight;
                                 mCargoIntake.manualControl(cCargoIntakeHeight, false);
                             } else {
                                 mCargoIntake.manualControl(cCargoIntakeHeight, false);
                             }
+                        
                             SmartDashboard.putNumber("Cargo Intake Height", cCargoIntakeHeight);
                             if(mCargoIntake.hasBall()){
                                 mCargoIntake.hold();
