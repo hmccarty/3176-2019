@@ -8,10 +8,7 @@
 package frc.robot;
 
 import frc.subsystem.*;
-
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class Robot extends TimedRobot {
 	private static Robot myRobot = new Robot(); 
@@ -112,6 +109,10 @@ public class Robot extends TimedRobot {
 		|* Superstructure States *|
 		\*************************/
 
+		/*
+		* Correlates controller inputs to superstructure states, also allows for vision to 
+		* deploy and grab hatches. 
+		*/
 		if(mController.crossbowIntake()) {
 		 	mSuperstructure.setWantedState(superstructure.state.INTAKE_H_CB);
 		} else if (mController.wantedCargoIntakeOpenLoop() != 0) {
@@ -145,11 +146,18 @@ public class Robot extends TimedRobot {
 		\*******************/
 		
 		lastCommandedHeight = (mController.wantedElevatorHeight() != 1) ? mController.wantedElevatorHeight() : lastCommandedHeight; 
-		double visionHeight = (mElevator.getHeight() < 8.0) ? 8.0 : mElevator.getHeight(); 
+
+		// When vision processing, keeps the elevator at least 8 units
+		double visionHeight = (mElevator.getHeight() < 8.0) ? 8.0 : mElevator.getHeight();
+
+		// If vision processing, then move to vision height, else keep wanted height 
 		double wantedHeight = (mDriveTrain.isVisionDriving()) ? visionHeight : mController.wantedElevatorHeight();
+
+		// If deploying or intaking hatch through vision, then set elevator to zero height
 		wantedHeight = (!mDriveTrain.isVisionDriving() && mController.trackTarget()) ? 0 : wantedHeight; 
 		double deploymentBottomHeight = (mDriveTrain.isVisionDriving() && isVisionDeploying()) ? 8.0 : 0.0;
 		if(isVisionDeploying()) {wantedHeight = (lastCommandedHeight == 0) ? deploymentBottomHeight : lastCommandedHeight;}
+		
 		if (mController.wantedElevatorHeight() != -1 || wantedHeight != mController.wantedElevatorHeight()) {
 			mElevator.setWantedElevatorHeight(wantedHeight);
 		 	mElevator.setWantedState(elevator.state.POSITION_CONTROL);
@@ -161,14 +169,14 @@ public class Robot extends TimedRobot {
 		}
 	}
 
-	public boolean isVisionDeploying(){
+	public boolean isVisionDeploying() {
 		return visionDeploying; 
 	}
 
 	@Override
 	public void testPeriodic() { 
 		/**
-		 * NEED TEST METHOD TO AUTO-CHECKLIST 
+		 * TODO: METHOD TO TEST ALL SUBSYSTEMS
 		 */
 	}
 }

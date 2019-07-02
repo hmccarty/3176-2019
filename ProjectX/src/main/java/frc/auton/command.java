@@ -24,8 +24,7 @@ public class command {
 	 * @param type the type of the commands {@link commandType}
 	 * @param timeToComplete the time in second the command lasts
 	 */
-	public command(commandType type, double timeToComplete)
-	{
+	public command(commandType type, double timeToComplete) {
 		this.type = type;
 		this.timeToComplete = timeToComplete;
 	}
@@ -33,8 +32,7 @@ public class command {
 	 * Constructor for the command to initialize the command 
 	 * @param type the type of the commands {@link commandType}
 	 */
-	public command(commandType type)
-	{
+	public command(commandType type) {
 		this.type = type;
 	}
 	/**
@@ -43,22 +41,18 @@ public class command {
 	 * Methods that are called only once should be put in onStart
 	 * @param l
 	 */
-	public void setLoop(loop l)
-	{
+	public void setLoop(loop l) {
 		commandLoop = l;
 	}
 	/**
 	 * checks to see if the command is done based on either time or trigger based
 	 * @return boolean is the command finished
 	 */
-	private boolean checkEndCondition()
-	{
-		if(type == commandType.timeBased)
-		{
+	private boolean checkEndCondition() {
+		if(type == commandType.timeBased) {
 			if(currTime <= timeToComplete) {return false;} else {return true;}
 		}
-		else
-		{
+		else {
 			if(!isTriggered) {return false;} else {return true;}
 		}
 	}
@@ -66,23 +60,20 @@ public class command {
 	 * called to set a trigger for if it is finished
 	 * @param isTriggered boolean true for if finished false if still executing
 	 */
-	public void setTrigger(boolean isTriggered)
-	{
+	public void setTrigger(boolean isTriggered) {
 		this.isTriggered = isTriggered;
 	}
 	/**
 	 * @return if the command is finished
 	 */
-	public boolean getIsFinished()
-	{
+	public boolean getIsFinished() {
 		return isFinished;
 	}
 	/**
 	 * records start time from FPGA
 	 * runs the onStart() of the commandLoop
 	 */
-	public void runOnStart()
-	{
+	public void runOnStart() {
 		startTimeOfCommand = Timer.getFPGATimestamp();
 		commandLoop.onStart();
 	}
@@ -90,8 +81,7 @@ public class command {
 	 * sets current time based off start time from FPGA
 	 * runs the onloop() of the commandLoop
 	 */
-	public void runOnloop()
-	{
+	public void runOnloop() {
 		currTime = Timer.getFPGATimestamp()-startTimeOfCommand;
 		commandLoop.onLoop();
 	}
@@ -99,34 +89,28 @@ public class command {
 	 * sets isFinished to true
 	 * runs the stop() of the commandLoop
 	 */
-	public void runStop()
-	{
+	public void runStop() {
 		isFinished = true;
 		commandLoop.onStop();
 	}
 	/**
 	 * runs onStart() then runs onLoop() until {@link #checkEndCondition()} is true then runs stop()
 	 */
-	public void run()
-	{
-		if(firstTime)
-		{
+	public void run() {
+		if(firstTime) {
 			startTimeOfCommand = Timer.getFPGATimestamp();
 			//System.out.println("initLoop with: " + checkEndCondition() + " as end condition");
 			commandLoop.onStart();
 			firstTime = false;
 		}
-		else if(!checkEndCondition())
-		{
+		else if(!checkEndCondition()) {
 			currTime = Timer.getFPGATimestamp()-startTimeOfCommand;
 			//System.out.println("doing loop");
 			commandLoop.onLoop();
 		}
-		else
-		{
+		else {
 			commandLoop.onStop();
 			isFinished = true;
 		}
 	}
-
 }

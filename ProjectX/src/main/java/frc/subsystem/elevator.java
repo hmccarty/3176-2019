@@ -14,6 +14,12 @@ import frc.robot.constants;
 import frc.util.*;
 import frc.util.trajectory;
 
+/**
+ * Elevator operates with two neos, using a double barrel winch.
+ * Sensors include three limit switches for detecting max/min positions, 
+ * and the additional NEO 'encoder' info
+ */
+
 public class elevator {
     private static elevator instance = new elevator();
     private controller mController = controller.getInstance();
@@ -23,7 +29,6 @@ public class elevator {
     private CANSparkMax mWinchRight;
 
     private CANPIDController mPositionController;
-    //private pid mSpeedController; 
     private CANEncoder mEncoder; 
 
     private PowerDistributionPanel powerPanel = new PowerDistributionPanel();
@@ -66,8 +71,6 @@ public class elevator {
         mPositionController.setOutputRange(-0.05, 0.8, 1);
         mPositionController.setP(0.0005, 1);
 
-        //mSpeedController = new pid(0.07, 0, 0, 0.8);
-
         mWinchLeft.setSmartCurrentLimit(constants.SMART_CURRENT_LIMIT);
         mWinchRight.setSmartCurrentLimit(constants.SMART_CURRENT_LIMIT);
 
@@ -108,10 +111,11 @@ public class elevator {
         } 
     }
 
-
+    /**
+     * When in velocity control mode, sets NEO Speed
+     */
     private void setSpeed(double wantedSpeed) {
         mPositionController.setReference(wantedSpeed, ControlType.kVelocity, 1);
-        //mWinchLeft.set(mSpeedController.returnOutput(mEncoder.getVelocity(), wantedSpeed));
     }
 
     public boolean inPosition() {

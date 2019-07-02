@@ -13,7 +13,6 @@ public class rightRocketDeploy extends auto {
 		public rightRocketDeploy() {
 			registerManager(manager);
 			manager.qeueCommand(new drivetrajectory(rightToRightRocket.main.get()));
-			//manager.qeueCommand(new visiontrack());
 		}
 		
 

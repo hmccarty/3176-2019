@@ -12,8 +12,7 @@ public class waypoint {
 	 * @param Y double in ft
 	 * @param Angle (-Pi to PI) with 0 straight ahead
 	 */
-	public waypoint(double X, double Y, double Angle)
-	{
+	public waypoint(double X, double Y, double Angle) {
 		this.X = X;
 		this.Y = Y;
 		this.Angle = Angle;
@@ -26,8 +25,7 @@ public class waypoint {
 	 * @param Angle (-Pi to PI) with 0 straight ahead
 	 * @param speed the ending speed for the trajectory in ft/s
 	 */
-	public waypoint(double X, double Y, double Angle, double speed)
-	{
+	public waypoint(double X, double Y, double Angle, double speed) {
 		this.X = X;
 		this.Y = Y;
 		this.Angle = Angle;

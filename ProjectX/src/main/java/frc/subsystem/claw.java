@@ -22,22 +22,37 @@ public class claw {
         }
     }
 
+    /**
+     * Extends claw 
+     */
     public void deploy() {
         extender.set(DoubleSolenoid.Value.kForward);
     }
 
+    /**
+     * Brings claw to center
+     */
     public void stow() {
         extender.set(DoubleSolenoid.Value.kReverse);
     }
     
+    /**
+     * Releases claw arms, allowing cargo to slip in
+     */
     public void intake() {
         pincher.set(DoubleSolenoid.Value.kOff);
     }
 
+    /**
+     * Clamps onto cargo, not allowing it to escape
+     */
     public void clamp() {
         pincher.set(DoubleSolenoid.Value.kReverse);
     }
 
+    /**
+     * Shoots cargo by pushing 
+     */
     public void release() {
         pincher.set(DoubleSolenoid.Value.kForward);
     }

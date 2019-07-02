@@ -84,7 +84,7 @@ public class controller {
     }
 
     public boolean stowCargoIntakeMain() {
-        return false;//mButtonMonkeyBackup.getRawButton(9);
+        return mButtonMonkeyBackup.getRawButton(9);
     }
 
     public boolean rocketCargoIntakeMain() {
@@ -438,35 +438,22 @@ public class controller {
      * @return wanted direction when tracking
      */
     public double gyroClockPosition() {
-        //int position = mYawStick.getPOV(0);
-        // if((position < 22 && position > -1) || position > 338) {
-        //     return 0; 
-        // }
         if(mYawStick.getRawButton(6)) {
             return 29 * Math.PI / 180;
         }
-        // // else if(position > 67 && position < 112) {
-        // //     return Math.PI / 2;
-        // // }
         else if(mYawStick.getRawButton(4)) {
             return 3 * Math.PI / 4;
         }
-        // else if(position > 157 && position < 202) {
-        //     return Math.PI;
-        // }
         else if(mYawStick.getRawButton(3)) {
             return 5 * Math.PI / 4;
         }
-        // else if(position > 247 && position < 292) {
-        //      return 3 * Math.PI / 2;
-        //  }
         else if(mYawStick.getRawButton(5)) {
             return 5.72;
         } 
         else if(mYawStick.getRawButton(11)) {
             return Math.PI;
         } else {
-            return -1;//5.72; 
+            return -1;
         }
     }
 

@@ -29,19 +29,16 @@ public class pathfollower {
 		this.t = t;
 		spinHandler = new pid(.4,0.0,0.0);
 	}
-	public void init()
-	{
+	public void init() {
 		pathLoop.onStart();
 	}
 	/**
 	 * runs the loop to follow given trajectory
 	 */
-	public void run()
-	{
+	public void run() {
 		pathLoop.onLoop();
 	}
-	loop pathLoop = new loop()
-			{
+	loop pathLoop = new loop() {
 				@Override
 				public void onStart() {
 					startTime = Timer.getFPGATimestamp();
@@ -78,12 +75,6 @@ public class pathfollower {
 				}
 
 				@Override
-				public void onStop() {
-					//  N/A
-					
-				}
-		
+				public void onStop() {}		
 			};
-	
-
 }

@@ -501,7 +501,5 @@ public class drivetrain extends subsystem {
 	}
 
 	@Override
-	public void outputToSmartDashboard() {
-		//SmartDashboard.putNumber("Vision Gyro", mController.gyroClockPosition()); 
-	}
+	public void outputToSmartDashboard() {}
 }
