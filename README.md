@@ -18,5 +18,9 @@ Features of Project X include:
    - Distance and Yaw Detection
    - Network Table Interface
 - Trapezoidal Motion Profiling 
+
+For any questions regarding the code, contact one of the following: 
+- Harrison McCarty (mccarth@purdue.edu) - Programmer from 2019
+- Team 3176 (team3176@brownsburg.k12.in.us)
  
    

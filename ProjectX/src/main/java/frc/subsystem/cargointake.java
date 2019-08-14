@@ -38,7 +38,7 @@ public class cargointake {
     private int kStowedHeight = constants.STOWED_HEIGHT;   // The position of the winch when stowed
     private int kIntakeHeight = constants.DEPLOYED_HEIGHT; // The position of the winch when deployed
     private int kRocketHeight = constants.ROCKET_HEIGHT;   // The position of the winch when shooting in the rocket
-    private int kTransferHeight = constants.TRANSFER_HEIGHT;  //
+    private int kTransferHeight = constants.TRANSFER_HEIGHT;  // The position of the winch when transfer cargo through the elevator
 
     public cargointake() {
         mCargoStowPID = new pid(0.00015, 0,0, .3); // The PID values for Deploying the mechanism
