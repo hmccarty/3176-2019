@@ -2,6 +2,8 @@
 
 The following code was written for the team's 2019 season robot, Project X. 
 
+![Project X Photo](ProjectX-Picture.jpg)
+
 Features of Project X include: 
 
 - Swerve Drive
