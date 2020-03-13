@@ -1,6 +1,6 @@
 # Team 3176 FIRST Robotics Competition
 
-The following code was written for the team's 2019 season robot, Project X. 
+The following code was written for the team's 2019 robot, Project X. 
 
 ![Project X Photo](ProjectX-Picture.jpg)
 
