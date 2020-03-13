@@ -11,8 +11,8 @@ Features of Project X include:
    - Vision Integration
    - Defensive Locking Position
    - Variable Pivot Points
-- Superstructure
-   - Collision Detection 
+- Superstructure Subsystem
+   - Internal Collision Prevention 
    - Management of Four Different Subsystems
 - Vision Processing with Raspberry Pi
    - Variable Streams
@@ -22,7 +22,7 @@ Features of Project X include:
 - Trapezoidal Motion Profiling 
 
 For any questions regarding the code, contact one of the following: 
-- Harrison McCarty (mccarth@purdue.edu) - Programmer from 2019
+- Harrison McCarty (mccarth@purdue.edu) - Lead Programmer from 2019
 - Team 3176 (team3176@brownsburg.k12.in.us)
  
    
